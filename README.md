@@ -7,3 +7,5 @@ Jamal Ghamraoui
 Anamika Pancholy
 
 Jessica Allaire (TiraFire)
+
+Nicolas Hudon
