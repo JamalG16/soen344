@@ -7,3 +7,4 @@
 |Jessica Allaire (TiraFire)|
 |Nicolas Hudon|
 |Daniel Privorotsky|
+|Patrick Pin|
