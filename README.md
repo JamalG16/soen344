@@ -8,3 +8,4 @@
 |Nicolas Hudon|
 |Daniel Privorotsky|
 |Patrick Pin|
+|Ayan Bikalapov|
