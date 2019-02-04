@@ -10,3 +10,32 @@
 |Patrick Pin|
 |Ayan Bikalapov|
 |Mila Roisin|
+
+
+## Frontend and Backend Installation
+
+Before beginning, be sure to have the corresponding config.py file.
+
+To install the backend, navigate to the root folder and run the following command:
+```
+$ pip install -r requirements.txt
+```
+
+To install the frontend, navigate to root/static and run the following command:
+```
+$ npm install
+```
+
+## Running the App
+
+To run the backend, navigate to the root folder and run the following command:
+```
+$ python run.py
+```
+
+To run the frontend, navigate to root/static and run the following command:
+```
+$ npm start
+```
+
+The frontend should be running on localhost:3000, while the backend server should be running on localhost:5000.
