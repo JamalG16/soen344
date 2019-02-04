@@ -11,6 +11,10 @@
 |Ayan Bikalapov|
 |Mila Roisin|
 
+## Requirements
+
+* Node v10.15.1
+* Python 3.6.4
 
 ## Frontend and Backend Installation
 
