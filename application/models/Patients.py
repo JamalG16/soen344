@@ -2,7 +2,7 @@ from index import db
 from datetime import datetime
 from passlib.hash import sha256_crypt
 
-class User(db.Model):
+class Patient(db.Model):
 	hcnumber = db.Column(db.String(12), primary_key=True)
 	fname = db.Column(db.String(30), nullable=False)
 	lname = db.Column(db.String(30), nullable=False)
@@ -14,7 +14,7 @@ class User(db.Model):
 	password_hash = db.Column(db.String(100), nullable=False)
 
 	def __repr__(self):
-		return '<User %r %r>' % self.username % self.email
+		return '<Patient %r %r>' % self.fname % self.lname
 
 	
 
@@ -22,24 +22,24 @@ class User(db.Model):
 # Initializes the database
 db.create_all()
 
-# Returns True if user exists
-def userExists(hcnumber):
-	return User.query.filter_by(hcnumber=hcnumber).first() is not None
+# Returns True if patient exists
+def patientExists(hcnumber):
+	return Patient.query.filter_by(hcnumber=hcnumber).first() is not None
 
-# Returns True if user is created
-def createUser(hcnumber, fname, lname, birthday, gender, phone, email, address, password):
+# Returns True if patient is created
+def createPatient(hcnumber, fname, lname, birthday, gender, phone, email, address, password):
 	reponse = False
-	if userExists(hcnumber):
-		reponse =  False # if user exists then return false
+	if patientExists(hcnumber):
+		reponse =  False # if patient exists then return false
 	else:
-		# Hash the Password so that we are smart
+		# hash password
 		password_hash = sha256_crypt.hash(password)
 
-		# Create the new User
-		newUser = User(hcnumber=hcnumber, fname=fname, lname=lname, birthday=birthday, gender=gender, phone=phone, email=email, address=address, password_hash=password_hash)
+		# Create the new patient
+		newPatient = Patient(hcnumber=hcnumber, fname=fname, lname=lname, birthday=birthday, gender=gender, phone=phone, email=email, address=address, password_hash=password_hash)
 
-		# Add it 
-		db.session.add(newUser)
+		# Add it to the database
+		db.session.add(newPatient)
 
 		# Commit it
 		db.session.commit()
