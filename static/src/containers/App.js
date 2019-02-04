@@ -68,7 +68,7 @@ class App extends Component {
         headers: myHeaders
       };
 
-      let req = new Request("/api/users/", myInit)
+      let req = new Request("/api/patients/", myInit)
       fetch(req).then(res => res.json())
       .catch(e => console.error('Error:', e))
       .then(response => {
