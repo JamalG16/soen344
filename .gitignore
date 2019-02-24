@@ -29,3 +29,4 @@ yarn-error.log*
 
 #Json Modules
 static/package-lock.json
+\.vscode/settings\.json

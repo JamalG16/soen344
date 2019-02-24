@@ -12,6 +12,7 @@ class Patient(db.Model):
 	email = db.Column(db.String(120), nullable=False)
 	address = db.Column(db.String(120), nullable=False)
 	password_hash = db.Column(db.String(100), nullable=False)
+	lastAnnual = db.Column(db.String(10), nullable=True)
 
 	def __repr__(self):
 		return '<Patient %r %r>' % self.fname % self.lname
@@ -27,7 +28,7 @@ def patientExists(hcnumber):
 	return Patient.query.filter_by(hcnumber=hcnumber).first() is not None
 
 # Returns True if patient is created
-def createPatient(hcnumber, fname, lname, birthday, gender, phone, email, address, password):
+def createPatient(hcnumber, fname, lname, birthday, gender, phone, email, address, password, lastAnnual):
 	reponse = False
 	if patientExists(hcnumber):
 		reponse =  False # if patient exists then return false
@@ -36,7 +37,7 @@ def createPatient(hcnumber, fname, lname, birthday, gender, phone, email, addres
 		password_hash = sha256_crypt.hash(password)
 
 		# Create the new patient
-		newPatient = Patient(hcnumber=hcnumber, fname=fname, lname=lname, birthday=birthday, gender=gender, phone=phone, email=email, address=address, password_hash=password_hash)
+		newPatient = Patient(hcnumber=hcnumber, fname=fname, lname=lname, birthday=birthday, gender=gender, phone=phone, email=email, address=address, password_hash=password_hash, lastAnnual=lastAnnual)
 
 		# Add it to the database
 		db.session.add(newPatient)

@@ -31,7 +31,7 @@ def newPatient():
 	if request.method == 'PUT':
 
 		# Create a patient and find our whether it is successful or not
-		success = Patients.createPatient(hcnumber=data['hcnumber'], fname=data['fname'], lname=data['lname'], birthday=data['birthday'], gender=data['gender'], phone=data['phone'], email=data['email'], address=data['address'], password=data['password'])
+		success = Patients.createPatient(hcnumber=data['hcnumber'], fname=data['fname'], lname=data['lname'], birthday=data['birthday'], gender=data['gender'], phone=data['phone'], email=data['email'], address=data['address'], password=data['password'], lastAnnual=data['lastAnnual'])
 		if success:
 			message = "Patient has been created"
 		else:
