@@ -5,7 +5,9 @@ import { logout } from '../../actions/auth'
 class Menu extends Component {
     render() {
         let menu; 
-        if (this.props.user!==null && this.props.user!==hcnumber) { //if patient is logged in, display logout
+        //TODO: IMPLEMENT CASE CHECKS TO DETERMINE IF LOGGED IN USER IS PATIENT/NURSE/DOCTOR/ADMIN AND DISPLAY
+        //APPROPRIATE OPTIONS IN THE MENU
+        if (this.props.user!=null) { 
             menu = <div>
                 <Link to="/" onClick={logout}>
                     Logout
@@ -14,7 +16,6 @@ class Menu extends Component {
                     Book Appointment
                 </Link>
             </div>
-        //add cases for nurse, doctors and admins
         } else { //no user is connected, display login and register
             menu = <div>
                 <Link to="/register">
