@@ -17,7 +17,18 @@ class Patient(db.Model):
 	def __repr__(self):
 		return '<Patient %r %r>' % self.fname % self.lname
 
-	
+	# to iterate over a patient to retrieve specific attributes
+	def __iter__(self):
+		yield 'hcnumber', self.hcnumber
+		yield 'fname', self.fname
+		yield 'lname', self.lname
+		yield 'birthday', self.birthday
+		yield 'gender', self.gender
+		yield 'phone', self.phone
+		yield 'email', self.email
+		yield 'address', self.address
+		yield 'password_hash', self.password_hash
+		yield 'lastAnnual', self.lastAnnual
 
 
 # Initializes the database
@@ -26,6 +37,23 @@ db.create_all()
 # Returns True if patient exists
 def patientExists(hcnumber):
 	return Patient.query.filter_by(hcnumber=hcnumber).first() is not None
+
+# Returns true if patient is authenticated
+def authenticate(hcnumber, password):
+	verified = False
+	user = getPatient(hcnumber)
+	if user is not None:
+		verified = sha256_crypt.verify(password, user['password_hash'])
+
+	return verified
+
+# Returns Patient if found
+def getPatient(hcnumber):
+	patient = Patient.query.filter_by(hcnumber=hcnumber).first()
+	if patient is None:
+		return None
+	else:
+		return dict(patient)
 
 # Returns True if patient is created
 def createPatient(hcnumber, fname, lname, birthday, gender, phone, email, address, password, lastAnnual):
