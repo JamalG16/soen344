@@ -65,13 +65,16 @@ def createPatient(hcnumber, fname, lname, birthday, gender, phone, email, addres
 		password_hash = sha256_crypt.hash(password)
 
 		# format the dates
-		lastannualSplit = lastAnnual.split("-")
+		if lastAnnual is not None:
+			lastannualSplit = lastAnnual.split("-")
+			lastAnnual = datetime.datetime.strptime(lastannualSplit[0] + lastannualSplit[1] + lastannualSplit[2], '%Y%m%d').date()
+
 		bdaySplit = birthday.split("-")
-		formattedBday = datetime.datetime.strptime(bdaySplit[0] + bdaySplit[1] + bdaySplit[2], '%Y%m%d').date()
-		formattedLastAnnual = datetime.datetime.strptime(lastannualSplit[0] + lastannualSplit[1] + lastannualSplit[2], '%Y%m%d').date()
+		birthday = datetime.datetime.strptime(bdaySplit[0] + bdaySplit[1] + bdaySplit[2], '%Y%m%d').date()
+		
 
 		# Create the new patient
-		newPatient = Patient(hcnumber=hcnumber, fname=fname, lname=lname, birthday=formattedBday, gender=gender, phone=phone, email=email, address=address, password_hash=password_hash, lastAnnual=formattedLastAnnual)
+		newPatient = Patient(hcnumber=hcnumber, fname=fname, lname=lname, birthday=birthday, gender=gender, phone=phone, email=email, address=address, password_hash=password_hash, lastAnnual=lastAnnual)
 
 		# Add it to the database
 		db.session.add(newPatient)

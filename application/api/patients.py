@@ -71,7 +71,8 @@ def userAuthenticate():
 			user = Patients.getPatient(data['hcnumber'])
 			# convert datetimes to strings
 			user['birthday'] = user['birthday'].strftime("%Y-%m-%d")
-			user['lastAnnual'] = user['lastAnnual'].strftime("%Y-%m-%d")
+			if user['lastAnnual'] is not None:
+				user['lastAnnual'] = user['lastAnnual'].strftime("%Y-%m-%d")
 			message = "Patient authenticated."
 			status = "OK"
 			response = json.dumps({'success': success, 'status': status, 'message': message,'user':user}, default=str)
