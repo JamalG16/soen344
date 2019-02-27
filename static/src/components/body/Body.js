@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Row, Col, Grid } from 'react-bootstrap'
 import Login from './Login'
+import Register from './Register'
 import { connect } from 'react-redux'
 import { Route } from 'react-router-dom'
 
@@ -30,10 +31,12 @@ class Body extends Component {
                   return(
                     <div>
                     {Login}
+                    {Register}
                   </div>
                   )
                 }} />
 				<Route path='/Login' component={Login}/>
+        <Route path='/Register' component={Register}/>
           </Row>
         </Grid>
       </div>
