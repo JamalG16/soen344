@@ -44,9 +44,13 @@ class Register extends Component {
     }
 
     validateForm() {
-        return (this.state.fname.length>0 && this.state.lname.length>0 && this.state.address.length>0 && this.state.validBirthday 
+        //check first if all info is valid and no last annual is entered OR all info is valid and last annual is valid
+        return ((this.state.fname.length>0 && this.state.lname.length>0 && this.state.address.length>0 && this.state.validBirthday 
             && this.state.validHcNumber && this.state.validPhone && this.state.validEmail && this.state.validPassword 
-            && (this.state.gender.value=='F' || this.state.gender.value=='M'))
+            && (this.state.gender.value=='F' || this.state.gender.value=='M') && this.state.lastAnnual == "") || 
+            (this.state.fname.length>0 && this.state.lname.length>0 && this.state.address.length>0 && this.state.validBirthday 
+            && this.state.validHcNumber && this.state.validPhone && this.state.validEmail && this.state.validPassword 
+            && (this.state.gender.value=='F' || this.state.gender.value=='M') && this.state.validLastAnnual))
     }
 
     handleChange = event => {
@@ -69,7 +73,7 @@ class Register extends Component {
     }
 
     validateBirthday(bday){
-        if (/^\d{2}-\d{2}-\d{4}$/.test(bday)){
+        if (/^\d{4}-\d{2}-\d{2}$/.test(bday)){
             this.setState({validBirthday: true }, () => {
                 console.log(this.state.validBirthday)
             })
@@ -108,7 +112,7 @@ class Register extends Component {
     }
 
     validateLastAnnual(appt){
-        if (/^\d{2}-\d{2}-\d{4}$/.test(appt)){
+        if (/^\d{4}-\d{2}-\d{2}$/.test(appt)){
             this.setState({validLastAnnual: true }, () => {
                 console.log(this.state.validLastAnnual)
             })
@@ -255,7 +259,7 @@ class Register extends Component {
                         <ControlLabel>Birthday</ControlLabel>
                         <FormControl
                         type="text"
-                        placeholder="MM-DD-YYYY"
+                        placeholder="YYYY-MM-DD"
                         value={this.state.birthday}
                         onChange={(e) => {
                             this.validateBirthday(e.target.value)
@@ -318,7 +322,7 @@ class Register extends Component {
                     <FormGroup controlId="lastAnnual" bsSize="large">
                         <ControlLabel>Last Annual Checkup</ControlLabel>
                         <FormControl
-                        placeholder="Optional: MM-DD-YYYY"
+                        placeholder="Optional: YYYY-MM-DD"
                         value={this.state.lastAnnual}
                         onChange={(e) => {
                             this.validateLastAnnual(e.target.value)

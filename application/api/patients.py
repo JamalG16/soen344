@@ -69,9 +69,12 @@ def userAuthenticate():
 		# if email exists & authenticated, then get the patient
 		if success:
 			user = Patients.getPatient(data['hcnumber'])
+			# convert datetimes to strings
+			user['birthday'] = user['birthday'].strftime("%Y-%m-%d")
+			user['lastAnnual'] = user['lastAnnual'].strftime("%Y-%m-%d")
 			message = "Patient authenticated."
 			status = "OK"
-			response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
+			response = json.dumps({'success': success, 'status': status, 'message': message,'user':user}, default=str)
 		# else the user is not authenticated, request is denied
 		else:
 			message = "User not authenticated."

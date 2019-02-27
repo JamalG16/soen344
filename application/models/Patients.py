@@ -1,18 +1,18 @@
 from index import db
-from datetime import datetime
+import datetime
 from passlib.hash import sha256_crypt
 
 class Patient(db.Model):
 	hcnumber = db.Column(db.String(12), primary_key=True)
 	fname = db.Column(db.String(30), nullable=False)
 	lname = db.Column(db.String(30), nullable=False)
-	birthday = db.Column(db.String(10), nullable=False)
+	birthday = db.Column(db.DateTime, nullable=False)
 	gender = db.Column(db.String(1), nullable=False)
 	phone = db.Column(db.String(10), nullable=False)
 	email = db.Column(db.String(120), nullable=False)
 	address = db.Column(db.String(120), nullable=False)
 	password_hash = db.Column(db.String(100), nullable=False)
-	lastAnnual = db.Column(db.String(10), nullable=True)
+	lastAnnual = db.Column(db.DateTime, nullable=True)
 
 	def __repr__(self):
 		return '<Patient %r %r>' % self.fname % self.lname
@@ -64,8 +64,14 @@ def createPatient(hcnumber, fname, lname, birthday, gender, phone, email, addres
 		# hash password
 		password_hash = sha256_crypt.hash(password)
 
+		# format the dates
+		lastannualSplit = lastAnnual.split("-")
+		bdaySplit = birthday.split("-")
+		formattedBday = datetime.datetime.strptime(bdaySplit[0] + bdaySplit[1] + bdaySplit[2], '%Y%m%d').date()
+		formattedLastAnnual = datetime.datetime.strptime(lastannualSplit[0] + lastannualSplit[1] + lastannualSplit[2], '%Y%m%d').date()
+
 		# Create the new patient
-		newPatient = Patient(hcnumber=hcnumber, fname=fname, lname=lname, birthday=birthday, gender=gender, phone=phone, email=email, address=address, password_hash=password_hash, lastAnnual=lastAnnual)
+		newPatient = Patient(hcnumber=hcnumber, fname=fname, lname=lname, birthday=formattedBday, gender=gender, phone=phone, email=email, address=address, password_hash=password_hash, lastAnnual=formattedLastAnnual)
 
 		# Add it to the database
 		db.session.add(newPatient)
