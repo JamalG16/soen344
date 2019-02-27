@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { FormGroup, FormControl, ControlLabel, Button, Alert } from "react-bootstrap";
 import { fetchAPI } from '../utility'
 import Select from 'react-select'
+import './register.css'
 
 class Register extends Component {
     constructor(props) {
@@ -223,7 +224,6 @@ class Register extends Component {
                     <FormGroup controlId="hcnumber" bsSize="large">
                         <ControlLabel>Health Card Number</ControlLabel>
                         <FormControl
-                        autoFocus
                         type="text"
                         placeholder="ex: LOUX 0803 2317"
                         value={this.state.hcnumber}
@@ -236,7 +236,6 @@ class Register extends Component {
                     <FormGroup controlId="fname" bsSize="large">
                         <ControlLabel>First Name</ControlLabel>
                         <FormControl
-                        autoFocus
                         type="text"
                         placeholder="John"
                         value={this.state.fname}
@@ -246,7 +245,6 @@ class Register extends Component {
                     <FormGroup controlId="lname" bsSize="large">
                         <ControlLabel>Last Name</ControlLabel>
                         <FormControl
-                        autoFocus
                         type="text"
                         placeholder="Doe"
                         value={this.state.lname}
@@ -256,7 +254,6 @@ class Register extends Component {
                     <FormGroup controlId="birthday" bsSize="large">
                         <ControlLabel>Birthday</ControlLabel>
                         <FormControl
-                        autoFocus
                         type="text"
                         placeholder="MM-DD-YYYY"
                         value={this.state.birthday}
@@ -288,7 +285,6 @@ class Register extends Component {
                     <FormGroup controlId="phone" bsSize="large">
                         <ControlLabel>Phone</ControlLabel>
                         <FormControl
-                        autoFocus
                         type="text"
                         placeholder="ex: 4509999999"
                         value={this.state.phone}
@@ -301,7 +297,6 @@ class Register extends Component {
                     <FormGroup controlId="email" bsSize="large">
                         <ControlLabel>Email</ControlLabel>
                         <FormControl
-                        autoFocus
                         type="text"
                         placeholder="ex: johndoe@gmail.com"
                         value={this.state.email}
@@ -314,7 +309,6 @@ class Register extends Component {
                     <FormGroup controlId="address" bsSize="large">
                         <ControlLabel>Address</ControlLabel>
                         <FormControl
-                        autoFocus
                         type="text"
                         placeholder="123 St-Catherine Street, Montreal, QC"
                         value={this.state.address}
@@ -336,7 +330,6 @@ class Register extends Component {
                     <FormGroup controlId="password" bsSize="large">
                         <ControlLabel>Password</ControlLabel>
                         <FormControl
-                        autoFocus
                         type="password"
                         placeholder="6 characters minimum"
                         value={this.state.password}
@@ -349,7 +342,6 @@ class Register extends Component {
                     <FormGroup controlId="confirmPassword" bsSize="large">
                         <ControlLabel>Confirm Password</ControlLabel>
                         <FormControl
-                        autoFocus
                         type="password"
                         placeholder="6 characters minimum"
                         value={this.state.confirmpassword}
