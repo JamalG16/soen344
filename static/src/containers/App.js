@@ -17,7 +17,7 @@ export class App extends Component {
           <div>
           <Header />
           <Route path='/' component={Body}/>
-          <Infodump/>
+
           </div>
         </Router>
       </div>

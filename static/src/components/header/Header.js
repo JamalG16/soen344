@@ -9,25 +9,23 @@ class Header extends Component {
   
   render() {
     return (
-      <PageHeader>
-        <Grid>
+        <Grid style={{background: '#F2F1F1', width: '100%'}}>
           <Row>
-            <Col lg={2} lgOffset={0}>
+            <Col xs={6} style={{textAlign: 'left'}}>
               <h3>
                 <Link to='/'>
                   Uber Santé 
                 </Link>    
               </h3>
             </Col>
-            <Col lg={3} lgOffset={7}>
+            <Col xs={6} style={{textAlign: 'right'}}>
               <h3>
-                <Menu 
-                user = {this.props.user}/>
+                {<Menu 
+                user = {this.props.user}/>}
               </h3>
             </Col>
           </Row>
         </Grid>
-      </PageHeader>
     );
   }
 }

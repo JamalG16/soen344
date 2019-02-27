@@ -8,7 +8,7 @@ export const login = (user) => {
     window.location.href = ((window.location.href).split('/login')[0])
 }
 
-export const logout = () => {
+export const logOut = () => {
     configureStore.store.dispatch({
         type:"LOG_OUT"
     })

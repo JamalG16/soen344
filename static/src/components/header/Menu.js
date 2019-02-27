@@ -1,19 +1,23 @@
 import React, {Component} from 'react'
 import { Link } from 'react-router-dom'
-import { logout } from '../../actions/auth'
+import { logOut } from '../../actions/auth'
+import { Col } from 'react-bootstrap'
 
 class Menu extends Component {
     render() {
         let menu; 
         //TODO: IMPLEMENT CASE CHECKS TO DETERMINE IF LOGGED IN USER IS PATIENT/NURSE/DOCTOR/ADMIN AND DISPLAY
         //APPROPRIATE OPTIONS IN THE MENU
-        if (this.props.user!=null) { 
+        if (!(Object.keys(this.props.user).length === 0 && this.props.user.constructor === Object)) { 
             menu = <div>
-                <Link to="/" onClick={logout}>
-                    Logout
-                </Link>
+                Welcome {this.props.user.fname}!
+                &nbsp;&nbsp;&nbsp;&nbsp;
                 <Link to="/book">
-                    Book Appointment
+                    Book an Appointment
+                </Link>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <Link to="/" onClick={logOut}>
+                    Logout
                 </Link>
             </div>
         } else { //no user is connected, display login and register
