@@ -9,7 +9,7 @@ def roomExists(roomNumber):
 
 def createRoom(roomNumber, available):
 	reponse = False
-	if roomExists(hcnumber):
+	if roomExists(roomNumber):
 		reponse =  False
 	else:
 		newRoom = Room(roomNumber=roomNumber, available=available)
