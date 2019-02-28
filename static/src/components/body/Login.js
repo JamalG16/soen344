@@ -30,17 +30,39 @@ class Login extends Component {
 
   handleLogin = event => {
     event.preventDefault();
-    let user = {hcnumber: this.state.credentials, password: this.state.password }
-    this.authenticate(user);
+    if (/^[A-Z]{4}\s\d{4}\s\d{4}$/.test(this.state.credentials))
+      this.authenticatePatient();
+    else
+      this.authenticateAdmin();
   }
 
-  async authenticate(user){
-    fetchAPI("POST", "/api/patients/authenticate/", user).then(
+  async authenticatePatient(){
+    let patient = {hcnumber: this.state.credentials, password: this.state.password }
+    fetchAPI("POST", "/api/patients/authenticate/", patient).then(
       response => {
         try{
           if (response.success){
             login(response.user)
             console.log('it is a success mate, your info is ' + response.user.fname + response.user.hcnumber)
+            this.setState({logged: true, alert: false})
+          }
+          else {
+            console.log('it is a fail mate');
+            this.setState({alert: true, logged: false})
+          }
+        } catch(e){console.error("Error", e)}
+      }
+    ).catch((e)=>console.error("Error:", e))
+  }
+
+  async authenticateAdmin(){
+    let admin = {username: this.state.credentials, password: this.state.password }
+    fetchAPI("POST", "/api/admins/authenticate/", admin).then(
+      response => {
+        try{
+          if (response.success){
+            login(response.user)
+            console.log('it is a success mate, your info is ' + response.user.username)
             this.setState({logged: true, alert: false})
           }
           else {

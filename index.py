@@ -26,6 +26,8 @@ db = SQLAlchemy(app)
 
 # import api's
 from application.api.patients import patients
+from application.api.admins import admins
 
 # Attach VR to app
 app.register_blueprint(patients)
+app.register_blueprint(admins)

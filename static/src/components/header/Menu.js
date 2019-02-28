@@ -8,7 +8,7 @@ class Menu extends Component {
         let menu; 
         //TODO: IMPLEMENT CASE CHECKS TO DETERMINE IF LOGGED IN USER IS PATIENT/NURSE/DOCTOR/ADMIN AND DISPLAY
         //APPROPRIATE OPTIONS IN THE MENU
-        if (!(Object.keys(this.props.user).length === 0 && this.props.user.constructor === Object)) { 
+        if (!(Object.keys(this.props.user).length === 0 && this.props.user.constructor === Object) && typeof(this.props.user.hcnumber) !== 'undefined') { 
             menu = <div>
                 Welcome {this.props.user.fname}!
                 &nbsp;&nbsp;&nbsp;&nbsp;
@@ -20,6 +20,18 @@ class Menu extends Component {
                     Logout
                 </Link>
             </div>
+        } else if (!(Object.keys(this.props.user).length === 0 && this.props.user.constructor === Object) && typeof(this.props.user.username) !== 'undefined') { 
+            menu = <div>
+                Welcome {this.props.user.username}!
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <Link to="/register">
+                    Register An Account
+                </Link>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <Link to="/" onClick={logOut}>
+                    Logout
+                </Link>
+            </div> 
         } else { //no user is connected, display login and register
             menu = <div>
                 <Link to="/register">
