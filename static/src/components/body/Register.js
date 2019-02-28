@@ -157,7 +157,7 @@ class Register extends Component {
     }
 
     async register(patient){
-        fetchAPI("PUT", "/api/patients/", patient).then(
+        fetchAPI("PUT", "/api/patient/", patient).then(
             response => {
               try{
                 if (response.success){

@@ -1,11 +1,11 @@
 '''
-This file documents the api routes for the login information. It maps api calls that will return the patients
+This file documents the api routes for the login information. It maps api calls that will return the patient
 
 '''
 
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
-from application.models import Patients
+from application.models import Patient
 from application.util import *
 from passlib.hash import sha256_crypt
 from application.util import convertRequestDataToDict as toDict
@@ -14,17 +14,17 @@ import json
 # This is a Blueprint object. We use this as the object to route certain urls 
 # In /index.py we import this object and attach it to the Flask object app
 # This way all the routes attached to this object will be mapped to app as well.
-patients = Blueprint('patients', __name__)
+patient = Blueprint('patient', __name__)
 
 # list of possible requests
 httpMethods = ['PUT', 'GET', 'POST', 'DELETE']
 
 # Index 
-@patients.route('/api/', methods=['GET','OPTIONS'])
+@patient.route('/api/', methods=['GET','OPTIONS'])
 def index():
 	return json.dumps({'success': True, 'status': 'OK', 'message': 'Success'})
 
-@patients.route('/api/patients/', methods=['PUT','GET'])
+@patient.route('/api/patient/', methods=['PUT','GET'])
 def newPatient():
 	data = request.data
 	data  = data.decode('utf8').replace("'",'"')
@@ -34,7 +34,7 @@ def newPatient():
 	if request.method == 'PUT':
 
 		# Create a patient and find our whether it is successful or not
-		success = Patients.createPatient(hcnumber=data['hcnumber'], fname=data['fname'], lname=data['lname'], birthday=data['birthday'], gender=data['gender'], phone=data['phone'], email=data['email'], address=data['address'], password=data['password'], lastAnnual=data['lastAnnual'])
+		success = Patient.createPatient(hcnumber=data['hcnumber'], fname=data['fname'], lname=data['lname'], birthday=data['birthday'], gender=data['gender'], phone=data['phone'], email=data['email'], address=data['address'], password=data['password'], lastAnnual=data['lastAnnual'])
 		if success:
 			message = "Patient has been created"
 		else:
@@ -47,7 +47,7 @@ def newPatient():
 	response = json.dumps({"success":success, "message":message})
 	return response
 
-@patients.route('/api/patients/authenticate/', methods=httpMethods)
+@patient.route('/api/patient/authenticate/', methods=httpMethods)
 def userAuthenticate():
 
 	# convert request data to dictionary
@@ -62,13 +62,13 @@ def userAuthenticate():
 	# logging in
 	if request.method == 'POST':
 		# check if email exists
-		success = Patients.patientExists(data['hcnumber'])
+		success = Patient.patientExists(data['hcnumber'])
 		# Verify User  
-		success = Patients.authenticate(data['hcnumber'], data['password'])
+		success = Patient.authenticate(data['hcnumber'], data['password'])
 
 		# if email exists & authenticated, then get the patient
 		if success:
-			user = Patients.getPatient(data['hcnumber'])
+			user = Patient.getPatient(data['hcnumber'])
 			# convert datetimes to strings
 			user['birthday'] = user['birthday'].strftime("%Y-%m-%d")
 			if user['lastAnnual'] is not None:

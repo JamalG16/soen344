@@ -38,7 +38,7 @@ class Login extends Component {
 
   async authenticatePatient(){
     let patient = {hcnumber: this.state.credentials, password: this.state.password }
-    fetchAPI("POST", "/api/patients/authenticate/", patient).then(
+    fetchAPI("POST", "/api/patient/authenticate/", patient).then(
       response => {
         try{
           if (response.success){
@@ -57,7 +57,7 @@ class Login extends Component {
 
   async authenticateAdmin(){
     let admin = {username: this.state.credentials, password: this.state.password }
-    fetchAPI("POST", "/api/admins/authenticate/", admin).then(
+    fetchAPI("POST", "/api/admin/authenticate/", admin).then(
       response => {
         try{
           if (response.success){

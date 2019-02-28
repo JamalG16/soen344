@@ -36,7 +36,7 @@ class infodump extends Component {
       password: "lol", 
       lastAnnual: null
     }
-    fetchAPI("PUT", "/api/patients/", patientData).then(
+    fetchAPI("PUT", "/api/patient/", patientData).then(
         response => {
           try{
             if (response.success){
@@ -56,7 +56,7 @@ class infodump extends Component {
       username: 'admin',
       password: 'lol'
     }
-    fetchAPI("PUT", "/api/admins/", adminData).then(
+    fetchAPI("PUT", "/api/admin/", adminData).then(
         response => {
           try{
             if (response.success){

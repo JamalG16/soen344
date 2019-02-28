@@ -1,11 +1,11 @@
 '''
-This file documents the api routes for the login information. It maps api calls that will return the admins
+This file documents the api routes for the login information. It maps api calls that will return the admin
 
 '''
 
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
-from application.models import Admins
+from application.models import Admin
 from application.util import *
 from passlib.hash import sha256_crypt
 from application.util import convertRequestDataToDict as toDict
@@ -14,17 +14,17 @@ import json
 # This is a Blueprint object. We use this as the object to route certain urls 
 # In /index.py we import this object and attach it to the Flask object app
 # This way all the routes attached to this object will be mapped to app as well.
-admins = Blueprint('admins', __name__)
+admin = Blueprint('admin', __name__)
 
 # list of possible requests
 httpMethods = ['PUT', 'GET', 'POST', 'DELETE']
 
 # Index 
-@admins.route('/api/', methods=['GET','OPTIONS'])
+@admin.route('/api/', methods=['GET','OPTIONS'])
 def index():
 	return json.dumps({'success': True, 'status': 'OK', 'message': 'Success'})
 
-@admins.route('/api/admins/', methods=['PUT','GET'])
+@admin.route('/api/admin/', methods=['PUT','GET'])
 def newAdmin():
 	data = request.data
 	data  = data.decode('utf8').replace("'",'"')
@@ -34,7 +34,7 @@ def newAdmin():
 	if request.method == 'PUT':
 
 		# Create an admin and find our whether it is successful or not
-		success = Admins.createAdmin(username=data['username'], password=data['password'])
+		success = Admin.createAdmin(username=data['username'], password=data['password'])
 		if success:
 			message = "Admin has been created"
 		else:
@@ -47,7 +47,7 @@ def newAdmin():
 	response = json.dumps({"success":success, "message":message})
 	return response
 
-@admins.route('/api/admins/authenticate/', methods=httpMethods)
+@admin.route('/api/admin/authenticate/', methods=httpMethods)
 def userAuthenticate():
 
 	# convert request data to dictionary
@@ -62,13 +62,13 @@ def userAuthenticate():
 	# logging in
 	if request.method == 'POST':
 		# check if email exists
-		success = Admins.adminExists(data['username'])
+		success = Admin.adminExists(data['username'])
 		# Verify User  
-		success = Admins.authenticate(data['username'], data['password'])
+		success = Admin.authenticate(data['username'], data['password'])
 
 		# if email exists & authenticated, then get the admin
 		if success:
-			user = Admins.getAdmin(data['username'])
+			user = Admin.getAdmin(data['username'])
 			message = "Admin authenticated."
 			status = "OK"
 			response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
