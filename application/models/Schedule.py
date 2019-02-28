@@ -8,7 +8,7 @@ class TimeSlot(db.Model):
     endTime = db.Column(db.DateTime, nullable=False)
     rooms = db.Column(db.PickleType(mutable=True), nullable=False)
 
-	def __iter__(self):
+    def __iter__(self):
         yield 'available', self.available
         yield 'startTime', self.startTime
         yield 'endTime', self.endTime

@@ -8,7 +8,7 @@ class Transaction(db.Model):
     appointment = db.Column(db.PickleType(mutable=True), nullable=False)
     room = db.Column(db.PickleType(mutable=True), nullable=False)
 
-	def __iter__(self):
+    def __iter__(self):
         yield 'timeSlot', self.timeSlot
         yield 'doctor', self.doctor
         yield 'patient', self.patient
