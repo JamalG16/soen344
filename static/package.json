@@ -6,6 +6,7 @@
   "dependencies": {
     "app-container": "^1.1.1",
     "bootstrap": "^3.3.7",
+    "dropdown": "^0.2.0",
     "history": "^4.7.2",
     "mdbreact": "^4.11.0",
     "moment": "^2.20.1",
