@@ -3,7 +3,7 @@ from datetime import datetime
 from passlib.hash import sha256_crypt
 
 class Doctor(db.Model):
-	permit_number = db.Column(db.String(50), nullable=False)
+	permit_number = db.Column(db.String(7), nullable=False, primary_key=True)
 	fname = db.Column(db.String(30), nullable=False)
 	lname = db.Column(db.String(30), nullable=False)
 	specialty = db.Column(db.String(30), nullable=False)
@@ -28,6 +28,23 @@ db.create_all()
 # Returns True if doctor exists
 def doctorExists(permit_number):
 	return Doctor.query.filter_by(permit_number=permit_number).first() is not None
+
+# Returns true if doctor is authenticated
+def authenticate(permit_number, password):
+	verified = False
+	user = getDoctor(permit_number)
+	if user is not None:
+		verified = sha256_crypt.verify(password, user['password_hash'])
+
+	return verified
+
+# Returns Doctor if found
+def getDoctor(permit_number):
+	doctor = Doctor.query.filter_by(permit_number=permit_number).first()
+	if doctor is None:
+		return None
+	else:
+		return dict(doctor)
 
 # Returns True if doctor is created
 def createDoctor(permit_number, fname, lname, specialty, password, city):

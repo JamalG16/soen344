@@ -61,12 +61,12 @@ def userAuthenticate():
 	
 	# logging in
 	if request.method == 'POST':
-		# check if email exists
+		# check if username exists
 		success = Admin.adminExists(data['username'])
 		# Verify User  
 		success = Admin.authenticate(data['username'], data['password'])
 
-		# if email exists & authenticated, then get the admin
+		# if username exists & authenticated, then get the admin
 		if success:
 			user = Admin.getAdmin(data['username'])
 			message = "Admin authenticated."

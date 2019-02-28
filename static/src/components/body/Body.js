@@ -14,14 +14,6 @@ class Body extends Component {
     };
   }
   render() {
-    let login;
-    //if no user is logged in, then display login form, else, do not.
-    if (1){
-      
-    } else {
-      
-    }
-
     return (
       <div>
         <Grid>
@@ -30,9 +22,9 @@ class Body extends Component {
                 <Route exact path='/' render={()=>{
                   return(
                     <div>
-                    {Login}
-                    {Register}
-                  </div>
+                      {Login}
+                      {Register}
+                    </div>
                   )
                 }} />
 				<Route path='/Login' component={Login}/>
