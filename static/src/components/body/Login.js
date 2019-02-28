@@ -28,12 +28,20 @@ class Login extends Component {
     });
   }
 
+  //determines which kind of user is trying to log in and authenticates using the correct API. 
   handleLogin = event => {
     event.preventDefault();
     if (/^[A-Z]{4}\s\d{4}\s\d{4}$/.test(this.state.credentials))
-      this.authenticatePatient();
+        this.authenticatePatient();
+
+    else if(/^\d{7}$/.test(this.state.credentials))
+        this.authenticateDoctor();
+
+    else if(/^[A-Z]{3}\d{5}$/.test(this.state.credentials))
+        this.authenticateNurse();
+
     else
-      this.authenticateAdmin();
+        this.authenticateAdmin();
   }
 
   async authenticatePatient(){
@@ -44,6 +52,44 @@ class Login extends Component {
           if (response.success){
             login(response.user)
             console.log('it is a success mate, your info is ' + response.user.fname + response.user.hcnumber)
+            this.setState({logged: true, alert: false})
+          }
+          else {
+            console.log('it is a fail mate');
+            this.setState({alert: true, logged: false})
+          }
+        } catch(e){console.error("Error", e)}
+      }
+    ).catch((e)=>console.error("Error:", e))
+  }
+
+  async authenticateDoctor(){
+    let doctor = {permit_number: this.state.credentials, password: this.state.password }
+    fetchAPI("POST", "/api/doctor/authenticate/", doctor).then(
+      response => {
+        try{
+          if (response.success){
+            login(response.user)
+            console.log('it is a success mate, your info is ' + response.user.fname + response.user.permit_number)
+            this.setState({logged: true, alert: false})
+          }
+          else {
+            console.log('it is a fail mate');
+            this.setState({alert: true, logged: false})
+          }
+        } catch(e){console.error("Error", e)}
+      }
+    ).catch((e)=>console.error("Error:", e))
+  }
+
+  async authenticateNurse(){
+    let nurse = {access_ID: this.state.credentials, password: this.state.password }
+    fetchAPI("POST", "/api/nurse/authenticate/", nurse).then(
+      response => {
+        try{
+          if (response.success){
+            login(response.user)
+            console.log('it is a success mate, your info is ' + response.user.fname + response.user.access_ID)
             this.setState({logged: true, alert: false})
           }
           else {

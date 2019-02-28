@@ -3,7 +3,7 @@ from datetime import datetime
 from passlib.hash import sha256_crypt
 
 class Nurse(db.Model):
-	access_ID = db.Column(db.String(100), nullable=False)
+	access_ID = db.Column(db.String(8), nullable=False, primary_key=True)
 	fname = db.Column(db.String(30), nullable=False)
 	lname = db.Column(db.String(30), nullable=False)
 	password_hash = db.Column(db.String(100), nullable=False)
@@ -25,6 +25,23 @@ db.create_all()
 def nurseExists(access_ID):
 	return Nurse.query.filter_by(access_ID=access_ID).first() is not None
 
+# Returns true if nurse is authenticated
+def authenticate(access_ID, password):
+	verified = False
+	user = getNurse(access_ID)
+	if user is not None:
+		verified = sha256_crypt.verify(password, user['password_hash'])
+
+	return verified
+
+# Returns nurse if found
+def getNurse(access_ID):
+	nurse = Nurse.query.filter_by(access_ID=access_ID).first()
+	if nurse is None:
+		return None
+	else:
+		return dict(nurse)
+		
 # Returns True if nurse is created
 def createNurse(access_ID, fname, lname, password):
 	reponse = False

@@ -1,38 +1,35 @@
 import React, {Component} from 'react'
 import { Link } from 'react-router-dom'
-import { logOut } from '../../actions/auth'
-import { Col } from 'react-bootstrap'
+import PatientMenu from './PatientMenu'
+import AdminMenu from './AdminMenu'
+import NurseMenu from './NurseMenu'
+import DoctorMenu from './DoctorMenu'
 
 class Menu extends Component {
     render() {
         let menu; 
-        //TODO: IMPLEMENT CASE CHECKS TO DETERMINE IF LOGGED IN USER IS PATIENT/NURSE/DOCTOR/ADMIN AND DISPLAY
-        //APPROPRIATE OPTIONS IN THE MENU
+        //if patient is logged in
         if (!(Object.keys(this.props.user).length === 0 && this.props.user.constructor === Object) && typeof(this.props.user.hcnumber) !== 'undefined') { 
             menu = <div>
-                Welcome {this.props.user.fname}!
-                &nbsp;&nbsp;&nbsp;&nbsp;
-                <Link to="/book">
-                    Book an Appointment
-                </Link>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <Link to="/" onClick={logOut}>
-                    Logout
-                </Link>
+                <PatientMenu user={this.props.user}/>
             </div>
+        //if doc is logged in
+        } else if (!(Object.keys(this.props.user).length === 0 && this.props.user.constructor === Object) && typeof(this.props.user.permit_number) !== 'undefined') { 
+            menu = <div>
+                <DoctorMenu user={this.props.user}/>
+            </div>
+        //if nurse is logged in
+        } else if (!(Object.keys(this.props.user).length === 0 && this.props.user.constructor === Object) && typeof(this.props.user.access_ID) !== 'undefined') { 
+            menu = <div>
+                <NurseMenu user={this.props.user}/>
+            </div>
+        //if admin is logged in
         } else if (!(Object.keys(this.props.user).length === 0 && this.props.user.constructor === Object) && typeof(this.props.user.username) !== 'undefined') { 
             menu = <div>
-                Welcome {this.props.user.username}!
-                &nbsp;&nbsp;&nbsp;&nbsp;
-                <Link to="/register">
-                    Register An Account
-                </Link>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <Link to="/" onClick={logOut}>
-                    Logout
-                </Link>
+                <AdminMenu user={this.props.user}/>
             </div> 
-        } else { //no user is connected, display login and register
+        //no user is connected, display login and register    
+        } else { 
             menu = <div>
                 <Link to="/register">
                     Register

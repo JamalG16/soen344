@@ -1,5 +1,4 @@
 import React, {Component} from 'react'
-import {PageHeader, Button} from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { Col, Row, Grid} from 'react-bootstrap'
@@ -12,17 +11,17 @@ class Header extends Component {
         <Grid style={{background: '#F2F1F1', width: '100%'}}>
           <Row>
             <Col xs={6} style={{textAlign: 'left'}}>
-              <h3>
+              <h4>
                 <Link to='/'>
                   Uber Santé 
                 </Link>    
-              </h3>
+              </h4>
             </Col>
             <Col xs={6} style={{textAlign: 'right'}}>
-              <h3>
+              <h4>
                 {<Menu 
                 user = {this.props.user}/>}
-              </h3>
+              </h4>
             </Col>
           </Row>
         </Grid>
