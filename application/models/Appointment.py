@@ -6,3 +6,9 @@ class Appointment(db.Model):
     timeSlot = db.Column(db.PickleType(mutable=True), nullable=False)
     doctor = db.Column(db.PickleType(mutable=True), nullable=False)
     patient = db.Column(db.PickleType(mutable=True), nullable=False)
+
+	def __iter__(self):
+        yield 'room', self.room
+        yield 'timeSlot', self.timeSlot
+        yield 'doctor', self.doctor
+        yield 'patient', self.patient

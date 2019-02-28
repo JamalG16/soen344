@@ -4,6 +4,10 @@ class Room(db.Model):
 	roomNumber = db.Column(db.Integer, primary_key=True)
 	available = db.Column(db.Boolean, primary_key=True)
 
+	def __iter__(self):
+		yield 'roomNumber', self.roomNumber
+		yield 'available', self.available
+
 def roomExists(roomNumber):
 	return Room.query.filter_by(roomNumber=roomNumber).first() is not None
 
