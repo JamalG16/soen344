@@ -13,8 +13,14 @@ class Doctor(db.Model):
 	def __repr__(self):
 		return '<Doctor %r %r>' % self.fname % self.lname
 
-	
-
+	# to iterate over a patient to retrieve specific attributes
+	def __iter__(self):
+		yield 'permit_number', self.permit_number
+		yield 'fname', self.fname
+		yield 'lname', self.lname	
+		yield 'specialty', self.specialty
+		yield 'password_hash', self.password_hash
+		yield 'city', self.city
 
 # Initializes the database
 db.create_all()
