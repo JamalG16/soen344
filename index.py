@@ -25,7 +25,9 @@ def index(path):
 db = SQLAlchemy(app)
 
 # import api's
-from application.api.patients import patients
+from application.api.patient import patient
+from application.api.admin import admin
 
 # Attach VR to app
-app.register_blueprint(patients)
+app.register_blueprint(patient)
+app.register_blueprint(admin)
