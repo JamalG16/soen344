@@ -85,9 +85,6 @@ def createPatient(hcnumber, fname, lname, birthday, gender, phone, email, addres
 		reponse = True
 	return reponse
 
-
-
-
-
-
-
+# TO DO
+def hasPatient(time):
+	return True

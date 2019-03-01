@@ -67,9 +67,6 @@ def createDoctor(permit_number, fname, lname, specialty, password, city):
 		reponse = True
 	return reponse
 
-
-
-
-
-
-
+# TO DO
+def hasDoctor(time):
+	return True

@@ -1,4 +1,7 @@
 from index import db
+from .Room import roomAvailable
+from .Doctor import hasDoctor
+from .Patient import hasPatient
 
 # PickleType coverts python object to a string so that it can be stored on the database
 class Appointment(db.Model):
@@ -16,4 +19,19 @@ class Appointment(db.Model):
         yield 'length', self.length
     
 def createAppointment(room, timeSlot, doctor, patient, length):
-    pass
+	reponse = False
+	if (not roomAvailable(room, timeSlot) or not hasDoctor(timeSlot) or hasPatient(timeSlot)):
+		reponse =  False 
+	else:
+		# Create the new appointment
+		newAppointment = Appointment(room=room, timeSlot=timeSlot, doctor=doctor, patient=patient, length=length)
+
+		# Add it to the database
+		db.session.add(newAppointment)
+
+		# Commit it
+		db.session.commit()
+
+		reponse = True
+	return reponse
+			

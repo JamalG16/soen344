@@ -29,9 +29,11 @@ from application.api.patient import patient
 from application.api.admin import admin
 from application.api.doctor import doctor
 from application.api.nurse import nurse
+from application.api.room import room
 
 # Attach VR to app
 app.register_blueprint(patient)
 app.register_blueprint(admin)
 app.register_blueprint(nurse)
 app.register_blueprint(doctor)
+app.register_blueprint(room)
