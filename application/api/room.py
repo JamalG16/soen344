@@ -5,7 +5,8 @@ This file documents the api routes for the login information. It maps api calls 
 
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
-from application.models import Room
+from application.models import Room, Schedule
+from application.models.Room import roomAvailable
 from application.util import *
 from passlib.hash import sha256_crypt
 from application.util import convertRequestDataToDict as toDict
@@ -31,10 +32,10 @@ def newRoom():
 	data = json.loads(data)
 	print(data)
 	success = False
-    
-	if request.method == 'PUT':
 
+	if request.method == 'PUT':
 		success = Room.createRoom(roomNumber=data['roomNumber'])
+
 		if success:
 			message = "Room has been created"
 		else:
@@ -45,3 +46,38 @@ def newRoom():
 
 	response = json.dumps({"success":success, "message":message})
 	return response
+
+@room.route('/api/room/checkAvailability', methods=['PUT', 'GET'])
+def checkAvailability():
+	# convert request data to dictionary
+	data = toDict(request.data)
+
+	success = False  
+	message = "" 
+	status = ""  # OK, DENIED, WARNING
+	response = {}  
+	roomAvailability = None
+
+	if request.method == 'POST':
+		# check if room number exists
+		success = Room.roomExists(data['roomNumber'])
+		
+		# if room exists, room availabilities
+		if success:
+			roomAvail = Room.getRoomTimeSlots(data['roomNumber'])
+			message = "Room availabilities retrieved."
+			status = "OK"
+			response = json.dumps({'success': success, 'status': status, 'message': message, 'roomAvail': roomAvailability})
+		# else the room doesn't exist and request is denied.
+		else:
+			message = "Room does not exist."
+			status = "DENIED"
+
+	else:
+		message = "HTTP method invalid."
+		status = "WARNING"
+		success = False
+
+	response = json.dumps({'success': success, 'status': status, 'message': message,'roomAvail': roomAvail})
+	return response
+

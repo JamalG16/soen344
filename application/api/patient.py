@@ -58,14 +58,14 @@ def userAuthenticate():
 	status = ""  # OK, DENIED, WARNING
 	response = {}  
 	user = {}
-	
+
 	# logging in
 	if request.method == 'POST':
 		# check if health card number exists
 		success = Patient.patientExists(data['hcnumber'])
 		# Verify User  
 		success = Patient.authenticate(data['hcnumber'], data['password'])
-
+		
 		# if health card number exists & authenticated, then get the patient
 		if success:
 			user = Patient.getPatient(data['hcnumber'])
@@ -75,7 +75,7 @@ def userAuthenticate():
 				user['lastAnnual'] = user['lastAnnual'].strftime("%Y-%m-%d")
 			message = "Patient authenticated."
 			status = "OK"
-			response = json.dumps({'success': success, 'status': status, 'message': message,'user':user}, default=str)
+			response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
 		# else the user is not authenticated, request is denied
 		else:
 			message = "User not authenticated."

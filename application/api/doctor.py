@@ -35,6 +35,7 @@ def newDoctor():
 
 		# Create a doctor and find our whether it is successful or not
 		success = Doctor.createDoctor(permit_number=data['permit_number'], fname=data['fname'], lname=data['lname'], specialty=data['specialty'], password=data['password'], city=data['city'])
+		
 		if success:
 			message = "Doctor has been created"
 		else:

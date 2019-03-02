@@ -1,37 +1,92 @@
 from index import db
-from .Room import roomAvailable
-from .Doctor import hasDoctor
-from .Patient import hasPatient
+from .Room import roomAvailable, findRoomAtTime, findRoomForAnnual
+from .Doctor import findDoctorAtTime, findDoctorForAnnual
+from .Patient import canBookAnnual, updateAnnual
+from .Schedule import makeUnavailable, makeAvailable, getNextTimeSlot
+import datetime
 
 # PickleType coverts python object to a string so that it can be stored on the database
 class Appointment(db.Model):
-    room = db.Column(db.PickleType(mutable=True), primary_key=True)
-    timeSlot = db.Column(db.PickleType(mutable=True), nullable=False)
-    doctor = db.Column(db.PickleType(mutable=True), nullable=False)
-    patient = db.Column(db.PickleType(mutable=True), nullable=False)
-    length = db.Column(db.PickeType(mutable=True), nullable=False)
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	room = db.Column(db.Integer, db.ForeignKey('room.roomNumber'), nullable=False)
+	doctor_permit_number = db.Column(db.String(7), db.ForeignKey('doctor.permit_number'), nullable=False)
+	patient_hcnumber = db.Column(db.String(12), db.ForeignKey('patient.hcnumber'), nullable=False)
+	length = db.Column(db.Integer, nullable=False)
+	time = db.Column(db.String(), nullable=False)
+	date = db.Column(db.Date(), nullable=False)
 
-    def __iter__(self):
-        yield 'room', self.room
-        yield 'timeSlot', self.timeSlot
-        yield 'doctor', self.doctor
-        yield 'patient', self.patient
-        yield 'length', self.length
-    
-def createAppointment(room, timeSlot, doctor, patient, length):
-	reponse = False
-	if (not roomAvailable(room, timeSlot) or not hasDoctor(timeSlot) or hasPatient(timeSlot)):
-		reponse =  False 
+	def __iter__(self):
+		yield 'room', self.room
+		yield 'doctor_permit_number', self.doctor_permit_number
+		yield 'patient_hcnumber', self.patient_hcnumber
+		yield 'length', self.length
+		yield 'time', self.length
+		yield 'date', self.date
+
+# Initializes the database
+db.create_all()
+
+def createAppointment(room, doctor_permit_number, patient_hcnumber, length, time, date):
+	dateSplit = date.split("-")
+	date = datetime.datetime.strptime(dateSplit[0] + dateSplit[1] + dateSplit[2], '%Y%m%d').date()
+	newAppointment = Appointment(room=room, doctor_permit_number=doctor_permit_number, patient_hcnumber=patient_hcnumber, length=length, time=time, date=date)
+	# Add it to the database
+	db.session.add(newAppointment)
+	# Commit it
+	db.session.commit()
+	return True
+
+# find if a room is available and if a doctor is available to book an appointment. 
+# If so, book, the room and doctor at the specified time, with the specified patient, for a type of appointment.
+# If the type is to be annual, the patient's last annual must be checked to validate the new annual (at least 1 year difference).
+# Also, if the type is annual, check that the next two timeslots can be booked in the same room with the same doctor.
+def book(patient_hcnumber, length, time, date):
+	if length == '20': #checkup
+		available_doctor = findDoctorAtTime(time)
+		if available_doctor is None:
+			return False
+		available_room = findRoomAtTime(time)
+		if available_room is None:
+			return False
+		makeUnavailable(available_doctor, time)
+		makeUnavailable(available_room, time)
+		createAppointment(available_room, available_doctor, patient_hcnumber, length, time, date)
+		return True
+	elif length == '60': #annual
+		if not canBookAnnual(patient_hcnumber):
+			return False
+		available_doctor = findDoctorForAnnual(time)
+		if available_doctor is None:
+			return False
+		available_room = findRoomForAnnual(time)
+		if available_room is None:
+			return False
+		# getting the next two doctor and room time slots
+		doctorNextTimeSlot=getNextTimeSlot(available_doctor, time)
+		doctorNextNextTimeSlot=getNextTimeSlot(available_doctor, doctorNextTimeSlot)
+
+		roomNextTimeSlot=getNextTimeSlot(available_room, time)
+		roomNextNextTimeSlot=getNextTimeSlot(available_room, roomNextTimeSlot)
+
+		#Making all slots unavailable
+		makeUnavailable(available_doctor, time)
+		makeUnavailable(available_doctor, doctorNextTimeSlot)
+		makeUnavailable(available_doctor, doctorNextNextTimeSlot)
+		
+		makeUnavailable(available_room, time)
+		makeUnavailable(available_room, roomNextTimeSlot)
+		makeUnavailable(available_room, roomNextNextTimeSlot)
+
+		if createAppointment(available_room, available_doctor, patient_hcnumber, length, time, date):
+			updateAnnual(patient_hcnumber, date)
+		return True
 	else:
-		# Create the new appointment
-		newAppointment = Appointment(room=room, timeSlot=timeSlot, doctor=doctor, patient=patient, length=length)
+		return False
 
-		# Add it to the database
-		db.session.add(newAppointment)
-
-		# Commit it
-		db.session.commit()
-
-		reponse = True
-	return reponse
-			
+# gets the appointment based on user
+def getBooking(patient_hcnumber):
+	booking = Appointment.query.filter_by(patient_hcnumber=patient_hcnumber).first()
+	if booking is None:
+		return None
+	else:
+		return dict(booking)
