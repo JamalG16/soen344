@@ -34,7 +34,7 @@ def newAppointment():
 	success = False
 	info =None
 	if request.method == 'PUT':
-		success = Appointment.book(data['hcnumber'], data['length'], data['time'], data['date'])
+		success = Appointment.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
 		if success:
 			message = "Appointmented has been created"
 		else:
@@ -47,6 +47,7 @@ def newAppointment():
 	response = json.dumps({"success":success, "message":message, "info":info})
 	return response
 
+# Returns an array of appointments consisting of the patient specified
 @appointment.route('/api/appointment/check', methods=['PUT','GET'])
 def checkAppointment():
 	data = request.data
@@ -54,12 +55,11 @@ def checkAppointment():
 	data = json.loads(data)
 	print(data)
 	success = False
-	booking = {}
+	appointments = []
 	if request.method == 'POST':
-		booking = Appointment.getBooking(data['hcnumber'])
-		if booking is not None:
+		appointments = Appointment.getAppointments(data['hcnumber'])
+		if appointments is not None:
 			success = True
-			booking['date'] = booking['date'].strftime("%Y-%m-%d")
 		else:
 			success = False
 
@@ -72,15 +72,39 @@ def checkAppointment():
 		success = False
 		message = "No HTTP request"
 
-	response = json.dumps({"success":success, "message":message, "booking":booking})
+	response = json.dumps({"success":success, "message":message, "appointments":appointments})
 	return response
 
-#TO DO
+
 @appointment.route('/api/appointment/cancel', methods=['PUT','GET'])
 def cancelAppointment():
-	pass
+	data = request.data
+	data  = data.decode('utf8').replace("'",'"')
+	data = json.loads(data)
+	print(data)
+	success = False
+	cancelled = False
+	if request.method == 'POST':
+		if Appointment.getAppointment(data['id']) is not None:
+			success = Appointment.cancelAppointment(data['id'])
+		if success:
+			message: 'Appointment cancelled'
+		else:
+			message: 'Appointment may not exist or cancellation failed.'
+	else:
+		message = "No HTTP request"
 	
+	response = json.dumps({"success":success, "message":message, "cancelled":cancelled})
+	return response
+			
+
 # TO DO
 @appointment.route('/api/appointment/update', methods=['PUT','GET'])
 def updateAppointment():
-	pass
+	data = request.data
+	data  = data.decode('utf8').replace("'",'"')
+	data = json.loads(data)
+	print(data)
+	success = False
+	appointment = {}
+	cancelled = False

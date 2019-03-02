@@ -16,12 +16,13 @@ class Appointment(db.Model):
 	date = db.Column(db.Date(), nullable=False)
 
 	def __iter__(self):
+		yield 'id', self.id
 		yield 'room', self.room
 		yield 'doctor_permit_number', self.doctor_permit_number
 		yield 'patient_hcnumber', self.patient_hcnumber
 		yield 'length', self.length
-		yield 'time', self.length
-		yield 'date', self.date
+		yield 'time', self.time
+		yield 'date', self.date.strftime("%Y-%m-%d")
 
 # Initializes the database
 db.create_all()
@@ -40,7 +41,7 @@ def createAppointment(room, doctor_permit_number, patient_hcnumber, length, time
 # If so, book, the room and doctor at the specified time, with the specified patient, for a type of appointment.
 # If the type is to be annual, the patient's last annual must be checked to validate the new annual (at least 1 year difference).
 # Also, if the type is annual, check that the next two timeslots can be booked in the same room with the same doctor.
-def book(patient_hcnumber, length, time, date):
+def bookAppointment(patient_hcnumber, length, time, date):
 	if length == '20': #checkup
 		available_doctor = findDoctorAtTime(time)
 		if available_doctor is None:
@@ -83,10 +84,64 @@ def book(patient_hcnumber, length, time, date):
 	else:
 		return False
 
-# gets the appointment based on user
-def getBooking(patient_hcnumber):
-	booking = Appointment.query.filter_by(patient_hcnumber=patient_hcnumber).first()
-	if booking is None:
+# gets the appointment based on id
+def getAppointment(id):
+	appointment = Appointment.query.filter_by(id=id).first()
+	if appointment is None:
 		return None
 	else:
-		return dict(booking)
+		return dict(appointment)
+
+# gets all patient's appointments. Returns an array, where each value contains an appointment in the form of a dict.
+def getAppointments(patient_hcnumber):
+	apps = []
+	appointments = Appointment.query.filter_by(patient_hcnumber=patient_hcnumber).all()
+	for appointment in appointments:
+		apps.append(dict(appointment))
+	return apps
+
+# cancels an appointment and frees the time slots
+def cancelAppointment(id):
+	appointment = getAppointment(id)
+	if appointment is None:
+		return False
+	else:
+		doctor = appointment['doctor_permit_number']
+		room = appointment['room']
+		time = appointment['time']
+		if appointment['length'] == 20:
+			makeAvailable(doctor, time)
+			makeAvailable(room, time)
+			Appointment.query.filter_by(id = appointment['id']).delete()
+			db.session.commit()
+			return True
+		elif appointment['length'] == 60:
+			doctorNextTimeSlot=getNextTimeSlot(doctor, time)
+			doctorNextNextTimeSlot=getNextTimeSlot(doctor, doctorNextTimeSlot)
+
+			roomNextTimeSlot=getNextTimeSlot(room, time)
+			roomNextNextTimeSlot=getNextTimeSlot(room, roomNextTimeSlot)
+
+			makeAvailable(doctor, time)
+			makeAvailable(room, time)
+			makeAvailable(doctor, doctorNextTimeSlot)
+			makeAvailable(room, roomNextTimeSlot)
+			makeAvailable(doctor, doctorNextNextTimeSlot)
+			makeAvailable(room, roomNextNextTimeSlot)
+			Appointment.query.filter_by(id=appointment['id']).delete()
+			db.session.commit()
+			return True
+		else:
+			return False
+
+#gets the currently made appointment and tries to change it.
+# 4 cases: 20mins --> 20mins, 20mins-->60mins, 60mins-->20mins, 60mins-->60mins
+#def updateAppointment(id, patient_hcnumber, length, time, date):
+	#appointment = getAppointment(id)
+	#if appointment is None:
+		#return False
+	#else:
+		#if appointment['length'] == 20 and length =='20':
+		#elif appointment['length'] == 20 and length=='60':
+		#elif appointment['length'] == 60 and length=='20':
+		#elif appointment['length'] == 60 and length == '60':

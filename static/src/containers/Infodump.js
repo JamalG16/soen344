@@ -119,8 +119,8 @@ class infodump extends Component {
 
     let appointment= { 
       hcnumber: 'LOUX 0803 2317',
-      time: '8:00',
       length: '20',
+      time: '8:00',
       date: '2019-04-01'
     }
     fetchAPI("PUT", "/api/appointment/book", appointment).then(

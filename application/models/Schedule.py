@@ -65,7 +65,8 @@ def getNextTimeSlot(owner, time):
         index = None
         if slotAvailable(owner, time):
             index = timeSlots.index(time + ':true')
+            return timeSlots[index+1][:-5] #increment the index to get next time slot
         else:
             index = timeSlots.index(time + ':false')
-        return timeSlots[index+1][:-5] #increment the index to get next time slot
+            return timeSlots[index+1][:-6] #increment the index to get next time slot
 
