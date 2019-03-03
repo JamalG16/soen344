@@ -42,12 +42,33 @@ def makeAvailable(owner, time):
     TimeSlot.query.filter_by(owner=owner).first().timeSlots = ','.join(timeSlots) # put back into db as a string
     db.session.commit()
 
+# if the appointment is an annual, make all slots available
+def makeAvailableAnnual(owner, time):
+    ownerNextTimeSlot = getNextTimeSlot(owner, time)
+    ownerNextNextTimeSlot = getNextTimeSlot(owner, ownerNextTimeSlot)
+
+    makeAvailable(owner, time)
+    makeAvailable(owner, ownerNextTimeSlot)
+    makeAvailable(owner, ownerNextNextTimeSlot)
+    db.session.commit()
+
+
 #makes a timeslot unavailable
 def makeUnavailable(owner, time):
     timeSlots = format(getTimeSlots(owner))
     index = timeSlots.index(time + ':true')
     timeSlots[index] = time + ':false'
     TimeSlot.query.filter_by(owner=owner).first().timeSlots = ','.join(timeSlots) #put back into db as a string
+    db.session.commit()
+
+# if the appointment is an annual, make all slots unavailable
+def makeUnavailableAnnual(owner, time):
+    ownerNextTimeSlot = getNextTimeSlot(owner, time)
+    ownerNextNextTimeSlot = getNextTimeSlot(owner, ownerNextTimeSlot)
+
+    makeUnavailable(owner, time)
+    makeUnavailable(owner, ownerNextTimeSlot)
+    makeUnavailable(owner, ownerNextNextTimeSlot)
     db.session.commit()
 
 # Return true if slot is available, else return false.

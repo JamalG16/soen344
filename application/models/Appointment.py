@@ -2,7 +2,7 @@ from index import db
 from .Room import roomAvailable, findRoomAtTime, findRoomForAnnual
 from .Doctor import findDoctorAtTime, findDoctorForAnnual
 from .Patient import canBookAnnual, updateAnnual
-from .Schedule import makeUnavailable, makeAvailable, getNextTimeSlot
+from .Schedule import makeUnavailable, makeAvailable, getNextTimeSlot, makeAvailableAnnual, makeUnavailableAnnual
 import datetime
 
 # PickleType coverts python object to a string so that it can be stored on the database
@@ -62,21 +62,9 @@ def bookAppointment(patient_hcnumber, length, time, date):
 		available_room = findRoomForAnnual(time)
 		if available_room is None:
 			return False
-		# getting the next two doctor and room time slots
-		doctorNextTimeSlot=getNextTimeSlot(available_doctor, time)
-		doctorNextNextTimeSlot=getNextTimeSlot(available_doctor, doctorNextTimeSlot)
-
-		roomNextTimeSlot=getNextTimeSlot(available_room, time)
-		roomNextNextTimeSlot=getNextTimeSlot(available_room, roomNextTimeSlot)
-
-		#Making all slots unavailable
-		makeUnavailable(available_doctor, time)
-		makeUnavailable(available_doctor, doctorNextTimeSlot)
-		makeUnavailable(available_doctor, doctorNextNextTimeSlot)
 		
-		makeUnavailable(available_room, time)
-		makeUnavailable(available_room, roomNextTimeSlot)
-		makeUnavailable(available_room, roomNextNextTimeSlot)
+		makeUnavailableAnnual(available_room, time)
+		makeUnavailableAnnual(available_doctor, time)
 
 		if createAppointment(available_room, available_doctor, patient_hcnumber, length, time, date):
 			updateAnnual(patient_hcnumber, date)
@@ -116,32 +104,85 @@ def cancelAppointment(id):
 			db.session.commit()
 			return True
 		elif appointment['length'] == 60:
-			doctorNextTimeSlot=getNextTimeSlot(doctor, time)
-			doctorNextNextTimeSlot=getNextTimeSlot(doctor, doctorNextTimeSlot)
-
-			roomNextTimeSlot=getNextTimeSlot(room, time)
-			roomNextNextTimeSlot=getNextTimeSlot(room, roomNextTimeSlot)
-
-			makeAvailable(doctor, time)
-			makeAvailable(room, time)
-			makeAvailable(doctor, doctorNextTimeSlot)
-			makeAvailable(room, roomNextTimeSlot)
-			makeAvailable(doctor, doctorNextNextTimeSlot)
-			makeAvailable(room, roomNextNextTimeSlot)
+			makeAvailableAnnual(doctor, time)
+			makeAvailableAnnual(room, time)
 			Appointment.query.filter_by(id=appointment['id']).delete()
 			db.session.commit()
 			return True
 		else:
 			return False
 
-#gets the currently made appointment and tries to change it.
+#updates the information of an appointment
+def updateDB(id, room, doctor_permit_number, length, time, date):
+	dateSplit = date.split("-")
+	date = datetime.datetime.strptime(dateSplit[0] + dateSplit[1] + dateSplit[2], '%Y%m%d').date()
+	Appointment.query.filter_by(id=id).first().doctor_permit_number = doctor_permit_number
+	Appointment.query.filter_by(id=id).first().room = room
+	Appointment.query.filter_by(id=id).first().length = length
+	Appointment.query.filter_by(id=id).first().time = time
+	Appointment.query.filter_by(id=id).first().date = date
+	db.session.commit()
+
+#gets the currently made appointment and tries to change it to the new appointment parameters.
 # 4 cases: 20mins --> 20mins, 20mins-->60mins, 60mins-->20mins, 60mins-->60mins
-#def updateAppointment(id, patient_hcnumber, length, time, date):
-	#appointment = getAppointment(id)
-	#if appointment is None:
-		#return False
-	#else:
-		#if appointment['length'] == 20 and length =='20':
-		#elif appointment['length'] == 20 and length=='60':
-		#elif appointment['length'] == 60 and length=='20':
-		#elif appointment['length'] == 60 and length == '60':
+def updateAppointment(id, patient_hcnumber, length, time, date):
+	appointment = getAppointment(id)
+	if appointment is None:
+		return False
+	elif appointment['time'] == time and appointment['length'] == int(length): #trying to book at same time for same length
+		return False
+	else:
+		if appointment['length'] == 20 and length =='20':
+			available_doctor = findDoctorAtTime(time)
+			if available_doctor is None:
+				return False
+			available_room = findRoomAtTime(time)
+			if available_room is None:
+				return False
+			makeAvailable(appointment['doctor_permit_number'], appointment['time'])
+			makeAvailable(appointment['room'],appointment['time'])
+			makeUnavailable(available_doctor, time)
+			makeUnavailable(available_room, time)
+			#updates
+			updateDB(appointment['id'], available_room, available_doctor, length, time, date)
+		elif appointment['length'] == 20 and length=='60':
+			available_doctor = findDoctorForAnnual(time)
+			if available_doctor is None:
+				return False
+			available_room = findRoomForAnnual(time)
+			if available_room is None:
+				return False
+			makeAvailable(appointment['doctor_permit_number'], appointment['time'])
+			makeAvailable(appointment['room'],appointment['time'])
+			makeUnavailableAnnual(available_doctor, time)
+			makeUnavailableAnnual(available_room, time)
+			#updates
+			updateDB(appointment['id'], available_room, available_doctor, length, time, date)
+
+		elif appointment['length'] == 60 and length=='20':
+			available_doctor = findDoctorAtTime(time)
+			if available_doctor is None:
+				return False
+			available_room = findRoomAtTime(time)
+			if available_room is None:
+				return False
+			makeAvailableAnnual(appointment['doctor_permit_number'], appointment['time'])
+			makeAvailableAnnual(appointment['room'],appointment['time'])
+			makeUnavailable(available_doctor, time)
+			makeUnavailable(available_room, time)
+			#updates
+			updateDB(appointment['id'], available_room, available_doctor, length, time, date)
+		elif appointment['length'] == 60 and length == '60':
+			available_doctor = findDoctorForAnnual(time)
+			if available_doctor is None:
+				return False
+			available_room = findRoomForAnnual(time)
+			if available_room is None:
+				return False
+			makeAvailableAnnual(appointment['doctor_permit_number'], appointment['time'])
+			makeAvailableAnnual(appointment['room'],appointment['time'])
+			makeUnavailableAnnual(available_doctor, time)
+			makeUnavailableAnnual(available_room, time)
+			#updates
+			updateDB(appointment['id'], available_room, available_doctor,length, time, date)
+		return True

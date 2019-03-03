@@ -33,6 +33,7 @@ def newAppointment():
 	print(data)
 	success = False
 	info =None
+	message=""
 	if request.method == 'PUT':
 		success = Appointment.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
 		if success:
@@ -49,14 +50,15 @@ def newAppointment():
 
 # Returns an array of appointments consisting of the patient specified
 @appointment.route('/api/appointment/check', methods=['PUT','GET'])
-def checkAppointment():
+def checkAppointmenst():
 	data = request.data
 	data  = data.decode('utf8').replace("'",'"')
 	data = json.loads(data)
 	print(data)
 	success = False
+	message=""
 	appointments = []
-	if request.method == 'POST':
+	if request.method == 'GET':
 		appointments = Appointment.getAppointments(data['hcnumber'])
 		if appointments is not None:
 			success = True
@@ -84,13 +86,14 @@ def cancelAppointment():
 	print(data)
 	success = False
 	cancelled = False
-	if request.method == 'POST':
+	message = ""
+	if request.method == 'DELETE':
 		if Appointment.getAppointment(data['id']) is not None:
 			success = Appointment.cancelAppointment(data['id'])
 		if success:
-			message: 'Appointment cancelled'
+			message= 'Appointment cancelled'
 		else:
-			message: 'Appointment may not exist or cancellation failed.'
+			message= 'Appointment may not exist or cancellation failed.'
 	else:
 		message = "No HTTP request"
 	
@@ -98,7 +101,6 @@ def cancelAppointment():
 	return response
 			
 
-# TO DO
 @appointment.route('/api/appointment/update', methods=['PUT','GET'])
 def updateAppointment():
 	data = request.data
@@ -106,5 +108,17 @@ def updateAppointment():
 	data = json.loads(data)
 	print(data)
 	success = False
-	appointment = {}
-	cancelled = False
+	appointment = None
+	if request.method == 'PUT':
+		if Appointment.getAppointment(data['id']) is not None:
+			success = Appointment.updateAppointment(data['id'], data['hcnumber'], data['length'], data['time'], data['date'])
+		if success:
+			message = 'Appointment has been updated.'
+			appointment = Appointment.getAppointment(data['id'])
+		else:
+			message = 'Appointment has not been updated.'
+	else:
+		message = "No HTTP request"
+	
+	response = json.dumps({"success": success, "message":message, "appointment":appointment})
+	return response
