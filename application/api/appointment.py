@@ -5,7 +5,7 @@ This file documents the api routes for the login information. It maps api calls 
 
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
-from application.models import Appointment, Checkup, Annual, Doctor, Room, Schedule, Patient
+from application.models import Appointment, Doctor, Room, Schedule, Patient
 from application.models.Checkup import createAppointment
 from application.util import *
 from passlib.hash import sha256_crypt
