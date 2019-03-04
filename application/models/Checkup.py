@@ -15,13 +15,11 @@ class Checkup(Appointment):
         yield 'length', self.length
 
 def createAppointment(room, timeSlot, doctor, patient, length):
-
-		# Create the new appointment
-		newAppointment = Appointment(room=room, timeSlot=timeSlot, doctor=doctor, patient=patient, length=Checkup.length)
-
-		# Add it to the database
-		db.session.add(newAppointment)
-
-		# Commit it
-		db.session.commit()
+	# Create the new appointment
+    newAppointment = Appointment(room=room, timeSlot=timeSlot, doctor=doctor, patient=patient, length=Checkup.length)
+	# Add it to the database
+    db.session.add(newAppointment)
+    # Commit it
+    db.session.commit()
+    return True
 

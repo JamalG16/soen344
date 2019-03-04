@@ -1,5 +1,5 @@
 '''
-This file documents the api routes for the login information. It maps api calls that will return the admin
+This file documents the api routes for admin-related events.
 
 '''
 
@@ -24,30 +24,25 @@ httpMethods = ['PUT', 'GET', 'POST', 'DELETE']
 def index():
 	return json.dumps({'success': True, 'status': 'OK', 'message': 'Success'})
 
-@admin.route('/api/admin/', methods=['PUT','GET'])
+@admin.route('/api/admin/', methods=['PUT'])
 def newAdmin():
 	data = request.data
 	data  = data.decode('utf8').replace("'",'"')
 	data = json.loads(data)
 	print(data)
 	success = False
-	if request.method == 'PUT':
 
-		# Create an admin and find our whether it is successful or not
-		success = Admin.createAdmin(username=data['username'], password=data['password'])
-		if success:
-			message = "Admin has been created"
-		else:
-			message = "Admin already exists"
-
+	# Create an admin and find our whether it is successful or not
+	success = Admin.createAdmin(username=data['username'], password=data['password'])
+	if success:
+		message = "Admin has been created"
 	else:
-		success = False
-		message = "No HTTP request"
+		message = "Admin already exists"
 
 	response = json.dumps({"success":success, "message":message})
 	return response
 
-@admin.route('/api/admin/authenticate/', methods=httpMethods)
+@admin.route('/api/admin/authenticate/', methods=['POST'])
 def userAuthenticate():
 
 	# convert request data to dictionary
@@ -60,27 +55,21 @@ def userAuthenticate():
 	user = {}
 	
 	# logging in
-	if request.method == 'POST':
-		# check if username exists
-		success = Admin.adminExists(data['username'])
-		# Verify User  
-		success = Admin.authenticate(data['username'], data['password'])
+	# check if username exists
+	success = Admin.adminExists(data['username'])
+	# Verify User  
+	success = Admin.authenticate(data['username'], data['password'])
 
-		# if username exists & authenticated, then get the admin
-		if success:
-			user = Admin.getAdmin(data['username'])
-			message = "Admin authenticated."
-			status = "OK"
-			response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
-		# else the user is not authenticated, request is denied
-		else:
-			message = "User not authenticated."
-			status = "DENIED"
-
+	# if username exists & authenticated, then get the admin
+	if success:
+		user = Admin.getAdmin(data['username'])
+		message = "Admin authenticated."
+		status = "OK"
+		response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
+	# else the user is not authenticated, request is denied
 	else:
-		message = "HTTP method invalid."
-		status = "WARNING"
-		success = False
+		message = "User not authenticated."
+		status = "DENIED"
 
 	response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
 	return response

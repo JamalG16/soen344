@@ -17,6 +17,8 @@ class infodump extends Component {
   componentDidMount() {
     this.registerPatient()
     this.registerAdmin()
+    this.addRoom()
+    this.addDoctor()
   }
 
   /* 
@@ -34,7 +36,7 @@ class infodump extends Component {
       email: "johndoe@gmail.com", 
       address: "123 St. Catherine, Montreal QC",
       password: "lol", 
-      lastAnnual: null
+      lastAnnual: "2010-10-10"
     }
     fetchAPI("PUT", "/api/patient/", patientData).then(
         response => {
@@ -45,6 +47,7 @@ class infodump extends Component {
             }
             else {
               console.log('it is a fail mate');
+              this.book()
             }
           } catch(e){console.error("Error", e)}
         }
@@ -65,6 +68,71 @@ class infodump extends Component {
             }
             else {
               console.log('it is a fail mate');
+            }
+          } catch(e){console.error("Error", e)}
+        }
+      ).catch((e)=>console.error("Error:", e))
+  }
+
+  async addRoom(){
+    let room= { 
+      roomNumber: '10'
+    }
+    fetchAPI("PUT", "/api/room/", room).then(
+        response => {
+          try{
+            if (response.success){
+              console.log('it is a success mate')
+              this.setState({sendDataAns: response.message})
+            }
+            else {
+              console.log('it is a fail mate');
+            }
+          } catch(e){console.error("Error", e)}
+        }
+      ).catch((e)=>console.error("Error:", e))
+  }
+  async addDoctor(){
+    let doctor= { 
+      permit_number: '1234567',
+      fname: "Jill",
+      lname: "Doe",
+      specialty: "Dermatologist",
+      password: "lol",
+      city: "Mtl"
+    }
+    fetchAPI("PUT", "/api/doctor/", doctor).then(
+        response => {
+          try{
+            if (response.success){
+              console.log('it is a success mate')
+              this.setState({sendDataAns: response.message})
+            }
+            else {
+              console.log('it is a fail mate');
+            }
+          } catch(e){console.error("Error", e)}
+        }
+      ).catch((e)=>console.error("Error:", e))
+  }
+  async book(){
+
+    let appointment= { 
+      hcnumber: 'LOUX 0803 2317',
+      length: '20',
+      time: '8:00',
+      date: '2019-04-01'
+    }
+    fetchAPI("PUT", "/api/appointment/book", appointment).then(
+        response => {
+          try{
+            if (response.success){
+              console.log('it is a success matie!' + response.info)
+              this.setState({sendDataAns: response.message})
+            }
+            else {
+              console.log('it is a fail matie!');
+              console.log(response.message + 'info:' +response.info)
             }
           } catch(e){console.error("Error", e)}
         }

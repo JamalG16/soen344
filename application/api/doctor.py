@@ -1,5 +1,5 @@
 '''
-This file documents the api routes for the login information. It maps api calls that will return the patient
+This file documents the api routes for doctor related events
 
 '''
 
@@ -24,30 +24,26 @@ httpMethods = ['PUT', 'GET', 'POST', 'DELETE']
 def index():
 	return json.dumps({'success': True, 'status': 'OK', 'message': 'Success'})
 
-@doctor.route('/api/doctor/', methods=['PUT','GET'])
+@doctor.route('/api/doctor/', methods=['PUT'])
 def newDoctor():
 	data = request.data
 	data  = data.decode('utf8').replace("'",'"')
 	data = json.loads(data)
 	print(data)
 	success = False
-	if request.method == 'PUT':
 
-		# Create a doctor and find our whether it is successful or not
-		success = Doctor.createDoctor(permit_number=data['permit_number'], fname=data['fname'], lname=data['lname'], specialty=data['specialty'], password=data['password'], city=data['city'])
-		if success:
-			message = "Doctor has been created"
-		else:
-			message = "Doctor already exists"
-
+	# Create a doctor and find our whether it is successful or not
+	success = Doctor.createDoctor(permit_number=data['permit_number'], fname=data['fname'], lname=data['lname'], specialty=data['specialty'], password=data['password'], city=data['city'])
+	
+	if success:
+		message = "Doctor has been created"
 	else:
-		success = False
-		message = "No HTTP request"
+		message = "Doctor already exists"
 
 	response = json.dumps({"success":success, "message":message})
 	return response
 
-@doctor.route('/api/doctor/authenticate/', methods=httpMethods)
+@doctor.route('/api/doctor/authenticate/', methods=['POST'])
 def userAuthenticate():
 
 	# convert request data to dictionary
@@ -58,30 +54,23 @@ def userAuthenticate():
 	status = ""  # OK, DENIED, WARNING
 	response = {}  
 	user = {}
-	
-	# logging in
-	if request.method == 'POST':
-		# check if permit number exists
-		success = Doctor.doctorExists(data['permit_number'])
-		# Verify User  
-		success = Doctor.authenticate(data['permit_number'], data['password'])
 
-		# if permit number exists & authenticated, then get the patient
-		if success:
-			user = Doctor.getDoctor(data['permit_number'])
-			# convert datetimes to strings
-			message = "Doctor authenticated."
-			status = "OK"
-			response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
-		# else the user is not authenticated, request is denied
-		else:
-			message = "User not authenticated."
-			status = "DENIED"
+	# check if permit number exists
+	success = Doctor.doctorExists(data['permit_number'])
+	# Verify User  
+	success = Doctor.authenticate(data['permit_number'], data['password'])
 
+	# if permit number exists & authenticated, then get the patient
+	if success:
+		user = Doctor.getDoctor(data['permit_number'])
+		# convert datetimes to strings
+		message = "Doctor authenticated."
+		status = "OK"
+		response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
+	# else the user is not authenticated, request is denied
 	else:
-		message = "HTTP method invalid."
-		status = "WARNING"
-		success = False
+		message = "User not authenticated."
+		status = "DENIED"
 
 	response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
 	return response
