@@ -1,5 +1,5 @@
 '''
-This file documents the api routes for the login information. It maps api calls that will return the patient
+This file documents the api routes for patient related events
 
 '''
 
@@ -24,7 +24,7 @@ httpMethods = ['PUT', 'GET', 'POST', 'DELETE']
 def index():
 	return json.dumps({'success': True, 'status': 'OK', 'message': 'Success'})
 
-@patient.route('/api/patient/', methods=['PUT','GET'])
+@patient.route('/api/patient/', methods=['PUT'])
 def newPatient():
 	data = request.data
 	data  = data.decode('utf8').replace("'",'"')

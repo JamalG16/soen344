@@ -1,5 +1,5 @@
 '''
-This file documents the api routes for the login information. It maps api calls that will return the patient
+This file documents the api routes for room related events
 
 '''
 
@@ -25,7 +25,7 @@ httpMethods = ['PUT', 'GET', 'POST', 'DELETE']
 def index():
 	return json.dumps({'success': True, 'status': 'OK', 'message': 'Success'})
 
-@room.route('/api/room/', methods=['PUT','GET'])
+@room.route('/api/room/', methods=['PUT'])
 def newRoom():
 	data = request.data
 	data  = data.decode('utf8').replace("'",'"')
@@ -47,7 +47,7 @@ def newRoom():
 	response = json.dumps({"success":success, "message":message})
 	return response
 
-@room.route('/api/room/checkAvailability', methods=['PUT', 'GET'])
+@room.route('/api/room/checkAvailability', methods=['POST'])
 def checkAvailability():
 	# convert request data to dictionary
 	data = toDict(request.data)

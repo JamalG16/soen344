@@ -1,5 +1,5 @@
 '''
-This file documents the api routes for the login information. It maps api calls that will return the admin
+This file documents the api routes for admin-related events.
 
 '''
 
@@ -24,7 +24,7 @@ httpMethods = ['PUT', 'GET', 'POST', 'DELETE']
 def index():
 	return json.dumps({'success': True, 'status': 'OK', 'message': 'Success'})
 
-@admin.route('/api/admin/', methods=['PUT','GET'])
+@admin.route('/api/admin/', methods=['PUT'])
 def newAdmin():
 	data = request.data
 	data  = data.decode('utf8').replace("'",'"')

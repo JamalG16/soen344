@@ -152,6 +152,8 @@ def updateAppointment(id, patient_hcnumber, length, time, date):
 			available_room = findRoomForAnnual(time)
 			if available_room is None:
 				return False
+			if not canBookAnnual(patient_hcnumber):
+				return False
 			makeAvailable(appointment['doctor_permit_number'], appointment['time'])
 			makeAvailable(appointment['room'],appointment['time'])
 			makeUnavailableAnnual(available_doctor, time)

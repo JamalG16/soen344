@@ -1,5 +1,5 @@
 '''
-This file documents the api routes for the login information. It maps api calls that will return the patient
+This file documents the api routes for appointment information.
 
 '''
 
@@ -49,8 +49,8 @@ def newAppointment():
 	return response
 
 # Returns an array of appointments consisting of the patient specified
-@appointment.route('/api/appointment/check', methods=['PUT','GET'])
-def checkAppointmenst():
+@appointment.route('/api/appointment/check', methods=['GET'])
+def checkAppointments():
 	data = request.data
 	data  = data.decode('utf8').replace("'",'"')
 	data = json.loads(data)
@@ -78,7 +78,7 @@ def checkAppointmenst():
 	return response
 
 
-@appointment.route('/api/appointment/cancel', methods=['PUT','GET'])
+@appointment.route('/api/appointment/cancel', methods=['DELETE'])
 def cancelAppointment():
 	data = request.data
 	data  = data.decode('utf8').replace("'",'"')
@@ -101,7 +101,7 @@ def cancelAppointment():
 	return response
 			
 
-@appointment.route('/api/appointment/update', methods=['PUT','GET'])
+@appointment.route('/api/appointment/update', methods=['PUT'])
 def updateAppointment():
 	data = request.data
 	data  = data.decode('utf8').replace("'",'"')
