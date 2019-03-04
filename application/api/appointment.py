@@ -1,5 +1,5 @@
 '''
-This file documents the api routes for appointment information.
+This file documents the api routes for appointment related events.
 
 '''
 
@@ -25,7 +25,7 @@ httpMethods = ['PUT', 'GET', 'POST', 'DELETE']
 def index():
 	return json.dumps({'success': True, 'status': 'OK', 'message': 'Success'})
 
-@appointment.route('/api/appointment/book', methods=['PUT','GET'])
+@appointment.route('/api/appointment/book', methods=['PUT'])
 def newAppointment():
 	data = request.data
 	data  = data.decode('utf8').replace("'",'"')
@@ -34,16 +34,12 @@ def newAppointment():
 	success = False
 	info =None
 	message=""
-	if request.method == 'PUT':
-		success = Appointment.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
-		if success:
-			message = "Appointmented has been created"
-		else:
-			message = "Appointment already exists or there are no doctors/rooms available. If annual appointment, may not have been a year yet."
 
+	success = Appointment.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
+	if success:
+		message = "Appointmented has been created"
 	else:
-		success = False
-		message = "No HTTP request"
+		message = "Appointment already exists or there are no doctors/rooms available. If annual appointment, may not have been a year yet."
 
 	response = json.dumps({"success":success, "message":message, "info":info})
 	return response
@@ -58,21 +54,17 @@ def checkAppointments():
 	success = False
 	message=""
 	appointments = []
-	if request.method == 'GET':
-		appointments = Appointment.getAppointments(data['hcnumber'])
-		if appointments is not None:
-			success = True
-		else:
-			success = False
 
-		if success:
-			message = "Appointment(s) retrieved."
-		else:
-			message = "No appointment(s) retrieved."
-
+	appointments = Appointment.getAppointments(data['hcnumber'])
+	if appointments is not None:
+		success = True
 	else:
 		success = False
-		message = "No HTTP request"
+
+	if success:
+		message = "Appointment(s) retrieved."
+	else:
+		message = "No appointment(s) retrieved."
 
 	response = json.dumps({"success":success, "message":message, "appointments":appointments})
 	return response
@@ -87,16 +79,14 @@ def cancelAppointment():
 	success = False
 	cancelled = False
 	message = ""
-	if request.method == 'DELETE':
-		if Appointment.getAppointment(data['id']) is not None:
-			success = Appointment.cancelAppointment(data['id'])
-		if success:
-			message= 'Appointment cancelled'
-		else:
-			message= 'Appointment may not exist or cancellation failed.'
-	else:
-		message = "No HTTP request"
 	
+	if Appointment.getAppointment(data['id']) is not None:
+		success = Appointment.cancelAppointment(data['id'])
+	if success:
+		message= 'Appointment cancelled'
+	else:
+		message= 'Appointment may not exist or cancellation failed.'
+
 	response = json.dumps({"success":success, "message":message, "cancelled":cancelled})
 	return response
 			
@@ -109,16 +99,14 @@ def updateAppointment():
 	print(data)
 	success = False
 	appointment = None
-	if request.method == 'PUT':
-		if Appointment.getAppointment(data['id']) is not None:
-			success = Appointment.updateAppointment(data['id'], data['hcnumber'], data['length'], data['time'], data['date'])
-		if success:
-			message = 'Appointment has been updated.'
-			appointment = Appointment.getAppointment(data['id'])
-		else:
-			message = 'Appointment has not been updated.'
+
+	if Appointment.getAppointment(data['id']) is not None:
+		success = Appointment.updateAppointment(data['id'], data['hcnumber'], data['length'], data['time'], data['date'])
+	if success:
+		message = 'Appointment has been updated.'
+		appointment = Appointment.getAppointment(data['id'])
 	else:
-		message = "No HTTP request"
-	
+		message = 'Appointment has not been updated.'
+
 	response = json.dumps({"success": success, "message":message, "appointment":appointment})
 	return response

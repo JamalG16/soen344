@@ -31,18 +31,13 @@ def newPatient():
 	data = json.loads(data)
 	print(data)
 	success = False
-	if request.method == 'PUT':
 
-		# Create a patient and find our whether it is successful or not
-		success = Patient.createPatient(hcnumber=data['hcnumber'], fname=data['fname'], lname=data['lname'], birthday=data['birthday'], gender=data['gender'], phone=data['phone'], email=data['email'], address=data['address'], password=data['password'], lastAnnual=data['lastAnnual'])
-		if success:
-			message = "Patient has been created"
-		else:
-			message = "Patient already exists"
-
+	# Create a patient and find our whether it is successful or not
+	success = Patient.createPatient(hcnumber=data['hcnumber'], fname=data['fname'], lname=data['lname'], birthday=data['birthday'], gender=data['gender'], phone=data['phone'], email=data['email'], address=data['address'], password=data['password'], lastAnnual=data['lastAnnual'])
+	if success:
+		message = "Patient has been created"
 	else:
-		success = False
-		message = "No HTTP request"
+		message = "Patient already exists"
 
 	response = json.dumps({"success":success, "message":message})
 	return response
@@ -60,31 +55,26 @@ def userAuthenticate():
 	user = {}
 
 	# logging in
-	if request.method == 'POST':
-		# check if health card number exists
-		success = Patient.patientExists(data['hcnumber'])
-		# Verify User  
-		success = Patient.authenticate(data['hcnumber'], data['password'])
-		
-		# if health card number exists & authenticated, then get the patient
-		if success:
-			user = Patient.getPatient(data['hcnumber'])
-			# convert datetimes to strings
-			user['birthday'] = user['birthday'].strftime("%Y-%m-%d")
-			if user['lastAnnual'] is not None:
-				user['lastAnnual'] = user['lastAnnual'].strftime("%Y-%m-%d")
-			message = "Patient authenticated."
-			status = "OK"
-			response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
-		# else the user is not authenticated, request is denied
-		else:
-			message = "User not authenticated."
-			status = "DENIED"
-
+	
+	# check if health card number exists
+	success = Patient.patientExists(data['hcnumber'])
+	# Verify User  
+	success = Patient.authenticate(data['hcnumber'], data['password'])
+	
+	# if health card number exists & authenticated, then get the patient
+	if success:
+		user = Patient.getPatient(data['hcnumber'])
+		# convert datetimes to strings
+		user['birthday'] = user['birthday'].strftime("%Y-%m-%d")
+		if user['lastAnnual'] is not None:
+			user['lastAnnual'] = user['lastAnnual'].strftime("%Y-%m-%d")
+		message = "Patient authenticated."
+		status = "OK"
+		response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
+	# else the user is not authenticated, request is denied
 	else:
-		message = "HTTP method invalid."
-		status = "WARNING"
-		success = False
+		message = "User not authenticated."
+		status = "DENIED"
 
 	response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
 	return response

@@ -31,23 +31,19 @@ def newDoctor():
 	data = json.loads(data)
 	print(data)
 	success = False
-	if request.method == 'PUT':
 
-		# Create a nurse and find our whether it is successful or not
-		success = Nurse.createNurse(access_ID=data['access_ID'], fname=data['fname'], lname=data['lname'], password=data['password'])
-		if success:
-			message = "Nurse has been created"
-		else:
-			message = "Nurse already exists"
-
+	# Create a nurse and find our whether it is successful or not
+	success = Nurse.createNurse(access_ID=data['access_ID'], fname=data['fname'], lname=data['lname'], password=data['password'])
+	if success:
+		message = "Nurse has been created"
 	else:
-		success = False
-		message = "No HTTP request"
+		message = "Nurse already exists"
+
 
 	response = json.dumps({"success":success, "message":message})
 	return response
 
-@nurse.route('/api/nurse/authenticate/', methods=httpMethods)
+@nurse.route('/api/nurse/authenticate/', methods=['POST'])
 def userAuthenticate():
 
 	# convert request data to dictionary
@@ -58,30 +54,23 @@ def userAuthenticate():
 	status = ""  # OK, DENIED, WARNING
 	response = {}  
 	user = {}
-	
-	# logging in
-	if request.method == 'POST':
-		# check if access ID exists
-		success = Nurse.nurseExists(data['access_ID'])
-		# Verify User  
-		success = Nurse.authenticate(data['access_ID'], data['password'])
 
-		# if access ID exists & authenticated, then get the patient
-		if success:
-			user = Nurse.getNurse(data['access_ID'])
-			# convert datetimes to strings
-			message = "Nurse authenticated."
-			status = "OK"
-			response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
-		# else the user is not authenticated, request is denied
-		else:
-			message = "User not authenticated."
-			status = "DENIED"
+	# check if access ID exists
+	success = Nurse.nurseExists(data['access_ID'])
+	# Verify User  
+	success = Nurse.authenticate(data['access_ID'], data['password'])
 
+	# if access ID exists & authenticated, then get the patient
+	if success:
+		user = Nurse.getNurse(data['access_ID'])
+		# convert datetimes to strings
+		message = "Nurse authenticated."
+		status = "OK"
+		response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
+	# else the user is not authenticated, request is denied
 	else:
-		message = "HTTP method invalid."
-		status = "WARNING"
-		success = False
+		message = "User not authenticated."
+		status = "DENIED"
 
 	response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
 	return response

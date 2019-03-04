@@ -33,16 +33,12 @@ def newRoom():
 	print(data)
 	success = False
 
-	if request.method == 'PUT':
-		success = Room.createRoom(roomNumber=data['roomNumber'])
+	success = Room.createRoom(roomNumber=data['roomNumber'])
 
-		if success:
-			message = "Room has been created"
-		else:
-			message = "Room already exists"
+	if success:
+		message = "Room has been created"
 	else:
-		success = False
-		message = "No HTTP request"
+		message = "Room already exists"
 
 	response = json.dumps({"success":success, "message":message})
 	return response
@@ -58,25 +54,19 @@ def checkAvailability():
 	response = {}  
 	roomAvailability = None
 
-	if request.method == 'POST':
-		# check if room number exists
-		success = Room.roomExists(data['roomNumber'])
-		
-		# if room exists, room availabilities
-		if success:
-			roomAvail = Room.getRoomTimeSlots(data['roomNumber'])
-			message = "Room availabilities retrieved."
-			status = "OK"
-			response = json.dumps({'success': success, 'status': status, 'message': message, 'roomAvail': roomAvailability})
-		# else the room doesn't exist and request is denied.
-		else:
-			message = "Room does not exist."
-			status = "DENIED"
-
+	# check if room number exists
+	success = Room.roomExists(data['roomNumber'])
+	
+	# if room exists, room availabilities
+	if success:
+		roomAvail = Room.getRoomTimeSlots(data['roomNumber'])
+		message = "Room availabilities retrieved."
+		status = "OK"
+		response = json.dumps({'success': success, 'status': status, 'message': message, 'roomAvail': roomAvailability})
+	# else the room doesn't exist and request is denied.
 	else:
-		message = "HTTP method invalid."
-		status = "WARNING"
-		success = False
+		message = "Room does not exist."
+		status = "DENIED"
 
 	response = json.dumps({'success': success, 'status': status, 'message': message,'roomAvail': roomAvail})
 	return response
