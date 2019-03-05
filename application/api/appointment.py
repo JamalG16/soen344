@@ -110,3 +110,8 @@ def updateAppointment():
 
 	response = json.dumps({"success": success, "message":message, "appointment":appointment})
 	return response
+
+#TODO params
+@appointment.route('/api/appointment/find', methods=['GET'])
+def findAppointments():
+	return False
