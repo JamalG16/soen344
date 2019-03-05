@@ -17,7 +17,7 @@ class Doctor(db.Model):
 	def __iter__(self):
 		yield 'permit_number', self.permit_number
 		yield 'fname', self.fname
-		yield 'lname', self.lname	
+		yield 'lname', self.lname
 		yield 'specialty', self.specialty
 		yield 'password_hash', self.password_hash
 		yield 'city', self.city
@@ -57,7 +57,7 @@ def createDoctor(permit_number, fname, lname, specialty, password, city):
 
 		# Create the new doctor
 		newDoctor = Doctor(permit_number=permit_number, fname=fname, lname=lname, password_hash=password_hash, specialty=specialty, city=city)
-		
+
 		# Create the doctor's schedule
 		createTimeSlots(permit_number)
 
@@ -69,3 +69,53 @@ def createDoctor(permit_number, fname, lname, specialty, password, city):
 
 		reponse = True
 	return reponse
+
+# check if doctor is available at a specific time
+def doctorAvailable(permit_number, time):
+	if doctorExists(permit_number):
+		doctorTimeSlots = format(getTimeSlots(permit_number))
+		time = time + ':true'
+		return time in doctorTimeSlots
+	else:
+		return False
+
+# check if there is an available doctor at a specific time. If so, return the first doctor found to be available.
+# Else, return None.
+def findDoctorAtTime(time):
+	permit_number = None
+	for doctor in db.session.query(Doctor.permit_number).all():
+		if doctorAvailable(doctor.permit_number, time):
+			permit_number = doctor.permit_number
+			break
+	return permit_number
+
+# Returns true if doctor's timeslot has been modified.
+def toggleDoctorTimeSlot(permit_number, time):
+	response = False
+	doctor = getDoctor(permit_number)
+	if doctor is not None:
+		if doctorAvailable(permit_number, time):
+			makeUnavailable(permit_number, time)
+		else:
+			makeAvailable(permit_number, time)
+		response = True
+	return response
+
+# Given a time, get a list that has all doctors available at the specified time.
+# Then, check these doctors to find if a doctor is available for 3 consecutive time slots.
+# Return a doctor, else return None.
+def findDoctorForAnnual(time):
+	permit_numbers = []
+	nextTimeSlot = None
+	for doctor in db.session.query(Doctor.permit_number).all():
+		if doctorAvailable(doctor.permit_number, time):
+			permit_numbers.append(doctor.permit_number)
+	for permit_number in permit_numbers:
+		nextTimeSlot = getNextTimeSlot(permit_number, time)
+		if nextTimeSlot is not None:
+			if doctorAvailable(permit_number, nextTimeSlot):
+				nextTimeSlot = getNextTimeSlot(permit_number, nextTimeSlot)
+				if nextTimeSlot is not None:
+					if doctorAvailable(permit_number, nextTimeSlot):
+						return permit_number
+	return None

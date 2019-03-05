@@ -49,13 +49,13 @@ def isTimeSlotAvailable(permit_number, date, time):
     return fulltime in timeSlots
 
 # Return the next time slot. If no next time slot, then return None.
-def getNextTimeSlot(permit_number, time):
+def getNextTimeSlot(permit_number, date, time):
     if time is '19:40':
         return None
     else:
         timeSlots = format(getAllTimeSlotsByDoctor(permit_number))
         index = None
-        if isTimeSlotAvailable(permit_number, time):
+        if isTimeSlotAvailable(permit_number, date, time):
             index = timeSlots.index(time + ':true')
             return timeSlots[index+1][:-5] #increment the index to get next time slot
         else:
@@ -72,7 +72,7 @@ def makeTimeSlotAvailable(permit_number, date, time):
     db.session.commit()
 
 # if the appointment is an annual, make all necessary slots available
-def makeAvailableAnnual(permit_number, date, time):
+def makeTimeSlotAvailableAnnual(permit_number, date, time):
     doctorNextTimeSlot = getNextTimeSlot(permit_number, date, time)
     doctorNextNextTimeSlot = getNextTimeSlot(permit_number, date, doctorNextTimeSlot)
 
