@@ -19,15 +19,17 @@ doctor = Blueprint('doctor', __name__)
 # list of possible requests
 httpMethods = ['PUT', 'GET', 'POST', 'DELETE']
 
+
 # Index 
 @doctor.route('/api/', methods=['GET','OPTIONS'])
 def index():
 	return json.dumps({'success': True, 'status': 'OK', 'message': 'Success'})
 
+
 @doctor.route('/api/doctor/', methods=['PUT'])
 def newDoctor():
 	data = request.data
-	data  = data.decode('utf8').replace("'",'"')
+	data = data.decode('utf8').replace("'",'"')
 	data = json.loads(data)
 	print(data)
 	success = False
@@ -42,6 +44,7 @@ def newDoctor():
 
 	response = json.dumps({"success":success, "message":message})
 	return response
+
 
 @doctor.route('/api/doctor/authenticate/', methods=['POST'])
 def userAuthenticate():
@@ -75,3 +78,68 @@ def userAuthenticate():
 	response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
 	return response
 
+
+@doctor.route('/api/doctor/availability/', methods=['POST'])
+def setAvailability():
+
+	# convert request data to dictionary
+	data = toDict(request.data)
+
+	success = False
+	message = ""
+	status = ""  # OK, DENIED, WARNING
+	response = {}
+	user = {}
+
+	# check if permit number exists
+	success = Doctor.doctorExists(data['permit_number'])
+	# Verify User
+	success = Doctor.verifyHash(data['permit_number'], data['password_hash'])
+
+	# if permit number exists & authenticated, then get the patient
+	if success:
+		Doctor.setAvailability(data['permit_number'], data["date"], data["timeslots"])
+		# convert datetimes to strings
+		message = "Availability Modified."
+		status = "OK"
+		response = json.dumps({'success': success, 'status': status, 'message': message, 'user': user})
+	# else the user is not authenticated, request is denied
+	else:
+		message = "User not authenticated."
+		status = "DENIED"
+
+	response = json.dumps({'success': success, 'status': status, 'message': message, 'user': user})
+	return response
+
+
+@doctor.route('/api/doctor/availability/', methods=['GET'])
+def getAvailability():
+
+	# convert request data to dictionary
+	data = toDict(request.data)
+
+	success = False
+	message = ""
+	status = ""  # OK, DENIED, WARNING
+	response = {}
+	user = {}
+
+	# check if permit number exists
+	success = Doctor.doctorExists(data['permit_number'])
+	# Verify User
+	success = Doctor.authenticate(data['permit_number'], data['password'])
+
+	# if permit number exists & authenticated, then get the patient
+	if success:
+		user = Doctor.getDoctor(data['permit_number'])
+		# convert datetimes to strings
+		message = "Doctor authenticated."
+		status = "OK"
+		response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
+	# else the user is not authenticated, request is denied
+	else:
+		message = "User not authenticated."
+		status = "DENIED"
+
+	response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
+	return response
