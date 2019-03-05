@@ -1,6 +1,6 @@
 from index import db
 from datetime import datetime
-from .Schedule import createTimeSlots, format, getTimeSlots, makeAvailable, makeUnavailable, getNextTimeSlot
+from .DoctorSchedule import createTimeSlots, format, getTimeSlots, makeAvailable, makeUnavailable, getNextTimeSlot
 
 class Room(db.Model):
 	roomNumber = db.Column(db.Integer, primary_key=True)

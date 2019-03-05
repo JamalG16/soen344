@@ -5,7 +5,7 @@ This file documents the api routes for room related events
 
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
-from application.models import Room, Schedule
+from application.models import Room, DoctorSchedule
 from application.models.Room import roomAvailable
 from application.util import *
 from passlib.hash import sha256_crypt
