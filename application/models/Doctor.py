@@ -1,7 +1,6 @@
 from index import db
 from datetime import datetime
 from passlib.hash import sha256_crypt
-from .Schedule import createTimeSlots, getTimeSlots, makeAvailable, makeUnavailable, getNextTimeSlot, format
 
 class Doctor(db.Model):
 	permit_number = db.Column(db.String(7), nullable=False, primary_key=True)
@@ -18,7 +17,7 @@ class Doctor(db.Model):
 	def __iter__(self):
 		yield 'permit_number', self.permit_number
 		yield 'fname', self.fname
-		yield 'lname', self.lname	
+		yield 'lname', self.lname
 		yield 'specialty', self.specialty
 		yield 'password_hash', self.password_hash
 		yield 'city', self.city
@@ -58,7 +57,7 @@ def createDoctor(permit_number, fname, lname, specialty, password, city):
 
 		# Create the new doctor
 		newDoctor = Doctor(permit_number=permit_number, fname=fname, lname=lname, password_hash=password_hash, specialty=specialty, city=city)
-		
+
 		# Create the doctor's schedule
 		createTimeSlots(permit_number)
 
@@ -104,7 +103,7 @@ def toggleDoctorTimeSlot(permit_number, time):
 
 # Given a time, get a list that has all doctors available at the specified time.
 # Then, check these doctors to find if a doctor is available for 3 consecutive time slots.
-# Return a doctor, else return None. 
+# Return a doctor, else return None.
 def findDoctorForAnnual(time):
 	permit_numbers = []
 	nextTimeSlot = None

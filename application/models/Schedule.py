@@ -7,7 +7,7 @@ import json
 class TimeSlot(db.Model):
     owner = db.Column(db.String(), nullable=False, primary_key=True)
     timeSlots = db.Column(db.String(), nullable=False)
-    
+
     def __iter__(self):
         yield 'owner', self.owner
         yield 'timeSlots', self.timeSlots
@@ -90,4 +90,3 @@ def getNextTimeSlot(owner, time):
         else:
             index = timeSlots.index(time + ':false')
             return timeSlots[index+1][:-6] #increment the index to get next time slot
-
