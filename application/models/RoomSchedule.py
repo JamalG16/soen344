@@ -75,25 +75,25 @@ def makeTimeSlotAvailableAnnual(roomNumber, date, time):
     roomNextTimeSlot = getNextTimeSlot(roomNumber, date, time)
     roomNextNextTimeSlot = getNextTimeSlot(roomNumber, date, roomNextTimeSlot)
 
-    makeAvailable(roomNumber, date, time)
-    makeAvailable(roomNumber, date, roomNextTimeSlot)
-    makeAvailable(roomNumber, date, roomNextNextTimeSlot)
+    makeTimeSlotAvailable(roomNumber, date, time)
+    makeTimeSlotAvailable(roomNumber, date, roomNextTimeSlot)
+    makeTimeSlotAvailable(roomNumber, date, roomNextNextTimeSlot)
     db.session.commit()
 
 #makes a timeslot unavailable
 def makeTimeSlotUnavailable(roomNumber, date, time):
-    timeSlots = format(getTimeSlots(roomNumber, date))
+    timeSlots = format(getTimeSlotsByDateAndRoom(roomNumber, date))
     index = timeSlots.index(time + ':true')
     timeSlots[index] = time + ':false'
-    RoomSchedule.query.filter_by(roomNumber=roomNumber, date=date).first().timeSlots = ','first().join(timeSlots) #put back into db as a string
+    RoomSchedule.query.filter_by(roomNumber=roomNumber, date=date).first().timeSlots = ','.join(timeSlots) #put back into db as a string
     db.session.commit()
 
 # if the appointment is an annual, make all slots unavailable
 def makeTimeSlotUnavailableAnnual(roomNumber, date, time):
-    rooomNextTimeSlot = getNextTimeSlot(roomNumber, date, time)
+    roomNextTimeSlot = getNextTimeSlot(roomNumber, date, time)
     roomNextNextTimeSlot = getNextTimeSlot(roomNumber, date, roomNextTimeSlot)
 
-    makeUnavailable(roomNumber, date, time)
-    makeUnavailable(roomNumber, date, roomNextTimeSlot)
-    makeUnavailable(roomNumber, date, rooomNextNextTimeSlot)
+    makeTimeSlotUnavailable(roomNumber, date, time)
+    makeTimeSlotUnavailable(roomNumber, date, roomNextTimeSlot)
+    makeTimeSlotUnavailable(roomNumber, date, roomNextNextTimeSlot)
     db.session.commit()
