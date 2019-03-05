@@ -2,7 +2,7 @@ from index import db
 from .Room import roomAvailable, findRoomAtTime, findRoomForAnnual
 from .Doctor import findDoctorAtTime, findDoctorForAnnual
 from .Patient import canBookAnnual, updateAnnual
-from .Schedule import makeUnavailable, makeAvailable, getNextTimeSlot, makeAvailableAnnual, makeUnavailableAnnual
+from .DoctorSchedule import makeUnavailable, makeAvailable, getNextTimeSlot, makeAvailableAnnual, makeUnavailableAnnual
 import datetime
 
 # PickleType coverts python object to a string so that it can be stored on the database
