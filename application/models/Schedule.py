@@ -3,10 +3,10 @@ from datetime import datetime
 from datetime import time
 import json
 
-# PickleType coverts python object to a string so that it can be stored on the database
 class TimeSlot(db.Model):
     owner = db.Column(db.String(), nullable=False, primary_key=True)
     timeSlots = db.Column(db.String(), nullable=False)
+    date = db.Column(db.Date(), nullable=False, primary_key=True)
     
     def __iter__(self):
         yield 'owner', self.owner
@@ -21,70 +21,70 @@ db.create_all()
 # Create an with all possible timeslots and whether it is available or not
 SLOTS = '8:00:true,8:20:true,8:40:true,9:00:true,9:20:true,9:40:true,10:00:true,10:20:true,10:40:true,11:00:true,11:20:true,11:40:true,12:00:true,12:20:true,12:40:true,13:00:true,13:20:true,13:40:true,14:00:true,14:20:true,14:40:true,15:00:true,15:20:true,15:40:true,16:00:true,16:20:true,16:40:true,17:00:true,17:20:true,17:40:true,18:00:true,18:20:true,18:40:true,19:00:true,19:20:true,19:40:true'
 
-def createTimeSlots(owner):
-    newTimeSlots = TimeSlot(owner=owner, timeSlots=SLOTS)
+def createTimeSlots(owner, date):
+    newTimeSlots = TimeSlot(owner=owner, timeSlots=SLOTS, date=date)
     db.session.add(newTimeSlots)
     db.session.commit()
     return newTimeSlots
 
-def getTimeSlots(owner):
-    return TimeSlot.query.filter_by(owner=owner).first().timeSlots
+def getTimeSlots(owner, date):
+    return TimeSlot.query.filter_by(owner=owner, date=date).first().timeSlots
 
 # transform timeslots string into an array
 def format(timeslots):
 	return timeslots.split(",")
 
 # makes a timeslot available
-def makeAvailable(owner, time):
-    timeSlots = format(getTimeSlots(owner))
+def makeAvailable(owner, time, date):
+    timeSlots = format(getTimeSlots(owner, date))
     index = timeSlots.index(time + ':false')
     timeSlots[index] = time + ':true'
-    TimeSlot.query.filter_by(owner=owner).first().timeSlots = ','.join(timeSlots) # put back into db as a string
+    TimeSlot.query.filter_by(owner=owner, date=date).first().timeSlots = ','.join(timeSlots) # put back into db as a string
     db.session.commit()
 
 # if the appointment is an annual, make all slots available
-def makeAvailableAnnual(owner, time):
-    ownerNextTimeSlot = getNextTimeSlot(owner, time)
-    ownerNextNextTimeSlot = getNextTimeSlot(owner, ownerNextTimeSlot)
+def makeAvailableAnnual(owner, time, date):
+    ownerNextTimeSlot = getNextTimeSlot(owner, time, date)
+    ownerNextNextTimeSlot = getNextTimeSlot(owner, ownerNextTimeSlot, date)
 
-    makeAvailable(owner, time)
-    makeAvailable(owner, ownerNextTimeSlot)
-    makeAvailable(owner, ownerNextNextTimeSlot)
+    makeAvailable(owner, time, date)
+    makeAvailable(owner, ownerNextTimeSlot, date)
+    makeAvailable(owner, ownerNextNextTimeSlot, date)
     db.session.commit()
 
 
 #makes a timeslot unavailable
-def makeUnavailable(owner, time):
-    timeSlots = format(getTimeSlots(owner))
+def makeUnavailable(owner, time, date):
+    timeSlots = format(getTimeSlots(owner, date))
     index = timeSlots.index(time + ':true')
     timeSlots[index] = time + ':false'
-    TimeSlot.query.filter_by(owner=owner).first().timeSlots = ','.join(timeSlots) #put back into db as a string
+    TimeSlot.query.filter_by(owner=owner, date=date).first().timeSlots = ','.join(timeSlots) #put back into db as a string
     db.session.commit()
 
 # if the appointment is an annual, make all slots unavailable
-def makeUnavailableAnnual(owner, time):
-    ownerNextTimeSlot = getNextTimeSlot(owner, time)
-    ownerNextNextTimeSlot = getNextTimeSlot(owner, ownerNextTimeSlot)
+def makeUnavailableAnnual(owner, time, date):
+    ownerNextTimeSlot = getNextTimeSlot(owner, time, date)
+    ownerNextNextTimeSlot = getNextTimeSlot(owner, ownerNextTimeSlot, date)
 
-    makeUnavailable(owner, time)
-    makeUnavailable(owner, ownerNextTimeSlot)
-    makeUnavailable(owner, ownerNextNextTimeSlot)
+    makeUnavailable(owner, time, date)
+    makeUnavailable(owner, ownerNextTimeSlot, date)
+    makeUnavailable(owner, ownerNextNextTimeSlot, date)
     db.session.commit()
 
 # Return true if slot is available, else return false.
-def slotAvailable(owner, time):
-	timeSlots = format(getTimeSlots(owner))
+def slotAvailable(owner, time, date):
+	timeSlots = format(getTimeSlots(owner, date))
 	time = time + ':true'
 	return time in timeSlots
 
 # Return the next time slot. If no next time slot, then return None.
-def getNextTimeSlot(owner, time):
+def getNextTimeSlot(owner, time, date):
     if time is '19:40':
         return None
     else:
-        timeSlots = format(getTimeSlots(owner))
+        timeSlots = format(getTimeSlots(owner, date))
         index = None
-        if slotAvailable(owner, time):
+        if slotAvailable(owner, time, date):
             index = timeSlots.index(time + ':true')
             return timeSlots[index+1][:-5] #increment the index to get next time slot
         else:
