@@ -2,7 +2,7 @@ from index import db
 from .Room import roomAvailable, findRoomAtTime, findRoomForAnnual
 from .Doctor import findDoctorAtTime, findDoctorForAnnual
 from .Patient import canBookAnnual, updateAnnual
-from .DoctorSchedule import makeUnavailable, makeAvailable, getNextTimeSlot, makeAvailableAnnual, makeUnavailableAnnual
+from .Schedule import makeUnavailable, makeAvailable, getNextTimeSlot, makeAvailableAnnual, makeUnavailableAnnual
 import datetime
 
 # PickleType coverts python object to a string so that it can be stored on the database
@@ -37,7 +37,7 @@ def createAppointment(room, doctor_permit_number, patient_hcnumber, length, time
 	db.session.commit()
 	return True
 
-# find if a room is available and if a doctor is available to book an appointment. 
+# find if a room is available and if a doctor is available to book an appointment.
 # If so, book, the room and doctor at the specified time, with the specified patient, for a type of appointment.
 # If the type is to be annual, the patient's last annual must be checked to validate the new annual (at least 1 year difference).
 # Also, if the type is annual, check that the next two timeslots can be booked in the same room with the same doctor.
@@ -62,7 +62,7 @@ def bookAppointment(patient_hcnumber, length, time, date):
 		available_room = findRoomForAnnual(time)
 		if available_room is None:
 			return False
-		
+
 		makeUnavailableAnnual(available_room, time)
 		makeUnavailableAnnual(available_doctor, time)
 

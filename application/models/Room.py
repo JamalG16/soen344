@@ -1,6 +1,5 @@
 from index import db
 from datetime import datetime
-from .DoctorSchedule import createTimeSlots, format, getTimeSlots, makeAvailable, makeUnavailable, getNextTimeSlot
 
 class Room(db.Model):
 	roomNumber = db.Column(db.Integer, primary_key=True)
@@ -87,4 +86,3 @@ def findRoomForAnnual(time):
 					if roomAvailable(roomNumber, nextTimeSlot):
 						return roomNumber
 	return None
-	

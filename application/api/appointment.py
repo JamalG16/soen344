@@ -5,14 +5,14 @@ This file documents the api routes for appointment related events.
 
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
-from application.models import Appointment, Doctor, Room, DoctorSchedule, Patient
+from application.models import Appointment, Doctor, Room, Schedule, Patient
 from application.models.Checkup import createAppointment
 from application.util import *
 from passlib.hash import sha256_crypt
 from application.util import convertRequestDataToDict as toDict
 import json
 
-# This is a Blueprint object. We use this as the object to route certain urls 
+# This is a Blueprint object. We use this as the object to route certain urls
 # In /index.py we import this object and attach it to the Flask object app
 # This way all the routes attached to this object will be mapped to app as well.
 appointment = Blueprint('appointment', __name__)
@@ -20,7 +20,7 @@ appointment = Blueprint('appointment', __name__)
 # list of possible requests
 httpMethods = ['PUT', 'GET', 'POST', 'DELETE']
 
-# Index 
+# Index
 @appointment.route('/api/', methods=['GET','OPTIONS'])
 def index():
 	return json.dumps({'success': True, 'status': 'OK', 'message': 'Success'})
@@ -79,7 +79,7 @@ def cancelAppointment():
 	success = False
 	cancelled = False
 	message = ""
-	
+
 	if Appointment.getAppointment(data['id']) is not None:
 		success = Appointment.cancelAppointment(data['id'])
 	if success:
@@ -89,7 +89,7 @@ def cancelAppointment():
 
 	response = json.dumps({"success":success, "message":message, "cancelled":cancelled})
 	return response
-			
+
 
 @appointment.route('/api/appointment/update', methods=['PUT'])
 def updateAppointment():
