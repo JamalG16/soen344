@@ -1,7 +1,7 @@
 from index import db
 from datetime import datetime
 from passlib.hash import sha256_crypt
-from .Schedule import createTimeSlots, getTimeSlots, makeAvailable, makeUnavailable, getNextTimeSlot, format
+from .DoctorSchedule import getTimeSlotsByDateAndDoctor, makeTimeSlotAvailable, makeTimeSlotUnavailable, getNextTimeSlot
 
 class Doctor(db.Model):
     permit_number = db.Column(db.String(7), nullable=False, primary_key=True)
@@ -22,7 +22,6 @@ class Doctor(db.Model):
         yield 'specialty', self.specialty
         yield 'password_hash', self.password_hash
         yield 'city', self.city
-
 
 # Initializes the database
 db.create_all()
@@ -87,7 +86,7 @@ def createDoctor(permit_number, fname, lname, specialty, password, city):
 # check if doctor is available at a specific time
 def doctorAvailable(permit_number, time):
     if doctorExists(permit_number):
-        doctorTimeSlots = format(getTimeSlots(permit_number, datetime(2009, 5, 5)))
+        doctorTimeSlots = format(getTimeSlotsByDateAndDoctor(permit_number, datetime(2009, 5, 5)))
         time = time + ':true'
         return time in doctorTimeSlots
     else:
@@ -111,16 +110,16 @@ def toggleDoctorTimeSlot(permit_number, time):
     doctor = getDoctor(permit_number)
     if doctor is not None:
         if doctorAvailable(permit_number, time):
-            makeUnavailable(permit_number, time)
+            makeTimeSlotUnavailable(permit_number, time)
         else:
-            makeAvailable(permit_number, time)
+            makeTimeSlotAvailable(permit_number, time)
         response = True
     return response
 
 
 # Given a time, get a list that has all doctors available at the specified time.
 # Then, check these doctors to find if a doctor is available for 3 consecutive time slots.
-# Return a doctor, else return None. 
+# Return a doctor, else return None.
 def findDoctorForAnnual(time):
     permit_numbers = []
     nextTimeSlot = None
@@ -140,7 +139,7 @@ def findDoctorForAnnual(time):
 
 # Given an array of timeslots, a date and a permit number, create schedules for time slots in the date.
 def setAvailability(permit_number, date, timeslots):
-    schedule_timeslots = getTimeSlots(permit_number, date)
+    schedule_timeslots = getTimeSlotsByDateAndDoctor(permit_number, date)
     if schedule_timeslots is None:
         schedule_timeslots = createTimeSlots(permit_number, date)
 
