@@ -1,11 +1,12 @@
 from index import db
+from .Doctor import *
 from datetime import datetime
 from datetime import time
 import json
 
 # PickleType coverts python object to a string so that it can be stored on the database
 class DoctorSchedule(db.Model):
-    owner = db.Column(db.String(), nullable=False, primary_key=True)
+    permit_number = db.Column(db.String(), nullable=False, primary_key=True)
     date = db.Column(db.String(), nullable=False, primary_key=True)
     timeSlots = db.Column(db.String(), nullable=False)
 
@@ -37,6 +38,49 @@ def getAllTimeSlotsByDate(date):
 
 def getTimeSlotsByDateAndDoctor(permit_number, date):
     return format(DoctorSchedule.query.filter_by(permit_number=permit_number, date=date).first().timeSlots)
+
+
+
+# check if there is an available doctor at a specific time. If so, return the first doctor found to be available.
+# Else, return None.
+def findDoctorAtTime(date, time):
+    permit_number = None
+    for doctor in getAllDoctors():
+        if isTimeSlotAvailable(doctor.permit_number, date, time):
+            permit_number = doctor.permit_number
+            break
+    return permit_number
+
+# Returns true if doctor's timeslot has been modified.
+def toggleDoctorTimeSlot(permit_number, date, time):
+	response = False
+	doctor = getDoctor(permit_number)
+	if doctor is not None:
+		if isTimeSlotAvailable(permit_number, date, time):
+			makeTimeSlotUnavailable(permit_number, date, time)
+		else:
+			makeTimeSlotAvailable(permit_number, date, time)
+		response = True
+	return response
+
+# Given a time, get a list that has all doctors available at the specified time.
+# Then, check these doctors to find if a doctor is available for 3 consecutive time slots.
+# Return a doctor, else return None.
+def findDoctorForAnnual(date, time):
+	permit_numbers = []
+	nextTimeSlot = None
+	for doctor in getAllDoctors():
+		if isTimeSlotAvailable(doctor.permit_number, date, time):
+			permit_numbers.append(doctor.permit_number)
+	for permit_number in permit_numbers:
+		nextTimeSlot = getNextTimeSlot(permit_number, date, time)
+		if nextTimeSlot is not None:
+			if isTimeSlotAvailable(permit_number, date, nextTimeSlot):
+				nextTimeSlot = getNextTimeSlot(permit_number, date, nextTimeSlot)
+				if nextTimeSlot is not None:
+					if isTimeSlotAvailable(permit_number, date, nextTimeSlot):
+						return permit_number
+	return None
 
 # transform timeslots string into an array
 def format(timeSlots):
