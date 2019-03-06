@@ -4,7 +4,7 @@
   "private": true,
   "proxy": "http://localhost:5000",
   "dependencies": {
-    "antd":"3.14.1",
+    "antd": "^3.14.1",
     "app-container": "^1.1.1",
     "bootstrap": "^3.3.7",
     "dropdown": "^0.2.0",
