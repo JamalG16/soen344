@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Row, Col, Grid } from 'react-bootstrap'
 import Login from './Login'
 import Register from './Register'
+import CalendarPatient from './CalendarPatient'
 import { connect } from 'react-redux'
 import { Route } from 'react-router-dom'
 
@@ -24,11 +25,13 @@ class Body extends Component {
                     <div>
                       {Login}
                       {Register}
+                      {CalendarPatient}
                     </div>
                   )
                 }} />
 				<Route path='/Login' component={Login}/>
-        <Route path='/Register' component={Register}/>
+                <Route path='/Register' component={Register}/>
+                <Route path='/CalendarPatient' component={CalendarPatient}/>
           </Row>
         </Grid>
       </div>

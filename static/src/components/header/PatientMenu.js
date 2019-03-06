@@ -13,7 +13,7 @@ class PatientMenu extends Component {
         <div>
             Welcome {this.props.user.fname}!
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <Link to="/book">
+            <Link to="/CalendarPatient">
                 Book an Appointment
             </Link>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
