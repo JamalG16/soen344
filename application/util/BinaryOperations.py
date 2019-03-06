@@ -16,6 +16,10 @@ def main():
     print(convertIntegerToBooleanList(andTwoBinaryStrings(binaryString1, binaryString2)))
 
 
+    testList=['alpha:True','beta:False','gamma:True']
+    print(filterOutBooleanList(testList,':'))
+
+
 def convertBooleanListToBinaryString(booleanList):
     return ''.join(['1' if x else '0' for x in booleanList])
 
@@ -33,6 +37,16 @@ def convertBinaryStringToBooleanList(binaryString):
 
 def andTwoBinaryStrings(string1, string2):
     return int(string1,2) & int(string2,2)
+
+def filterOutBooleanList(listToFilter, delimiter):
+    booleanValuesList = []
+    for item in listToFilter:
+        time, value = item.split(delimiter)
+        if(value.lower() == 'false'):
+            booleanValuesList.append(False)
+        else:
+            booleanValuesList.append(True)
+    return booleanValuesList
 
 if __name__ == "__main__":
     main()
