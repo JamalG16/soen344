@@ -49,7 +49,6 @@ def getDoctor(permit_number):
 def getAllDoctors():
 	return db.session.query(Doctor.permit_number).all()
 
-
 # Returns True if doctor is created
 def createDoctor(permit_number, fname, lname, specialty, password, city):
 	reponse = False
@@ -61,9 +60,6 @@ def createDoctor(permit_number, fname, lname, specialty, password, city):
 
 		# Create the new doctor
 		newDoctor = Doctor(permit_number=permit_number, fname=fname, lname=lname, password_hash=password_hash, specialty=specialty, city=city)
-
-		# Create the doctor's schedule
-		createTimeSlots(permit_number)
 
 		# Add it to the database
 		db.session.add(newDoctor)

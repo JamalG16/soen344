@@ -5,8 +5,7 @@ This file documents the api routes for room related events
 
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
-from application.models import Room, Schedule
-from application.models.Room import roomAvailable
+from application.models import Room, RoomSchedule
 from application.util import *
 from passlib.hash import sha256_crypt
 from application.util import convertRequestDataToDict as toDict
@@ -59,7 +58,7 @@ def checkAvailability():
 
 	# if room exists, room availabilities
 	if success:
-		roomAvail = Room.getRoomTimeSlots(data['roomNumber'])
+		roomAvail = RoomSchedule.getTimeSlotsByDateAndRoom(data['roomNumber'], data['date'])
 		message = "Room availabilities retrieved."
 		status = "OK"
 		response = json.dumps({'success': success, 'status': status, 'message': message, 'roomAvail': roomAvailability})

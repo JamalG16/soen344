@@ -1,4 +1,5 @@
 from index import db
+from .Room import *
 from datetime import datetime
 from datetime import time
 import json
@@ -38,12 +39,53 @@ def getAllTimeSlotsByDate(date):
 def getTimeSlotsByDateAndRoom(roomNumber, date):
     return format(RoomSchedule.query.filter_by(roomNumber=roomNumber, date=date).first().timeSlots)
 
+# check if there is an available room at a specific time. If so, return the first room found to be available.
+# Else, return None.
+def findRoomAtTime(date, time):
+	roomNumber = None
+	for room in db.session.query(Room.roomNumber).all():
+		if isRoomAvailable(room.roomNumber, date, time):
+			roomNumber = room.roomNumber
+			break
+	return roomNumber
+
+# Given a time, get a list that has all rooms available at the specified time.
+# Then, check these rooms to find if a room is available for 3 consecutive time slots.
+# Return a room, else return None.
+def findRoomForAnnual(date, time):
+	roomNumbers = []
+	nextTimeSlot = None
+	for room in db.session.query(Room.roomNumber).all():
+		if isRoomAvailable(room.roomNumber, date, time):
+			roomNumbers.append(room.roomNumber)
+	for roomNumber in roomNumbers:
+		nextTimeSlot = getNextTimeSlot(roomNumber, date, time)
+		if nextTimeSlot is not None:
+			if isRoomAvailable(roomNumber, date, nextTimeSlot):
+				nextTimeSlot = getNextTimeSlot(roomNumber, date, nextTimeSlot)
+				if nextTimeSlot is not None:
+					if isRoomAvailable(roomNumber,date, nextTimeSlot):
+						return roomNumber
+	return None
+
+# Returns true if room's timeslot has been modified.
+def toggleRoomTimeSlot(roomNumber, date, time):
+	response = False
+	room = getRoom(roomNumber)
+	if room is not None:
+		if isRoomAvailable(roomNumber, date, time):
+			makeTimeSlotUnavailable(roomNumber, date, time)
+		else:
+			makeTimeSlotAvailable(roomNumber, date, time)
+		response = True
+	return response
+
 # transform timeslots string into an array
 def format(timeslots):
 	return timeslots.split(",")
 
 # Return true if slot is available, else return false.
-def isTimeSlotAvailable(roomNumber, date, time):
+def isRoomAvailable(roomNumber, date, time):
     timeSlots = getTimeSlotsByDateAndRoom(roomNumber, date)
     fulltime = time + ':true'
     return fulltime in timeSlots
@@ -55,7 +97,7 @@ def getNextTimeSlot(roomNumber, date, time):
     else:
         timeSlots = format(getAllTimeSlotsByRoom(roomNumber))
         index = None
-        if isTimeSlotAvailable(roomNumber, date, time):
+        if isRoomAvailable(roomNumber, date, time):
             index = timeSlots.index(time + ':true')
             return timeSlots[index+1][:-5] #increment the index to get next time slot
         else:
