@@ -5,6 +5,7 @@ import Register from './Register'
 import CalendarPatient from './CalendarPatient'
 import { connect } from 'react-redux'
 import { Route } from 'react-router-dom'
+import CalendarDoctor from "./CalendarDoctor";
 
 class Body extends Component {
 
@@ -26,12 +27,14 @@ class Body extends Component {
                       {Login}
                       {Register}
                       {CalendarPatient}
+                      {CalendarDoctor}
                     </div>
                   )
                 }} />
 				<Route path='/Login' component={Login}/>
                 <Route path='/Register' component={Register}/>
                 <Route path='/CalendarPatient' component={CalendarPatient}/>
+                <Route path='/CalendarDoctor' component={CalendarDoctor} />
           </Row>
         </Grid>
       </div>
