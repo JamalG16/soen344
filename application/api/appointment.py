@@ -5,7 +5,7 @@ This file documents the api routes for appointment related events.
 
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
-from application.models import Appointment, Doctor, Room, Schedule, Patient
+from application.models import Appointment, Doctor, Room, Patient
 from application.models.Checkup import createAppointment
 from application.util import *
 from passlib.hash import sha256_crypt
@@ -37,7 +37,7 @@ def newAppointment():
 
 	success = Appointment.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
 	if success:
-		message = "Appointmented has been created"
+		message = "Appointment has been created"
 	else:
 		message = "Appointment already exists or there are no doctors/rooms available. If annual appointment, may not have been a year yet."
 
