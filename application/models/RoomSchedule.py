@@ -35,6 +35,12 @@ def getAllTimeSlotsByRoom(roomNumber):
 def getAllTimeSlotsByDate(date):
     return format(RoomSchedule.query.filter_by(date=date).timeSlots)
 
+def getAllRoomsByDate(date):
+    return format(RoomSchedule.query.filter_by(date=date).roomNumber)
+
+def getAllRoomNumbers():
+    return format(RoomSchedule.query.all().roomNumber)
+
 def getTimeSlotsByDateAndRoom(roomNumber, date):
     return format(RoomSchedule.query.filter_by(roomNumber=roomNumber, date=date).first().timeSlots)
 

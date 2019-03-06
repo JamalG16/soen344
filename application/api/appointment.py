@@ -5,7 +5,7 @@ This file documents the api routes for appointment related events.
 
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
-from application.models import Appointment, Doctor, Room, Schedule, Patient
+from application.models import Appointment, Doctor, Room, Schedule, Patient, DoctorSchedule, RoomSchedule
 from application.models.Checkup import createAppointment
 from application.util import *
 from passlib.hash import sha256_crypt
@@ -111,7 +111,29 @@ def updateAppointment():
 	response = json.dumps({"success": success, "message":message, "appointment":appointment})
 	return response
 
-#TODO params
+
+# TODO params
 @appointment.route('/api/appointment/find', methods=['GET'])
 def findAppointments():
-	return False
+	date = request.args.get('date')
+	randomRoomNumber=None
+	if(date is None):
+		message = 'Enter a date to find the appointments for'
+		print(message)
+		return message, 404
+	availableDoctorPermitNumbers = DoctorSchedule.getAllDoctorsByDate(date)
+	print(availableDoctorPermitNumbers)
+	availableRoomNumbers = RoomSchedule.getAllRoomsByDate(date)
+	if(availableDoctorPermitNumbers is None):
+		message = "Unfortunately there are no doctors avaiable for this date at the moment. Please try later."
+		print(message)
+		return message, 200
+	if(availableRoomNumbers is None):
+		import random
+		randomRoomNumber = random.randint(0, RoomSchedule.getAllRoomNumbers())
+		RoomSchedule.createTimeSlots(randomRoomNumber,date)
+	listOfAvailableAppointments = Appointment.crossCheckDoctorAndRoomList(date,availableDoctorPermitNumbers,randomRoomNumber)
+	if listOfAvailableAppointments is None:
+		return 204
+	else:
+		return listOfAvailableAppointments,200

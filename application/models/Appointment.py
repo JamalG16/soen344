@@ -1,8 +1,11 @@
+
 from index import db
 from .Room import roomAvailable, findRoomAtTime, findRoomForAnnual
 from .Doctor import findDoctorAtTime, findDoctorForAnnual
 from .Patient import canBookAnnual, updateAnnual
 from .Schedule import makeUnavailable, makeAvailable, getNextTimeSlot, makeAvailableAnnual, makeUnavailableAnnual
+from .DoctorSchedule import getTimeSlotsByDateAndDoctor, format
+from .RoomSchedule import getTimeSlotsByDateAndRoom
 import datetime
 
 # PickleType coverts python object to a string so that it can be stored on the database
@@ -188,3 +191,14 @@ def updateAppointment(id, patient_hcnumber, length, time, date):
 			#updates
 			updateDB(appointment['id'], available_room, available_doctor,length, time, date)
 		return True
+
+def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, specifiedRoomNumber):
+	availableTimeSlots=None
+	# we have created a specific room schedule, might as well use that to save us some search cycles
+	if specifiedRoomNumber is not None:
+		roomTimeSlots = getTimeSlotsByDateAndRoom(date,specifiedRoomNumber)
+		roomTimeSlots = format(roomTimeSlots)
+	for permit_number in doctorPermitNumberList:
+		doctorTimeSlots = getTimeSlotsByDateAndDoctor(permit_number,date)
+		doctorTimeSlots = format(doctorTimeSlots)
+

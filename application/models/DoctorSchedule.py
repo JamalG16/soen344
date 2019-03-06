@@ -35,6 +35,9 @@ def getAllTimeSlotsByDoctor(permit_number):
 def getAllTimeSlotsByDate(date):
     return format(DoctorSchedule.query.filter_by(date=date).timeSlots)
 
+def getAllDoctorsByDate(date):
+    return format(DoctorSchedule.query.filter_by(date=date))
+
 def getTimeSlotsByDateAndDoctor(permit_number, date):
     return format(DoctorSchedule.query.filter_by(permit_number=permit_number, date=date).first().timeSlots)
 
@@ -98,3 +101,4 @@ def makeTimeSlotUnavailableAnnual(permit_number, date, time):
     makeTimeSlotUnavailable(permit_number, date, doctorNextTimeSlot)
     makeTimeSlotUnavailable(permit_number, date, doctorNextNextTimeSlot)
     db.session.commit()
+
