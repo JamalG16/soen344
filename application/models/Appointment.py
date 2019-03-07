@@ -6,7 +6,7 @@ from .Patient import canBookAnnual, updateAnnual
 from .Schedule import makeUnavailable, makeAvailable, getNextTimeSlot, makeAvailableAnnual, makeUnavailableAnnual
 from .DoctorSchedule import getTimeSlotsByDateAndDoctor, format
 from .RoomSchedule import getTimeSlotsByDateAndRoom, getAllRoomNumbers
-from application.util import BinaryOperations
+from application.util import BooleanArrayOperations
 import datetime
 
 # PickleType coverts python object to a string so that it can be stored on the database
@@ -204,15 +204,15 @@ def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, specifie
 		# if we have created a room timeslot, use that to display availabilities
 		if (room_time_slots is not None):
 			# concatenate existing availabilities with the crossavailabilities of the new room and the doc schedule
-			available_time_slots = BinaryOperations.concatenateBooleanLists(available_time_slots,
-																		  BinaryOperations.getCommonTimeslots(
+			available_time_slots = BooleanArrayOperations.concatenateBooleanLists(available_time_slots,
+																		  BooleanArrayOperations.getCommonTimeslots(
 																			  doctor_time_slots, room_time_slots))
 		else:
 			# for all available rooms
 			# concatenate existing availabilities with the crossavailabilities of each room and the doc schedule
 			for roomNumber in roomList:
-				available_time_slots = BinaryOperations.concatenateBooleanLists(available_time_slots,
-																			  BinaryOperations.getCommonTimeslots(
+				available_time_slots = BooleanArrayOperations.concatenateBooleanLists(available_time_slots,
+																			  BooleanArrayOperations.getCommonTimeslots(
 																				  doctor_time_slots,
 																				  getTimeSlotsByDateAndRoom(date,
 																											roomNumber)))
