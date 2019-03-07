@@ -5,7 +5,8 @@ from .Doctor import findDoctorAtTime, findDoctorForAnnual
 from .Patient import canBookAnnual, updateAnnual
 from .Schedule import makeUnavailable, makeAvailable, getNextTimeSlot, makeAvailableAnnual, makeUnavailableAnnual
 from .DoctorSchedule import getTimeSlotsByDateAndDoctor, format
-from .RoomSchedule import getTimeSlotsByDateAndRoom
+from .RoomSchedule import getTimeSlotsByDateAndRoom, getAllRoomNumbers
+from application.util import BinaryOperations
 import datetime
 
 # PickleType coverts python object to a string so that it can be stored on the database
@@ -193,12 +194,26 @@ def updateAppointment(id, patient_hcnumber, length, time, date):
 		return True
 
 def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, specifiedRoomNumber):
-	availableTimeSlots=None
+	available_time_slots = [36]
 	# we have created a specific room schedule, might as well use that to save us some search cycles
 	if specifiedRoomNumber is not None:
-		roomTimeSlots = getTimeSlotsByDateAndRoom(date,specifiedRoomNumber)
-		roomTimeSlots = format(roomTimeSlots)
+		room_time_slots = getTimeSlotsByDateAndRoom(date,specifiedRoomNumber)
+	# preferential filtering by doctors, since they are the ones to most likely have fewer availabilities
 	for permit_number in doctorPermitNumberList:
-		doctorTimeSlots = getTimeSlotsByDateAndDoctor(permit_number,date)
-		doctorTimeSlots = format(doctorTimeSlots)
-
+		doctor_time_slots = getTimeSlotsByDateAndDoctor(permit_number,date)
+		# if we have created a room timeslot, use that to display availabilities
+		if (room_time_slots is not None):
+			# concatenate existing availabilities with the crossavailabilities of the new room and the doc schedule
+			available_time_slots = BinaryOperations.concatenateBooleanLists(available_time_slots,
+																		  BinaryOperations.getCommonTimeslots(
+																			  doctor_time_slots, room_time_slots))
+		else:
+			# for all available rooms
+			# concatenate existing availabilities with the crossavailabilities of each room and the doc schedule
+			for roomNumber in roomList:
+				available_time_slots = BinaryOperations.concatenateBooleanLists(available_time_slots,
+																			  BinaryOperations.getCommonTimeslots(
+																				  doctor_time_slots,
+																				  getTimeSlotsByDateAndRoom(date,
+																											roomNumber)))
+	return available_time_slots

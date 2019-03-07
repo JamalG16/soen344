@@ -5,7 +5,7 @@ import json
 
 # PickleType coverts python object to a string so that it can be stored on the database
 class DoctorSchedule(db.Model):
-    owner = db.Column(db.String(), nullable=False, primary_key=True)
+    permit_number = db.Column(db.String(), nullable=False, primary_key=True)
     date = db.Column(db.String(), nullable=False, primary_key=True)
     timeSlots = db.Column(db.String(), nullable=False)
 
@@ -36,7 +36,10 @@ def getAllTimeSlotsByDate(date):
     return format(DoctorSchedule.query.filter_by(date=date).timeSlots)
 
 def getAllDoctorsByDate(date):
-    return format(DoctorSchedule.query.filter_by(date=date))
+    if DoctorSchedule.query.filter_by(date=date).first() is None:
+        return None
+    else:
+        return format(DoctorSchedule.query.filter_by(date=date).first().permit_number)
 
 def getTimeSlotsByDateAndDoctor(permit_number, date):
     return format(DoctorSchedule.query.filter_by(permit_number=permit_number, date=date).first().timeSlots)

@@ -124,15 +124,15 @@ def findAppointments():
 	availableDoctorPermitNumbers = DoctorSchedule.getAllDoctorsByDate(date)
 	print(availableDoctorPermitNumbers)
 	availableRoomNumbers = RoomSchedule.getAllRoomsByDate(date)
-	if(availableDoctorPermitNumbers is None):
+	if(availableDoctorPermitNumbers is not None):
 		message = "Unfortunately there are no doctors avaiable for this date at the moment. Please try later."
 		print(message)
 		return message, 200
 	if(availableRoomNumbers is None):
 		import random
-		randomRoomNumber = random.randint(0, RoomSchedule.getAllRoomNumbers())
+		randomRoomNumber = random.randint(0, len(RoomSchedule.getAllRoomNumbers()))
 		RoomSchedule.createTimeSlots(randomRoomNumber,date)
-	listOfAvailableAppointments = Appointment.crossCheckDoctorAndRoomList(date,availableDoctorPermitNumbers,randomRoomNumber)
+	listOfAvailableAppointments = Appointment.crossCheckDoctorAndRoomList(date,availableDoctorPermitNumbers,RoomSchedule.getAllRoomNumbers(), randomRoomNumber)
 	if listOfAvailableAppointments is None:
 		return 204
 	else:
