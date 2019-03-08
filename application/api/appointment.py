@@ -119,14 +119,12 @@ def findAppointments():
 	randomRoomNumber=None
 	if(date is None):
 		message = 'Enter a date to find the appointments for'
-		print(message)
 		return message, 404
 	availableDoctorPermitNumbers = DoctorSchedule.getAllDoctorsByDate(date)
 	print(availableDoctorPermitNumbers)
 	availableRoomNumbers = RoomSchedule.getAllRoomsByDate(date)
-	if(availableDoctorPermitNumbers is not None):
+	if(availableDoctorPermitNumbers is None):
 		message = "Unfortunately there are no doctors avaiable for this date at the moment. Please try later."
-		print(message)
 		return message, 200
 	if(availableRoomNumbers is None):
 		import random

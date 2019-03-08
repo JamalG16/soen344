@@ -43,10 +43,13 @@ def getAllRoomsByDate(date):
 
 def getAllRoomNumbers():
     listOfRooms = RoomSchedule.query.all()
+    listOfRoomNumbers=[]
     if listOfRooms is None or len(listOfRooms)==0:
         return []
     else:
-        return format(listOfRooms)
+        for room in listOfRooms:
+            listOfRoomNumbers.append(room.roomNumber)
+    return listOfRoomNumbers
 
 def getTimeSlotsByDateAndRoom(roomNumber, date):
     return format(RoomSchedule.query.filter_by(roomNumber=roomNumber, date=date).first().timeSlots)
