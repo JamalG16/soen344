@@ -30,3 +30,5 @@ yarn-error.log*
 #Json Modules
 static/package-lock.json
 \.vscode/settings\.json
+.idea/workspace.xml
+static/src/components/body/CalendarDoctor.js
