@@ -12,7 +12,7 @@ class PatientMenu extends Component {
             &nbsp;&nbsp;&nbsp;&nbsp;
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
              <Link to="/CalendarDoctor">
-                Book an Appointment
+                Schedule
             </Link>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <Link to="/" onClick={logOut}>
