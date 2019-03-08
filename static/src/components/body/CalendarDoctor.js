@@ -47,12 +47,13 @@ class CalendarDoctor extends Component {
         }
 
         return (
-            <table>
-                <tr><td><Alert message={message}/></td></tr>
-                <tr>
-                    <td><div><Calendar style={{width:300, height:200}} value={value} fullscreen={false}  onSelect={this.onSelect} onPanelChange={this.onPanelChange}/></div></td>
-                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                    <td style={{width:'100%'}}><AppointmentTable success={success} value={selectedValue}/></td>
+            <table style={{width:'100%'}}>
+                <tr rowSpan={4}><td ><Alert message={message}/></td></tr>
+                <tr >
+                    <td style={{verticalAlign: 'baseline'}}>
+                        <Calendar style={{width:300 , height:200, float: 'left', position:'fixed'}} value={value} fullscreen={false}  onSelect={this.onSelect} onPanelChange={this.onPanelChange}/>
+                        <AppointmentTable success={success} value={selectedValue}/>
+                    </td>
                 </tr>
             </table>
         );
@@ -160,8 +161,8 @@ function AppointmentTable(props) {
         return null;
     }
     return (
-        <div>
-            <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}</h2>
+        <div style={{width:'68%', float:'right'}}>
+            <h2>Schedule for the week of {props.value.format('YYYY-MM-DD')}</h2>
             <Table columns={columns} dataSource={data} pagination={false}/>
         </div>
     );
