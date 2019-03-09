@@ -19,6 +19,7 @@ class infodump extends Component {
     this.registerAdmin()
     this.addRoom()
     this.addDoctor()
+    this.addNurse()
   }
 
   /* 
@@ -102,6 +103,27 @@ class infodump extends Component {
       city: "Mtl"
     }
     fetchAPI("PUT", "/api/doctor/", doctor).then(
+        response => {
+          try{
+            if (response.success){
+              console.log('it is a success mate')
+              this.setState({sendDataAns: response.message})
+            }
+            else {
+              console.log('it is a fail mate');
+            }
+          } catch(e){console.error("Error", e)}
+        }
+      ).catch((e)=>console.error("Error:", e))
+  }
+  async addNurse(){
+    let nurse= { 
+      access_ID: 'ABC12345',
+      fname: "Joseph",
+      lname: "Doe",
+      password: "lol",
+    }
+    fetchAPI("PUT", "/api/nurse/", nurse).then(
         response => {
           try{
             if (response.success){
