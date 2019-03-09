@@ -43,7 +43,7 @@ class Body extends Component {
                 <Route path='/CalendarDoctor' component={CalendarDoctor} />
                 <Route path='/CalendarNurse' component={CalendarNurse} />
                 <Route path='/AppointmentCart' component={AppointmentCart} />
-                <Homepage user = {this.props.user}/>
+                <Route path='/Homepage' component={Homepage} />
           </Row>
         </Grid>
       </div>

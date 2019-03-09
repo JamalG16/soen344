@@ -3,6 +3,7 @@ import React from "react";
 import HomepagePatient from "./HomepagePatient";
 import HomepageDoctor from "./HomepageDoctor";
 import HomepageNurse from "./HomepageNurse";
+import {connect} from "react-redux";
 
 class Homepage extends Component {
     constructor(props) {
@@ -28,11 +29,21 @@ class Homepage extends Component {
         //if admin is logged in
         } else {
                homepage = <div>
-                <p></p>
+                <p>You're not logged in!</p>
             </div>
         }
            return homepage;
     }
 }
+
+function mapStateToProps(state) {
+  return {
+    user: state.login.user
+  }
+}
+
+Homepage = connect(
+  mapStateToProps,
+)(Homepage);
 
 export default Homepage;

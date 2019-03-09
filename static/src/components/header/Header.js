@@ -12,7 +12,7 @@ class Header extends Component {
           <Row>
             <Col xs={6} style={{textAlign: 'left'}}>
               <h4>
-                <Link to='/'>
+                <Link to='/Homepage'>
                   Uber Santé 
                 </Link>    
               </h4>
