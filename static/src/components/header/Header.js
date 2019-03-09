@@ -19,8 +19,7 @@ class Header extends Component {
             </Col>
             <Col xs={6} style={{textAlign: 'right'}}>
               <h4>
-                {<Menu 
-                user = {this.props.user}/>}
+                {<Menu user = {this.props.user}/>}
               </h4>
             </Col>
           </Row>
