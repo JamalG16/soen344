@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { Route } from 'react-router-dom'
 import CalendarDoctor from "./CalendarDoctor";
 import CalendarNurse from "./CalendarNurse";
+import AppointmentCart from "./AppointmentCart";
 
 class Body extends Component {
 
@@ -30,6 +31,7 @@ class Body extends Component {
                       {CalendarPatient}
                       {CalendarDoctor}
                       {CalendarNurse}
+                      {AppointmentCart}
                     </div>
                   )
                 }} />
@@ -38,6 +40,7 @@ class Body extends Component {
                 <Route path='/CalendarPatient' component={CalendarPatient}/>
                 <Route path='/CalendarDoctor' component={CalendarDoctor} />
                 <Route path='/CalendarNurse' component={CalendarNurse} />
+                <Route path='/AppointmentCart' component={AppointmentCart} />
           </Row>
         </Grid>
       </div>

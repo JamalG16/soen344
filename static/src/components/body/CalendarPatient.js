@@ -75,7 +75,6 @@ class CalendarPatient extends Component {
             </table>
         );
     }
-
 }
 
 function AppointmentTable(props) {
