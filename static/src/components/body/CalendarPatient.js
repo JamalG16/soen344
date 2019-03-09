@@ -1,6 +1,6 @@
 import {Component} from "react";
 import React from "react";
-import { Calendar, Alert , Table, Button, Tabs, Radio, Typography, Divider} from 'antd';
+import { Calendar, Alert , Table, Button, Radio, message} from 'antd';
 import * as moment from 'moment';
 import 'antd/es/calendar/style/index.css';
 import 'antd/es/alert/style/index.css';
@@ -13,6 +13,7 @@ import 'antd/es/icon/style/index.css';
 import 'antd/es/tabs/style/index.css';
 import 'antd/es/radio/style/index.css';
 import 'antd/es/typography/style/index.css';
+import 'antd/es/message/style/index.css';
 
 class CalendarPatient extends Component {
 
@@ -89,7 +90,7 @@ function AppointmentTable(props) {
 
     const data1 = [{
       time: moment().format('HH:mm A') + " - " + (moment().add(20, 'minutes')).format('HH:mm A'),
-      button: <Button type="primary" icon="plus" size="large">ADD TO CART</Button>
+      button: <Button type="primary" icon="plus" size="large" ref={'btn'} onClick={() => cartClick('hi')}>ADD TO CART</Button>
     },
     {
       time: moment().format('HH:mm A') + " - " + (moment().add(20, 'minutes')).format('HH:mm A'),
@@ -127,6 +128,10 @@ function AppointmentTable(props) {
             </div>
         );
     }
+}
+
+function cartClick(e) {
+    message.info(e)
 }
 
 export default CalendarPatient;
