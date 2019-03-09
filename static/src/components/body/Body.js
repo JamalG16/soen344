@@ -8,6 +8,7 @@ import { Route } from 'react-router-dom'
 import CalendarDoctor from "./CalendarDoctor";
 import CalendarNurse from "./CalendarNurse";
 import AppointmentCart from "./AppointmentCart";
+import Homepage from "./homepages/Homepage";
 
 class Body extends Component {
 
@@ -32,6 +33,7 @@ class Body extends Component {
                       {CalendarDoctor}
                       {CalendarNurse}
                       {AppointmentCart}
+                      {Homepage}
                     </div>
                   )
                 }} />
@@ -41,6 +43,7 @@ class Body extends Component {
                 <Route path='/CalendarDoctor' component={CalendarDoctor} />
                 <Route path='/CalendarNurse' component={CalendarNurse} />
                 <Route path='/AppointmentCart' component={AppointmentCart} />
+                <Homepage user = {this.props.user}/>
           </Row>
         </Grid>
       </div>

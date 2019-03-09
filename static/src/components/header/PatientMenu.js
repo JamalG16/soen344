@@ -1,12 +1,8 @@
 import React, {Component} from 'react'
-import {PageHeader, Button} from 'react-bootstrap'
-import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { logOut } from '../../actions/auth'
 import {Icon} from 'antd';
 import 'antd/es/icon/style/index.css';
-import { Col, Row, Grid} from 'react-bootstrap'
-import Menu from './Menu'
 
 class PatientMenu extends Component {
   
