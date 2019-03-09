@@ -5,6 +5,9 @@ import HomepageDoctor from "./HomepageDoctor";
 import HomepageNurse from "./HomepageNurse";
 
 class Homepage extends Component {
+    constructor(props) {
+        super(props)
+    }
 
     render(){
         let homepage;
