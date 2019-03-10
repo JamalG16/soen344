@@ -6,7 +6,7 @@ This file documents the api routes for appointment related events.
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
 from application.models import Appointment, Doctor, Room, Patient
-from application.models.Checkup import createAppointment
+from application.services import AppointmentService
 from application.util import *
 from passlib.hash import sha256_crypt
 from application.util import convertRequestDataToDict as toDict
@@ -35,7 +35,7 @@ def newAppointment():
 	info =None
 	message=""
 
-	success = Appointment.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
+	success = AppointmentService.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
 	if success:
 		message = "Appointment has been created"
 	else:
@@ -55,7 +55,7 @@ def checkAppointments():
 	message=""
 	appointments = []
 
-	appointments = Appointment.getAppointments(data['hcnumber'])
+	appointments = AppointmentService.getAppointments(data['hcnumber'])
 	if appointments is not None:
 		success = True
 	else:
@@ -80,8 +80,8 @@ def cancelAppointment():
 	cancelled = False
 	message = ""
 
-	if Appointment.getAppointment(data['id']) is not None:
-		success = Appointment.cancelAppointment(data['id'])
+	if AppointmentService.getAppointment(data['id']) is not None:
+		success = AppointmentService.cancelAppointment(data['id'])
 	if success:
 		message= 'Appointment cancelled'
 	else:
@@ -100,11 +100,11 @@ def updateAppointment():
 	success = False
 	appointment = None
 
-	if Appointment.getAppointment(data['id']) is not None:
-		success = Appointment.updateAppointment(data['id'], data['hcnumber'], data['length'], data['time'], data['date'])
+	if AppointmentService.getAppointment(data['id']) is not None:
+		success = AppointmentService.updateAppointment(data['id'], data['hcnumber'], data['length'], data['time'], data['date'])
 	if success:
 		message = 'Appointment has been updated.'
-		appointment = Appointment.getAppointment(data['id'])
+		appointment = AppointmentService.getAppointment(data['id'])
 	else:
 		message = 'Appointment has not been updated.'
 
