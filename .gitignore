@@ -1,6 +1,10 @@
 #database
 clinic.db
 
+#IDE
+.idea/
+*.iml
+
 # python files
 config.py
 
