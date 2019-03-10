@@ -22,10 +22,10 @@ def getTimeSlotsByDateAndRoom(roomNumber, date):
     return format(RoomScheduleTDG.find(roomNumber=roomNumber, date=date))
 
 def getAllRoomsByDate(date):
-    return format(RoomScheduleTDG.findAllbyDate(date))
+    return RoomScheduleTDG.findAllbyDate(date)
 
 def getAllRoomNumbers():
-    return format(RoomScheduleTDG.findAllRoomNumbers())
+    return RoomScheduleTDG.findAllRoomNumbers()
 
 # check if there is an available room at a specific time. If so, return the first room found to be available.
 # Else, return None.

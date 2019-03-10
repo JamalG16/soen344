@@ -117,6 +117,8 @@ def updateAppointment():
 def findAppointments():
 	date = request.args.get('date')
 	randomRoomNumber=None
+	# RoomScheduleService.createTimeSlots(10,date)
+	# DoctorScheduleService.createTimeSlots('1234567',date)
 	if(date is None):
 		message = 'Enter a date to find the appointments for'
 		return message, 404
@@ -130,7 +132,7 @@ def findAppointments():
 		import random
 		randomRoomNumber = random.randint(0, len(RoomScheduleService.getAllRoomNumbers()))
 		RoomScheduleService.createTimeSlots(randomRoomNumber,date)
-	listOfAvailableAppointments = Appointment.crossCheckDoctorAndRoomList(date,availableDoctorPermitNumbers,RoomScheduleService.getAllRoomNumbers(), randomRoomNumber)
+	listOfAvailableAppointments = AppointmentService.crossCheckDoctorAndRoomList(date,availableDoctorPermitNumbers,RoomScheduleService.getAllRoomNumbers(), randomRoomNumber)
 	if listOfAvailableAppointments is None:
 		return 204
 	else:
