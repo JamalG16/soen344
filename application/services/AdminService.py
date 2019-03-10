@@ -1,6 +1,4 @@
-from application.models.Admin import Admin
 from application.TDG import AdminTDG
-from index import db
 from passlib.hash import sha256_crypt
 
 # Returns admin if found

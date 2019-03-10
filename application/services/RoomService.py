@@ -1,6 +1,4 @@
-from application.models.Room import Room
 from application.TDG import RoomTDG
-from index import db
 
 def roomExists(roomNumber):
 	return RoomTDG.find(roomNumber) is not None

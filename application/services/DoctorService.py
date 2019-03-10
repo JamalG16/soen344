@@ -1,6 +1,4 @@
-from application.models.Doctor import Doctor
 from application.TDG import DoctorTDG
-from index import db
 from passlib.hash import sha256_crypt
 
 # Returns True if doctor exists

@@ -1,4 +1,3 @@
-from index import db
 from application.services import RoomScheduleService, DoctorScheduleService
 from application.services.PatientService import canBookAnnual, updateAnnual
 from application.TDG import AppointmentTDG

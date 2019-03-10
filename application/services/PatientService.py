@@ -1,6 +1,4 @@
-from application.models.Patient import Patient
 from application.TDG import PatientTDG
-from index import db
 from passlib.hash import sha256_crypt
 import datetime
 

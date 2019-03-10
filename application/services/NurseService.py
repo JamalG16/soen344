@@ -1,6 +1,4 @@
-from application.models.Nurse import Nurse
 from application.TDG import NurseTDG
-from index import db
 from passlib.hash import sha256_crypt
 
 # Returns True if nurse exists
@@ -9,7 +7,7 @@ def nurseExists(access_ID):
 
 # Returns nurse if found
 def getNurse(access_ID):
-	nurse = Nurse.query.filter_by(access_ID=access_ID).first()
+	nurse = NurseTDG.find(access_ID)
 	if nurse is None:
 		return None
 	else:
