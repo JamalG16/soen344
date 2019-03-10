@@ -5,7 +5,7 @@ This file documents the api routes for admin-related events.
 
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
-from application.models import Admin
+from application.services import AdminService
 from application.util import *
 from passlib.hash import sha256_crypt
 from application.util import convertRequestDataToDict as toDict
@@ -33,7 +33,7 @@ def newAdmin():
 	success = False
 
 	# Create an admin and find our whether it is successful or not
-	success = Admin.createAdmin(username=data['username'], password=data['password'])
+	success = AdminService.createAdmin(username=data['username'], password=data['password'])
 	if success:
 		message = "Admin has been created"
 	else:
@@ -56,13 +56,13 @@ def userAuthenticate():
 	
 	# logging in
 	# check if username exists
-	success = Admin.adminExists(data['username'])
+	success = AdminService.adminExists(data['username'])
 	# Verify User  
-	success = Admin.authenticate(data['username'], data['password'])
+	success = AdminService.authenticate(data['username'], data['password'])
 
 	# if username exists & authenticated, then get the admin
 	if success:
-		user = Admin.getAdmin(data['username'])
+		user = AdminService.getAdmin(data['username'])
 		message = "Admin authenticated."
 		status = "OK"
 		response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
