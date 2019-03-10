@@ -195,6 +195,8 @@ def updateAppointment(id, patient_hcnumber, length, time, date):
 
 def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, specifiedRoomNumber):
 	available_time_slots = [36]
+	doctor_time_slots=[]
+	room_time_slots=[]
 	# we have created a specific room schedule, might as well use that to save us some search cycles
 	if specifiedRoomNumber is not None:
 		room_time_slots = getTimeSlotsByDateAndRoom(date,specifiedRoomNumber)
@@ -202,7 +204,7 @@ def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, specifie
 	for permit_number in doctorPermitNumberList:
 		doctor_time_slots = getTimeSlotsByDateAndDoctor(permit_number,date)
 		# if we have created a room timeslot, use that to display availabilities
-		if (room_time_slots is not None):
+		if (len(room_time_slots)!=0):
 			# concatenate existing availabilities with the crossavailabilities of the new room and the doc schedule
 			available_time_slots = BooleanArrayOperations.concatenateBooleanLists(available_time_slots,
 																		  BooleanArrayOperations.getCommonTimeslots(
@@ -214,6 +216,6 @@ def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, specifie
 				available_time_slots = BooleanArrayOperations.concatenateBooleanLists(available_time_slots,
 																			  BooleanArrayOperations.getCommonTimeslots(
 																				  doctor_time_slots,
-																				  getTimeSlotsByDateAndRoom(date,
-																											roomNumber)))
+																				  getTimeSlotsByDateAndRoom(roomNumber,
+																											date)))
 	return available_time_slots

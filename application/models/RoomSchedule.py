@@ -52,7 +52,10 @@ def getAllRoomNumbers():
     return listOfRoomNumbers
 
 def getTimeSlotsByDateAndRoom(roomNumber, date):
-    return format(RoomSchedule.query.filter_by(roomNumber=roomNumber, date=date).first().timeSlots)
+    if RoomSchedule.query.filter_by(roomNumber=roomNumber, date=date).first() is None:
+        return None
+    else:
+        return format(RoomSchedule.query.filter_by(roomNumber=roomNumber, date=date).first().timeSlots)
 
 # transform timeslots string into an array
 def format(timeslots):

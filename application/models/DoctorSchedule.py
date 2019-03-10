@@ -21,7 +21,8 @@ db.create_all()
 #SLOTS = ['8:00:00','8:20:00','8:40:00','9:00:00','9:20:00','9:40:00','10:00:00','10:20:00','10:40:00','11:00:00','11:20:00','11:40:00','12:00:00','12:20:00','12:40:00','13:00:00','13:20:00','13:40:00','14:00:00','14:20:00','14:40:00','15:00:00','15:20:00','15:40:00','16:00:00','16:20:00','16:40:00','17:00:00','17:20:00','17:40:00','18:00:00','18:20:00','18:40:00','19:00:00','19:20:00','19:40:00']
 
 # Create an with all possible timeslots and unavailable by default
-SLOTS = '8:00:false,8:20:false,8:40:false,9:00:false,9:20:false,9:40:false,10:00:false,10:20:false,10:40:false,11:00:false,11:20:false,11:40:false,12:00:false,12:20:false,12:40:false,13:00:false,13:20:false,13:40:false,14:00:false,14:20:false,14:40:false,15:00:false,15:20:false,15:40:false,16:00:false,16:20:false,16:40:false,17:00:false,17:20:false,17:40:false,18:00:false,18:20:false,18:40:false,19:00:false,19:20:false,19:40:false'
+SLOTS = '8:00:true,8:20:true,8:40:true,9:00:false,9:20:true,9:40:false,10:00:false,10:20:false,10:40:false,11:00:false,11:20:true,11:40:true,12:00:true,12:20:true,12:40:true,13:00:true,13:20:true,13:40:false,14:00:false,14:20:false,14:40:false,15:00:false,15:20:false,15:40:true,16:00:true,16:20:true,16:40:true,17:00:true,17:20:true,17:40:false,18:00:false,18:20:false,18:40:false,19:00:false,19:20:true,19:40:true'
+# SLOTS = '8:00:false,8:20:false,8:40:false,9:00:false,9:20:false,9:40:false,10:00:false,10:20:false,10:40:false,11:00:false,11:20:false,11:40:false,12:00:false,12:20:false,12:40:false,13:00:false,13:20:false,13:40:false,14:00:false,14:20:false,14:40:false,15:00:false,15:20:false,15:40:false,16:00:false,16:20:false,16:40:false,17:00:false,17:20:false,17:40:false,18:00:false,18:20:false,18:40:false,19:00:false,19:20:false,19:40:false'
 
 def createTimeSlots(permit_number, date):
     newDoctorSchedule = DoctorSchedule(permit_number=permit_number, timeSlots=SLOTS, date=date)

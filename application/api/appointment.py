@@ -112,10 +112,12 @@ def updateAppointment():
 	return response
 
 
-# TODO params
+# /api/appointment/find?date=<insert_date_here>
 @appointment.route('/api/appointment/find', methods=['GET'])
 def findAppointments():
 	date = request.args.get('date')
+	DoctorSchedule.createTimeSlots('1234567',date)
+	RoomSchedule.createTimeSlots(10,date)
 	randomRoomNumber=None
 	if(date is None):
 		message = 'Enter a date to find the appointments for'

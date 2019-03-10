@@ -15,10 +15,10 @@ class infodump extends Component {
    * If you want to know more about it, read the React Docs
    */
   componentDidMount() {
-    // this.registerPatient()
-    // this.registerAdmin()
-    // this.addRoom()
-    // this.addDoctor()
+    this.registerPatient()
+    this.registerAdmin()
+    this.addRoom()
+    this.addDoctor()
     this.checkAvailabilities()
   }
 
