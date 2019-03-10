@@ -5,8 +5,8 @@ This file documents the api routes for appointment related events.
 
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
-from application.models import Appointment, Doctor, Room, Schedule, Patient, DoctorSchedule, RoomSchedule
-from application.models.Checkup import createAppointment
+from application.models import Appointment, Doctor, Room, Patient
+from application.services import AppointmentService, DoctorScheduleService, RoomScheduleService
 from application.util import *
 from passlib.hash import sha256_crypt
 from application.util import convertRequestDataToDict as toDict
@@ -35,9 +35,9 @@ def newAppointment():
 	info =None
 	message=""
 
-	success = Appointment.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
+	success = AppointmentService.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
 	if success:
-		message = "Appointmented has been created"
+		message = "Appointment has been created"
 	else:
 		message = "Appointment already exists or there are no doctors/rooms available. If annual appointment, may not have been a year yet."
 
@@ -55,7 +55,7 @@ def checkAppointments():
 	message=""
 	appointments = []
 
-	appointments = Appointment.getAppointments(data['hcnumber'])
+	appointments = AppointmentService.getAppointments(data['hcnumber'])
 	if appointments is not None:
 		success = True
 	else:
@@ -80,8 +80,8 @@ def cancelAppointment():
 	cancelled = False
 	message = ""
 
-	if Appointment.getAppointment(data['id']) is not None:
-		success = Appointment.cancelAppointment(data['id'])
+	if AppointmentService.getAppointment(data['id']) is not None:
+		success = AppointmentService.cancelAppointment(data['id'])
 	if success:
 		message= 'Appointment cancelled'
 	else:
@@ -100,11 +100,11 @@ def updateAppointment():
 	success = False
 	appointment = None
 
-	if Appointment.getAppointment(data['id']) is not None:
-		success = Appointment.updateAppointment(data['id'], data['hcnumber'], data['length'], data['time'], data['date'])
+	if AppointmentService.getAppointment(data['id']) is not None:
+		success = AppointmentService.updateAppointment(data['id'], data['hcnumber'], data['length'], data['time'], data['date'])
 	if success:
 		message = 'Appointment has been updated.'
-		appointment = Appointment.getAppointment(data['id'])
+		appointment = AppointmentService.getAppointment(data['id'])
 	else:
 		message = 'Appointment has not been updated.'
 
@@ -120,17 +120,17 @@ def findAppointments():
 	if(date is None):
 		message = 'Enter a date to find the appointments for'
 		return message, 404
-	availableDoctorPermitNumbers = DoctorSchedule.getAllDoctorsByDate(date)
+	availableDoctorPermitNumbers = DoctorScheduleService.getAllDoctorsByDate(date)
 	print(availableDoctorPermitNumbers)
-	availableRoomNumbers = RoomSchedule.getAllRoomsByDate(date)
+	availableRoomNumbers = RoomScheduleService.getAllRoomsByDate(date)
 	if(availableDoctorPermitNumbers is None):
 		message = "Unfortunately there are no doctors avaiable for this date at the moment. Please try later."
 		return message, 200
 	if(availableRoomNumbers is None):
 		import random
-		randomRoomNumber = random.randint(0, len(RoomSchedule.getAllRoomNumbers()))
-		RoomSchedule.createTimeSlots(randomRoomNumber,date)
-	listOfAvailableAppointments = Appointment.crossCheckDoctorAndRoomList(date,availableDoctorPermitNumbers,RoomSchedule.getAllRoomNumbers(), randomRoomNumber)
+		randomRoomNumber = random.randint(0, len(RoomScheduleService.getAllRoomNumbers()))
+		RoomScheduleService.createTimeSlots(randomRoomNumber,date)
+	listOfAvailableAppointments = Appointment.crossCheckDoctorAndRoomList(date,availableDoctorPermitNumbers,RoomScheduleService.getAllRoomNumbers(), randomRoomNumber)
 	if listOfAvailableAppointments is None:
 		return 204
 	else:
