@@ -19,7 +19,11 @@ def getAllTimeSlotsByDate(date):
     return format(RoomScheduleTDG.findAllbyDate(date=date))
 
 def getTimeSlotsByDateAndRoom(roomNumber, date):
-    return format(RoomScheduleTDG.find(roomNumber=roomNumber, date=date))
+    timeSlots = RoomScheduleTDG.find(roomNumber=roomNumber, date=date)
+    if timeSlots is not None:
+        return format(RoomScheduleTDG.find(roomNumber=roomNumber, date=date))
+    else:
+        createTimeSlots(roomNumber=roomNumber, date=date)
 
 # check if there is an available room at a specific time. If so, return the first room found to be available.
 # Else, return None.
@@ -73,7 +77,7 @@ def getNextTimeSlot(roomNumber, date, time):
     if time is '19:40':
         return None
     else:
-        timeSlots = format(getAllTimeSlotsByRoom(roomNumber))
+        timeSlots = getAllTimeSlotsByRoom(roomNumber)
         index = None
         if isRoomAvailable(roomNumber, date, time):
             index = timeSlots.index(time + ':true')
