@@ -21,8 +21,12 @@ def getAllTimeSlotsByDate(date):
 def getTimeSlotsByDateAndDoctor(permit_number, date):
     return format(DoctorScheduleTDG.find(permit_number=permit_number, date=date))
 
-def getAllDoctorsByDate(date):
-    return format(DoctorScheduleTDG.findAllDoctorsByDate(date=date))
+def getAllAvailableDoctorPermitsByDate(date):
+    available_doctors_permit_numbers=[]
+    for row in DoctorScheduleTDG.findAllDoctorsByDate(date=date):
+        available_doctors_permit_numbers.append(row.permit_number)
+    return available_doctors_permit_numbers
+
 
 # Return true if slot is available, else return false.
 def isDoctorAvailable(permit_number, date, time):

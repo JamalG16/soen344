@@ -159,7 +159,7 @@ def updateAppointment(id, patient_hcnumber, length, time, date):
 
 
 def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, specifiedRoomNumber):
-	available_time_slots = [36]
+	available_time_slots = [False] * 36
 	doctor_time_slots=[]
 	room_time_slots=[]
 	# we have created a specific room schedule, might as well use that to save us some search cycles
@@ -177,6 +177,7 @@ def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, specifie
 			# for all available rooms
 			# concatenate existing availabilities with the crossavailabilities of each room and the doc schedule
 			for roomNumber in roomList:
-				common_time_slots =  BooleanArrayOperations.getCommonTimeslots(doctor_time_slots, RoomScheduleService.getTimeSlotsByDateAndRoom(roomNumber,date))
+				available_room_slots=RoomScheduleService.getTimeSlotsByDateAndRoom(roomNumber,date)
+				common_time_slots =  BooleanArrayOperations.getCommonTimeslots(doctor_time_slots, available_room_slots)
 				available_time_slots = BooleanArrayOperations.concatenateBooleanLists(available_time_slots,common_time_slots)
 	return available_time_slots

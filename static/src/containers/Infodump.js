@@ -103,6 +103,27 @@ class infodump extends Component {
   }
   async addDoctor(){
     let doctor= {
+      permit_number: '7777777',
+      fname: "Jill",
+      lname: "Doe",
+      specialty: "Dermatologist",
+      password: "lol",
+      city: "Mtl"
+    }
+    fetchAPI("PUT", "/api/doctor/", doctor).then(
+        response => {
+          try{
+            if (response.success){
+              console.log('it is a success mate')
+              this.setState({sendDataAns: response.message})
+            }
+            else {
+              console.log('it is a fail mate');
+            }
+          } catch(e){console.error("Error", e)}
+        }
+      ).catch((e)=>console.error("Error:", e))
+    doctor= {
       permit_number: '1234567',
       fname: "Jill",
       lname: "Doe",
