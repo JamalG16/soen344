@@ -16,7 +16,14 @@ def getAllTimeSlotsByRoom(roomNumber):
     return format(RoomScheduleTDG.findAllbyRoom(roomNumber=roomNumber))
 
 def getAllTimeSlotsByDate(date):
-    return format(RoomScheduleTDG.findAllbyDate(date=date))
+    listOfRooms = RoomScheduleTDG.findAllbyDate(date=date)
+    listOfRoomNumbers = []
+    if listOfRooms is None or len(listOfRooms) == 0:
+        return []
+    else:
+        for room in listOfRooms:
+            listOfRoomNumbers.append(room.roomNumber)
+    return listOfRoomNumbers
 
 def getTimeSlotsByDateAndRoom(roomNumber, date):
     return format(RoomScheduleTDG.find(roomNumber=roomNumber, date=date))
@@ -25,7 +32,14 @@ def getAllRoomsByDate(date):
     return RoomScheduleTDG.findAllbyDate(date)
 
 def getAllRoomNumbers():
-    return RoomScheduleTDG.findAllRoomNumbers()
+    listOfRooms = RoomScheduleTDG.findAllRoomNumbers()
+    listOfRoomNumbers = []
+    if listOfRooms is None or len(listOfRooms) == 0:
+        return []
+    else:
+        for room in listOfRooms:
+            listOfRoomNumbers.append(room.roomNumber)
+    return listOfRoomNumbers
 
 # check if there is an available room at a specific time. If so, return the first room found to be available.
 # Else, return None.

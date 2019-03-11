@@ -7,25 +7,10 @@ def findAllbyRoom(roomNumber):
 
 # return all of a date's timeslots
 def findAllbyDate(date):
-    listOfRooms = RoomSchedule.query.filter_by(date=date).all()
-    listOfRoomNumbers = []
-    if listOfRooms is None or len(listOfRooms) == 0:
-        return []
-    else:
-        for room in listOfRooms:
-            listOfRoomNumbers.append(room.roomNumber)
-    return listOfRoomNumbers
+    return RoomSchedule.query.filter_by(date=date).all()
 
 def findAllRoomNumbers():
-    listOfRooms = RoomSchedule.query.all()
-    listOfRoomNumbers = []
-    if listOfRooms is None or len(listOfRooms) == 0:
-        return []
-    else:
-        for room in listOfRooms:
-            listOfRoomNumbers.append(room.roomNumber)
-    return listOfRoomNumbers
-
+    return RoomSchedule.query.all()
 
 # return all available room numbers b
 # return all timeslots based on room number and date
