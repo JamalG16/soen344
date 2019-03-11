@@ -18,7 +18,7 @@ class HomepagePatient extends Component {
 
 
     async handleAppointmentsPatient(){
-     let route = "/api/appointment/check?hcnumber=" + this.props.user.hcnumber
+     let route = "/api/appointment/check?hcnumber=" + this.props.user.hcnumber;
         console.log(route);
         fetchAPI("GET",route).then(
             response => {

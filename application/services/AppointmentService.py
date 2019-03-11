@@ -61,6 +61,14 @@ def getAppointments(patient_hcnumber):
 		apps.append(dict(appointment))
 	return apps
 
+#gets all appointments for this doctor in an array
+def getDoctorAppointments(doctor_permit_number):
+	apps = []
+	appointments = AppointmentTDG.findForDoctor(doctor_permit_number=doctor_permit_number)
+	for appointment in appointments:
+		apps.append(dict(appointment))
+	return apps
+
 # cancels an appointment and frees the time slots
 def cancelAppointment(id):
 	appointment = getAppointment(id)

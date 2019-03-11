@@ -66,6 +66,28 @@ def checkAppointments():
 	response = json.dumps({"success":success, "message":message, "appointments":appointments})
 	return response
 
+# Returns an array of appointments for doctor specified
+@appointment.route('/api/appointment/checkDoctor', methods=['GET'])
+def checkAppointmentsDoctor():
+	data = request.args.get('doctor_permit_number')
+	success = False
+	message=""
+	appointments = []
+
+	appointments = AppointmentService.getDoctorAppointments(data)
+	if appointments is not None:
+		success = True
+	else:
+		success = False
+
+	if success:
+		message = "Appointment(s) retrieved."
+	else:
+		message = "No appointment(s) retrieved."
+
+	response = json.dumps({"success":success, "message":message, "appointments":appointments})
+	return response
+
 
 @appointment.route('/api/appointment/cancel', methods=['DELETE'])
 def cancelAppointment():
