@@ -5,7 +5,7 @@ export const login = (user) => {
         type:"USER_CONNECTION",
         payload: user
     })
-    window.location.href = ((window.location.href).split('/login')[0])
+    window.location.href = "/Homepage"
 }
 
 export const logOut = () => {
