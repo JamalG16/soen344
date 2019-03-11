@@ -12,15 +12,14 @@ class Header extends Component {
           <Row>
             <Col xs={6} style={{textAlign: 'left'}}>
               <h4>
-                <Link to='/'>
+                <Link to='/Homepage'>
                   Uber Santé 
                 </Link>    
               </h4>
             </Col>
             <Col xs={6} style={{textAlign: 'right'}}>
               <h4>
-                {<Menu 
-                user = {this.props.user}/>}
+                {<Menu user = {this.props.user}/>}
               </h4>
             </Col>
           </Row>
