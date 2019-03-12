@@ -2,6 +2,7 @@ import {Component} from "react";
 import React from "react";
 import { Calendar, Alert , Table, Button, Tabs, Radio, Typography, Divider, message} from 'antd';
 import * as moment from 'moment';
+import { fetchAPI } from '../utility'
 import 'antd/es/calendar/style/index.css';
 import 'antd/es/alert/style/index.css';
 import 'antd/es/table/style/index.css';
@@ -16,12 +17,22 @@ import 'antd/es/typography/style/index.css';
 import 'antd/es/message/style/index.css';
 
 class CalendarPatient extends Component {
-
-    state = {
-        size : 'checkin',
-        current : moment(),
-        value: moment(),
-        selectedValue: moment(),
+    constructor() {
+        super();
+        this.state = {
+            size : 'checkin',
+            current : moment(),
+            value: moment(),
+            selectedValue: moment(),
+            timeSlots: ['8:00', '8:20', '8:40', '9:00', '9:20', '9:40', '10:00', '10:20', '10:40', '11:00', '11:20', '11:40','12:00', '12:20', '12:40','13:00', '13:20', '13:40','14:00', '14:20', '14:40','15:00', '15:20', '15:40','16:00', '16:20', '16:40','17:00', '17:20', '17:40','18:00', '18:20', '18:40','19:00', '19:20', '19:40', '20:00'],
+            availableTimeSlots: [],
+            display1: [], //for checkups
+            display2: [], //for annuals
+        }
+    }
+    
+    componentDidMount(){
+        this.getTimeSlots(moment())
     }
 
     onSelect = (value) => {
@@ -29,14 +40,57 @@ class CalendarPatient extends Component {
         value,
         selectedValue: value,
         });
+        this.getTimeSlots(value)
     }
 
     onChange = (e) => {
     this.setState({ size: e.target.value });
-  }
+    }
 
     onPanelChange = (value) => {
         this.setState({ value });
+    }
+
+    cartClick(appointment) {
+        if (appointment[0] == 'Checkup')
+            message.info('Added a ' + appointment[0] + ' appointment on ' + appointment[1] + ' at ' + appointment[2] + ' to cart.')
+        if (appointment[0] == 'Annual')
+            message.info('Added an ' + appointment[0] + ' appointment on ' + appointment[1] + ' at ' + appointment[2] + ' to cart.')
+        this.props.addToCart(appointment)
+    }
+    
+    async getTimeSlots(date){
+        let data = {date: date.format('YYYY-MM-DD') }
+        fetchAPI("POST", "/api/appointment/find", data).then(
+            response => {
+              try{
+                if (response.success){
+                    console.log('it is a success mate' + response.listOfAvailableAppointments + response.message)
+                    this.setState({availableTimeSlots: response.listOfAvailableAppointments})
+                    let data1 = [] //for checkups
+                    let data2 = [] //for annuals
+                    for (let i = 0; i<35; i++){
+                        if (this.state.availableTimeSlots[i])
+                            data1.push({
+                                time: this.state.timeSlots[i] + " - " + this.state.timeSlots[i+1],
+                                button: <Button type="primary" icon="plus" size="large" onClick={() => 
+                                    this.cartClick(['Checkup', data.date, this.state.timeSlots[i]])}>ADD TO CART</Button>
+                            })
+                        if (this.state.availableTimeSlots[i] && this.state.availableTimeSlots[i+1] && this.state.availableTimeSlots[i+2] && i<=33)
+                            data2.push({
+                                time: this.state.timeSlots[i] + " - " + this.state.timeSlots[i+3],
+                                button: <Button type="primary" icon="plus" size="large" onClick={() => 
+                                    this.cartClick(['Annual', data.date, this.state.timeSlots[i]])}>ADD TO CART</Button>
+                            })
+                    }
+                    this.setState({display1: data1, display2:data2})
+                }
+                else {
+                  console.log('it is a fail mate' + response.message);
+                }
+              } catch(e){console.error("Error", e)}
+            }
+          ).catch((e)=>console.error("Error:", e))
     }
 
     render() {
@@ -71,7 +125,7 @@ class CalendarPatient extends Component {
                 <tr>
                     <td><div><Calendar style={{width:300, height:200}} value={value} fullscreen={false}  onSelect={this.onSelect} onPanelChange={this.onPanelChange}/></div></td>
                     <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                    <td style={{width:'100%'}}><AppointmentTable success={success} value={selectedValue} size={size}/></td>
+                    <td style={{width:'100%'}}><AppointmentTable success={success} value={selectedValue} size={size} display1={this.state.display1} display2={this.state.display2}/></td>
                 </tr>
             </table>
         );
@@ -86,17 +140,7 @@ function AppointmentTable(props) {
     }, {
       dataIndex: "button"
     }];
-
-    const data1 = [{
-      time: moment().format('HH:mm A') + " - " + (moment().add(20, 'minutes')).format('HH:mm A'),
-      button: <Button type="primary" icon="plus" size="large" onClick={() => cartClick('hi')}>ADD TO CART</Button>
-    },
-    {
-      time: moment().format('HH:mm A') + " - " + (moment().add(20, 'minutes')).format('HH:mm A'),
-      button: <Button type="primary" icon="plus" size="large">ADD TO CART</Button>
-    }
-    ];
-
+    
     const data2 = [{
       time: moment().format('HH:mm A') + " - " + (moment().add(60, 'minutes')).format('HH:mm A'),
       button: <Button type="primary" icon="plus" size="large">ADD TO CART</Button>
@@ -115,7 +159,7 @@ function AppointmentTable(props) {
         return (
             <div>
                 <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}</h2>
-                <Table columns={columns} dataSource={data1} pagination={false}/>
+                <Table columns={columns} dataSource={props.display1} pagination={false}/>
             </div>
         );
     }
@@ -123,14 +167,10 @@ function AppointmentTable(props) {
         return (
             <div>
                 <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}</h2>
-                <Table columns={columns} dataSource={data2} pagination={false}/>
+                <Table columns={columns} dataSource={props.display2} pagination={false}/>
             </div>
         );
     }
-}
-
-function cartClick(e) {
-    message.info(e)
 }
 
 export default CalendarPatient;

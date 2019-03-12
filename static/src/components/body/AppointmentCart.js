@@ -9,8 +9,10 @@ import 'antd/es/popconfirm/style/css.js';
 
 
 class AppointmentCart extends Component {
-
-    state = { visible: false , selected: {}}
+    constructor() {
+        super();
+        this.state = { visible: false , selected: {}}
+    }
 
     showModal = () => {
         this.setState({
@@ -52,22 +54,17 @@ class AppointmentCart extends Component {
                 dataIndex: 'select'
             }
         ];
-
-        const data = [{
-            type: 'Annual',
-            time: moment().format('HH:MM'),
-            date: '5th of March',
-            price: '50$',
-            select: <Checkbox style={{float: 'right'}} onChange={onChange}></Checkbox>
-        },
-            {
-                type: 'Check-In',
-                time: moment().format('HH:MM'),
-                date: '5th of March',
+        const cart= [['Checkup','2019-04-05','8:00'],['Checkup','2019-04-05','8:20']]
+        const data = []
+        for (let i=0; i<2; i++){
+            data.push({
+                type: cart[i][0],
+                time: cart[i][2],
+                date: cart[i][1],
                 price: '50$',
                 select: <Checkbox style={{float: 'right'}} onChange={onChange}></Checkbox>
-            }
-        ];
+            })
+        }
 
         return (
             <div>
@@ -75,6 +72,22 @@ class AppointmentCart extends Component {
             </div>
         );
     }
+
+    /*async checkout(){
+        let data = {hcnumber: this.props.user.hcnumber, length:, time: , date: }
+        fetchAPI("POST", "/api/appointment/book", data).then(
+            response => {
+              try{
+                if (response.success){
+                    console.log('it is a success mate')
+                }
+                else {
+                  console.log('it is a fail mate' + response.message);
+                }
+              } catch(e){console.error("Error", e)}
+            }
+          ).catch((e)=>console.error("Error:", e))
+    }*/
 
     render() {
 
