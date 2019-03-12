@@ -20,6 +20,7 @@ class infodump extends Component {
     this.addRoom()
     this.addDoctor()
     this.addNurse()
+    this.book()
   }
 
   /* 
@@ -149,12 +150,12 @@ class infodump extends Component {
         response => {
           try{
             if (response.success){
-              console.log('it is a success matie!' + response.info)
+              console.log('it is a success matie!' + response.hello)
               this.setState({sendDataAns: response.message})
             }
             else {
-              console.log('it is a fail matie!');
-              console.log(response.message + 'info:' +response.info)
+              console.log('it is a fail matie!' + response.hello);
+              console.log(response.message)
             }
           } catch(e){console.error("Error", e)}
         }

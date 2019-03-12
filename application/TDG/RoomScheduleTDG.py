@@ -1,17 +1,9 @@
 from application.models.RoomSchedule import RoomSchedule
 from index import db
 
-# return all of a room's timeslots
-def findAllbyRoom(roomNumber):
-    return RoomSchedule.query.filter_by(roomNumber=roomNumber).timeSlots
-
-# return all of a date's timeslots
-def findAllbyDate(date):
-    return RoomSchedule.query.filter_by(date=date).timeSlots
-
 # return all timeslots based on room number and date
-def find(roomNumber, date):
-    return RoomSchedule.query.filter_by(roomNumber=roomNumber, date=date).first().timeSlots
+def find(date, roomNumber):
+    return RoomSchedule.query.filter_by(roomNumber=roomNumber, date=date).first()
     
 # create timeslots of a room on a specific date
 def create(roomNumber,timeSlots, date):
@@ -20,6 +12,6 @@ def create(roomNumber,timeSlots, date):
     db.session.commit()
 
 # update a room's timeslots on a specific date
-def update(roomNumber, date, timeSlots):
-    RoomSchedule.query.filter_by(roomNumber=roomNumber, date=date).first().timeSlots = timeSlots
+def update(roomNumber, date, newTimeSlots):
+    RoomSchedule.query.filter_by(roomNumber=roomNumber, date=date).first().timeSlots = newTimeSlots
     db.session.commit()

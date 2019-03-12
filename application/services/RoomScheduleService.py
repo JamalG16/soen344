@@ -12,18 +12,13 @@ def createTimeSlots(roomNumber, date):
     RoomScheduleTDG.create(roomNumber=roomNumber, timeSlots=SLOTS, date=date)
     return True
 
-def getAllTimeSlotsByRoom(roomNumber):
-    return format(RoomScheduleTDG.findAllbyRoom(roomNumber=roomNumber))
-
-def getAllTimeSlotsByDate(date):
-    return format(RoomScheduleTDG.findAllbyDate(date=date))
-
-def getTimeSlotsByDateAndRoom(roomNumber, date):
-    timeSlots = RoomScheduleTDG.find(roomNumber=roomNumber, date=date)
-    if timeSlots is not None:
-        return format(RoomScheduleTDG.find(roomNumber=roomNumber, date=date))
+def getTimeSlotsByDateAndRoom(date, roomNumber):
+    roomSchedule = RoomScheduleTDG.find(date=date, roomNumber=roomNumber)
+    if roomSchedule is not None:
+        return format(roomSchedule.timeSlots)
     else:
         createTimeSlots(roomNumber=roomNumber, date=date)
+        return format(RoomScheduleTDG.find(roomNumber=roomNumber, date=date).timeSlots)
 
 # check if there is an available room at a specific time. If so, return the first room found to be available.
 # Else, return None.
@@ -69,15 +64,18 @@ def toggleRoomTimeSlot(roomNumber, date, time):
 # Return true if slot is available, else return false.
 def isRoomAvailable(roomNumber, date, time):
     timeSlots = getTimeSlotsByDateAndRoom(roomNumber, date)
-    fulltime = time + ':true'
-    return fulltime in timeSlots
+    if timeSlots is not None:
+        fulltime = time + ':true'
+        return fulltime in timeSlots
+    else:
+        return None
 
 # Return the next time slot. If no next time slot, then return None.
 def getNextTimeSlot(roomNumber, date, time):
     if time is '19:40':
         return None
     else:
-        timeSlots = getAllTimeSlotsByRoom(roomNumber)
+        timeSlots = getTimeSlotsByDateAndRoom(roomNumber=roomNumber, date=date)
         index = None
         if isRoomAvailable(roomNumber, date, time):
             index = timeSlots.index(time + ':true')
@@ -92,7 +90,7 @@ def makeTimeSlotAvailable(roomNumber, date, time):
     index = timeSlots.index(time + ':false')
     timeSlots[index] = time + ':true'
     timeSlots = ','.join(timeSlots)
-    RoomScheduleTDG.update(roomNumber=roomNumber, date=date, timeSlots=timeSlots)
+    RoomScheduleTDG.update(roomNumber=roomNumber, date=date, newTimeSlots=timeSlots)
 
 # if the appointment is an annual, make all slots available
 def makeTimeSlotAvailableAnnual(roomNumber, date, time):
@@ -105,11 +103,11 @@ def makeTimeSlotAvailableAnnual(roomNumber, date, time):
 
 #makes a timeslot unavailable
 def makeTimeSlotUnavailable(roomNumber, date, time):
-    timeSlots = format(getTimeSlotsByDateAndRoom(roomNumber, date))
+    timeSlots = getTimeSlotsByDateAndRoom(roomNumber, date)
     index = timeSlots.index(time + ':true')
     timeSlots[index] = time + ':false'
     timeSlots = ','.join(timeSlots)
-    RoomScheduleTDG.update(roomNumber=roomNumber, date=date, timeSlots=timeSlots)
+    RoomScheduleTDG.update(roomNumber=roomNumber, date=date, newTimeSlots=timeSlots)
 
 # if the appointment is an annual, make all slots unavailable
 def makeTimeSlotUnavailableAnnual(roomNumber, date, time):

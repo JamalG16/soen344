@@ -2,7 +2,7 @@ from application.TDG import DoctorScheduleTDG
 from application.services.DoctorService import getAllDoctors, getDoctor
 
 # Create an with all possible timeslots and unavailable by default
-SLOTS = '8:00:false,8:20:false,8:40:false,9:00:false,9:20:false,9:40:false,10:00:false,10:20:false,10:40:false,11:00:false,11:20:false,11:40:false,12:00:false,12:20:false,12:40:false,13:00:false,13:20:false,13:40:false,14:00:false,14:20:false,14:40:false,15:00:false,15:20:false,15:40:false,16:00:false,16:20:false,16:40:false,17:00:false,17:20:false,17:40:false,18:00:false,18:20:false,18:40:false,19:00:false,19:20:false,19:40:false'
+SLOTS = '8:00:true,8:20:false,8:40:false,9:00:false,9:20:false,9:40:false,10:00:false,10:20:false,10:40:false,11:00:false,11:20:false,11:40:false,12:00:false,12:20:false,12:40:false,13:00:false,13:20:false,13:40:false,14:00:false,14:20:false,14:40:false,15:00:false,15:20:false,15:40:false,16:00:false,16:20:false,16:40:false,17:00:false,17:20:false,17:40:false,18:00:false,18:20:false,18:40:false,19:00:false,19:20:false,19:40:false'
 
 # transform timeslots string into an array
 def format(timeSlots):
@@ -12,20 +12,21 @@ def createTimeSlots(permit_number, date):
     DoctorScheduleTDG.create(permit_number=permit_number, timeSlots=SLOTS, date=date)
     return True
 
-def getAllTimeSlotsByDoctor(permit_number):
-    return format(DoctorScheduleTDG.findAllbyPermit(permit_number=permit_number))
-
-def getAllTimeSlotsByDate(date):
-    return format(DoctorScheduleTDG.findAllbyDate(date=date))
-
 def getTimeSlotsByDateAndDoctor(permit_number, date):
-    return format(DoctorScheduleTDG.find(permit_number=permit_number, date=date))
+    doctorSchedule = DoctorScheduleTDG.find(permit_number=permit_number, date=date)
+    if doctorSchedule is not None:
+        return format(doctorSchedule.timeSlots)
+    else:
+        return None
 
 # Return true if slot is available, else return false.
 def isDoctorAvailable(permit_number, date, time):
     timeSlots = getTimeSlotsByDateAndDoctor(permit_number, date)
-    fulltime = time + ':true'
-    return fulltime in timeSlots
+    if timeSlots is not None:
+        fulltime = time + ':true'
+        return fulltime in timeSlots
+    else:
+        return None
 
 # check if there is an available doctor at a specific time. If so, return the first doctor found to be available.
 # Else, return None.
@@ -73,7 +74,7 @@ def getNextTimeSlot(permit_number, date, time):
     if time is '19:40':
         return None
     else:
-        timeSlots = format(getAllTimeSlotsByDoctor(permit_number))
+        timeSlots = getTimeSlotsByDateAndDoctor(permit_number=permit_number, date=date)
         index = None
         if isDoctorAvailable(permit_number, date, time):
             index = timeSlots.index(time + ':true')
