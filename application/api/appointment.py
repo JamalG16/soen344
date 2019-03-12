@@ -47,15 +47,34 @@ def newAppointment():
 # Returns an array of appointments consisting of the patient specified
 @appointment.route('/api/appointment/check', methods=['GET'])
 def checkAppointments():
-	data = request.data
-	data  = data.decode('utf8').replace("'",'"')
-	data = json.loads(data)
-	print(data)
+	data = request.args.get('hcnumber')
 	success = False
 	message=""
 	appointments = []
 
-	appointments = AppointmentService.getAppointments(data['hcnumber'])
+	appointments = AppointmentService.getAppointments(data)
+	if appointments is not None:
+		success = True
+	else:
+		success = False
+
+	if success:
+		message = "Appointment(s) retrieved."
+	else:
+		message = "No appointment(s) retrieved."
+
+	response = json.dumps({"success":success, "message":message, "appointments":appointments})
+	return response
+
+# Returns an array of appointments for doctor specified
+@appointment.route('/api/appointment/checkDoctor', methods=['GET'])
+def checkAppointmentsDoctor():
+	data = request.args.get('doctor_permit_number')
+	success = False
+	message=""
+	appointments = []
+
+	appointments = AppointmentService.getDoctorAppointments(data)
 	if appointments is not None:
 		success = True
 	else:

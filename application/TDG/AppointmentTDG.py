@@ -9,6 +9,10 @@ def find(id):
 def findAll(patient_hcnumber):
     return Appointment.query.filter_by(patient_hcnumber=patient_hcnumber).all()
 
+# returns all appointments for a doctor
+def findForDoctor(doctor_permit_number):
+    return Appointment.query.filter_by(doctor_permit_number=doctor_permit_number).all()
+
 # create appointment
 def create(room, doctor_permit_number, patient_hcnumber, length, time, date):
     newAppointment = Appointment(room=room, doctor_permit_number=doctor_permit_number, patient_hcnumber=patient_hcnumber, length=length, time=time, date=date)
