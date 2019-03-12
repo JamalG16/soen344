@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Row, Col, Grid } from 'react-bootstrap'
 import Login from './Login'
 import Register from './Register'
+import UpdateAvailability from './UpdateAvailability'
 import CalendarPatient from './CalendarPatient'
 import { connect } from 'react-redux'
 import { Route } from 'react-router-dom'
@@ -29,6 +30,7 @@ class Body extends Component {
                     <div>
                       {Login}
                       {Register}
+                      {UpdateAvailability}
                       {CalendarPatient}
                       {CalendarDoctor}
                       {CalendarNurse}
@@ -39,6 +41,7 @@ class Body extends Component {
                 }} />
 				<Route path='/Login' component={Login}/>
                 <Route path='/Register' component={Register}/>
+                <Route path='/UpdateAvailability' component={UpdateAvailability}/>
                 <Route path='/CalendarPatient' component={CalendarPatient}/>
                 <Route path='/CalendarDoctor' component={CalendarDoctor} />
                 <Route path='/CalendarNurse' component={CalendarNurse} />

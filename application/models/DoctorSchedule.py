@@ -1,6 +1,5 @@
 from index import db
-from datetime import datetime
-from datetime import time
+
 
 # PickleType coverts python object to a string so that it can be stored on the database
 class DoctorSchedule(db.Model):
@@ -12,6 +11,7 @@ class DoctorSchedule(db.Model):
         yield 'permit_number', self.permit_number
         yield 'date', self.date
         yield 'timeSlots', self.timeSlots
+
 
 # Initializes the database
 db.create_all()
