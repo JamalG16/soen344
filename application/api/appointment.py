@@ -35,15 +35,14 @@ def newAppointment():
 	success = False
 	info =None
 	message=""
-	hello = ""
-	#DoctorScheduleService.createTimeSlots('1234567', '2019-04-01')
-	#hello = AppointmentService.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
+
+	success = AppointmentService.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
 	if success:
 		message = "Appointment has been created"
 	else:
 		message = "Appointment already exists or there are no doctors/rooms available. If annual appointment, may not have been a year yet."
 
-	response = json.dumps({"success":success, "message":message, "info":info, "hello":hello})
+	response = json.dumps({"success":success, "message":message, "info":info})
 	return response
 
 # Returns an array of appointments consisting of the patient specified

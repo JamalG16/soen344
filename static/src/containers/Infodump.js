@@ -150,11 +150,11 @@ class infodump extends Component {
         response => {
           try{
             if (response.success){
-              console.log('it is a success matie!' + response.hello)
+              console.log('it is a success matie!')
               this.setState({sendDataAns: response.message})
             }
             else {
-              console.log('it is a fail matie!' + response.hello);
+              console.log('it is a fail matie!');
               console.log(response.message)
             }
           } catch(e){console.error("Error", e)}
