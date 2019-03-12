@@ -1,5 +1,5 @@
 from application.TDG import RoomScheduleTDG
-from application.services.RoomService import getAllRooms, getRoom
+from application.services import RoomService
 
 # Create an with all possible timeslots and whether it is available or not
 SLOTS = '8:00:true,8:20:true,8:40:true,9:00:true,9:20:true,9:40:true,10:00:true,10:20:true,10:40:true,11:00:true,11:20:true,11:40:true,12:00:true,12:20:true,12:40:true,13:00:true,13:20:true,13:40:true,14:00:true,14:20:true,14:40:true,15:00:true,15:20:true,15:40:true,16:00:true,16:20:true,16:40:true,17:00:true,17:20:true,17:40:true,18:00:true,18:20:true,18:40:true,19:00:true,19:20:true,19:40:true'
@@ -13,7 +13,7 @@ def createTimeSlots(roomNumber, date):
     return True
 
 def getTimeSlotsByDateAndRoom(date, roomNumber):
-    if getRoom(roomNumber) is None:
+    if RoomService.getRoom(roomNumber) is None:
         return None
     roomSchedule = RoomScheduleTDG.find(date=date, roomNumber=roomNumber)
     if roomSchedule is not None:
@@ -22,11 +22,22 @@ def getTimeSlotsByDateAndRoom(date, roomNumber):
         createTimeSlots(roomNumber=roomNumber, date=date)
         return format(RoomScheduleTDG.find(roomNumber=roomNumber, date=date).timeSlots)
 
+def getAllRoomNumbersByDate(date):
+    listOfRoomSchedules = RoomScheduleTDG.find(date=date)
+    listOfRoomNumbers = []
+    if listOfRoomSchedules is None or len(listOfRoomSchedules) == 0:
+        return []
+    else:
+        for room in listOfRoomSchedules:
+            listOfRoomNumbers.append(room.roomNumber)
+    return listOfRoomNumbers
+
+
 # check if there is an available room at a specific time. If so, return the first room found to be available.
 # Else, return None.
 def findRoomAtTime(date, time):
 	roomNumber = 'None'
-	for room in getAllRooms():
+	for room in RoomService.getAllRooms():
 		if isRoomAvailable(roomNumber=room.roomNumber, date=date, time=time):
 			roomNumber = room.roomNumber
 			break
@@ -38,7 +49,7 @@ def findRoomAtTime(date, time):
 def findRoomForAnnual(date, time):
 	roomNumbers = []
 	nextTimeSlot = None
-	for room in getAllRooms():
+	for room in RoomService.getAllRooms():
 		if isRoomAvailable(roomNumber=room.roomNumber, date=date, time=time):
 			roomNumbers.append(room.roomNumber)
 	for roomNumber in roomNumbers:
@@ -54,7 +65,7 @@ def findRoomForAnnual(date, time):
 # Returns true if room's timeslot has been modified.
 def toggleRoomTimeSlot(roomNumber, date, time):
 	response = False
-	room = getRoom(roomNumber)
+	room = RoomService.getRoom(roomNumber)
 	if room is not None:
 		if isRoomAvailable(roomNumber, date, time):
 			makeTimeSlotUnavailable(roomNumber=roomNumber, date=date, time=time)

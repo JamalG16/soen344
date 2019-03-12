@@ -9,6 +9,16 @@ def getRoom(roomNumber):
 def getAllRooms():
 	return RoomTDG.findAll()
 
+def getAllRoomNumbers():
+	listOfRooms = RoomTDG.findAll()
+	listOfRoomNumbers = []
+	if listOfRooms is None or len(listOfRooms) == 0:
+		return []
+	else:
+		for room in listOfRooms:
+			listOfRoomNumbers.append(room.roomNumber)
+	return listOfRoomNumbers
+
 # creates room
 def createRoom(roomNumber):
 	reponse = False

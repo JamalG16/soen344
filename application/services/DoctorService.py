@@ -25,6 +25,12 @@ def getDoctor(permit_number):
 def getAllDoctors():
 	return DoctorTDG.findAll()
 
+def getAllDoctorPermits():
+	doctor_permit_numbers = []
+	for row in getAllDoctors():
+		doctor_permit_numbers.append(row.permit_number)
+	return doctor_permit_numbers
+
 # Returns True if doctor is created
 def createDoctor(permit_number, fname, lname, specialty, password, city):
 	reponse = False

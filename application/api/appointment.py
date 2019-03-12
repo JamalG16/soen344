@@ -6,7 +6,7 @@ This file documents the api routes for appointment related events.
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
 from application.models import Appointment, Doctor, Room, Patient
-from application.services import AppointmentService, DoctorScheduleService, RoomScheduleService, RoomService
+from application.services import AppointmentService, DoctorScheduleService, RoomScheduleService, RoomService, DoctorService
 from application.TDG import RoomScheduleTDG
 from application.util import *
 from passlib.hash import sha256_crypt
@@ -130,3 +130,26 @@ def updateAppointment():
 
 	response = json.dumps({"success": success, "message":message, "appointment":appointment})
 	return response
+
+
+# /api/appointment/find?date=<insert_date_here>
+@appointment.route('/api/appointment/find', methods=['GET'])
+def findAppointments():
+	date = request.args.get('date')
+	if(date is None):
+		message = 'Enter a date to find the appointments for'
+		return message, 404
+	availableDoctorPermitNumbers = DoctorScheduleService.getAllAvailableDoctorPermitsByDate(date)
+	availableRoomNumbers = RoomService.getAllRoomNumbers()
+	if(availableDoctorPermitNumbers is None):
+		message = "Unfortunately there are no doctors available for this date at the moment. Please try later."
+		return message, 200
+	if(availableRoomNumbers is None):
+		message = "Unfortunately there are no rooms available for this date at the moment. Please try later."
+		return message, 200
+	listOfAvailableAppointments = AppointmentService.crossCheckDoctorAndRoomList(date,availableDoctorPermitNumbers,availableRoomNumbers)
+	if listOfAvailableAppointments is None:
+		return 204
+	else:
+		response = json.dumps({"listOfAvailableAppointments": listOfAvailableAppointments, "date":date})
+		return response,200

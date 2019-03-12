@@ -1,5 +1,5 @@
 from application.TDG import DoctorScheduleTDG
-from application.services.DoctorService import getAllDoctors, getDoctor
+from application.services.DoctorService import getAllDoctors, getDoctor, getAllDoctorPermits
 
 # Create an with all possible timeslots and unavailable by default
 SLOTS = '8:00:false,8:20:false,8:40:false,9:00:false,9:20:false,9:40:false,10:00:false,10:20:false,10:40:false,11:00:false,11:20:false,11:40:false,12:00:false,12:20:false,12:40:false,13:00:false,13:20:false,13:40:false,14:00:false,14:20:false,14:40:false,15:00:false,15:20:false,15:40:false,16:00:false,16:20:false,16:40:false,17:00:false,17:20:false,17:40:false,18:00:false,18:20:false,18:40:false,19:00:false,19:20:false,19:40:false'
@@ -18,6 +18,16 @@ def getTimeSlotsByDateAndDoctor(permit_number, date):
         return format(doctorSchedule.timeSlots)
     else:
         return None
+
+def getAllAvailableDoctorPermitsByDate(date):
+    all_doctors_permit_numbers = getAllDoctorPermits()
+    available_doctors_permit_numbers=[]
+    for permit in all_doctors_permit_numbers:
+        doctor_availability = DoctorScheduleTDG.find(permit_number=permit,date=date)
+        if doctor_availability is not None:
+            available_doctors_permit_numbers.append(doctor_availability.permit_number)
+    return available_doctors_permit_numbers
+
 
 # Return true if slot is available, else return false.
 def isDoctorAvailable(permit_number, date, time):

@@ -1,6 +1,10 @@
 from application.models.RoomSchedule import RoomSchedule
 from index import db
 
+# return all room schedules based on a date
+def find(date):
+    return RoomSchedule.query.filter_by(date=date).all()
+
 # return all timeslots based on room number and date
 def find(date, roomNumber):
     return RoomSchedule.query.filter_by(roomNumber=roomNumber, date=date).first()

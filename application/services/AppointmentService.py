@@ -1,6 +1,7 @@
 from application.services import RoomScheduleService, DoctorScheduleService
 from application.services.PatientService import canBookAnnual, updateAnnual
 from application.TDG import AppointmentTDG
+from application.util import BooleanArrayOperations
 import datetime
 
 
@@ -163,3 +164,17 @@ def updateAppointment(id, patient_hcnumber, length, time, date):
 			#updates
 			updateDB(appointment['id'], available_room, available_doctor,length, time, date)
 		return True
+
+
+def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList):
+	available_time_slots = [False] * 36
+	# preferential filtering by doctors, since they are the ones to most likely have fewer availabilities
+	for permit_number in doctorPermitNumberList:
+		doctor_time_slots = DoctorScheduleService.getTimeSlotsByDateAndDoctor(permit_number,date)
+		# for all available rooms
+		# concatenate existing availabilities with the crossavailabilities of each room and the doc schedule
+		for roomNumber in roomList:
+			room_slots=RoomScheduleService.getTimeSlotsByDateAndRoom(date,roomNumber)
+			common_time_slots =  BooleanArrayOperations.getCommonTimeslots(doctor_time_slots, room_slots)
+			available_time_slots = BooleanArrayOperations.concatenateBooleanLists(available_time_slots,common_time_slots)
+	return available_time_slots
