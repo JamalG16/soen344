@@ -19,7 +19,6 @@ def bookAppointment(patient_hcnumber, length, time, date):
 		available_doctor = DoctorScheduleService.findDoctorAtTime(date, time)
 		if available_doctor is None:
 			return False
-		# return "hi"
 		available_room = RoomScheduleService.findRoomAtTime(time=time, date=date)
 		if available_room is None:
 			return False

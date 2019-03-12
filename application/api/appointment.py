@@ -37,12 +37,7 @@ def newAppointment():
 	message=""
 	hello = ""
 	#DoctorScheduleService.createTimeSlots('1234567', '2019-04-01')
-	#hello = DoctorScheduleService.getTimeSlotsByDateAndDoctor('1234567', '2019-04-01')
-	# hello = AppointmentService.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
-	#hello = AppointmentService.getAppointment(1)['patient_hcnumber']
-	hello = RoomScheduleService.getTimeSlotsByDateAndRoom('123467', '2019-04-01')
-	#hello = RoomScheduleTDG.update(10, '2019-04-01', '8:00:false,8:20:true,8:40:true,9:00:true,9:20:true,9:40:true,10:00:true,10:20:true,10:40:true,11:00:true,11:20:true,11:40:true,12:00:true,12:20:true,12:40:true,13:00:true,13:20:true,13:40:true,14:00:true,14:20:true,14:40:true,15:00:true,15:20:true,15:40:true,16:00:true,16:20:true,16:40:true,17:00:true,17:20:true,17:40:true,18:00:true,18:20:true,18:40:true,19:00:true,19:20:true,19:40:true')
-	# hello = RoomScheduleTDG.find('2019-04-01', 10).timeSlots
+	#hello = AppointmentService.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
 	if success:
 		message = "Appointment has been created"
 	else:

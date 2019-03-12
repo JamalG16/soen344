@@ -13,6 +13,8 @@ def createTimeSlots(roomNumber, date):
     return True
 
 def getTimeSlotsByDateAndRoom(date, roomNumber):
+    if getRoom(roomNumber) is None:
+        return None
     roomSchedule = RoomScheduleTDG.find(date=date, roomNumber=roomNumber)
     if roomSchedule is not None:
         return format(roomSchedule.timeSlots)
@@ -23,9 +25,9 @@ def getTimeSlotsByDateAndRoom(date, roomNumber):
 # check if there is an available room at a specific time. If so, return the first room found to be available.
 # Else, return None.
 def findRoomAtTime(date, time):
-	roomNumber = None
+	roomNumber = 'None'
 	for room in getAllRooms():
-		if isRoomAvailable(room.roomNumber, date, time):
+		if isRoomAvailable(roomNumber=room.roomNumber, date=date, time=time):
 			roomNumber = room.roomNumber
 			break
 	return roomNumber
@@ -37,15 +39,15 @@ def findRoomForAnnual(date, time):
 	roomNumbers = []
 	nextTimeSlot = None
 	for room in getAllRooms():
-		if isRoomAvailable(room.roomNumber, date, time):
+		if isRoomAvailable(roomNumber=room.roomNumber, date=date, time=time):
 			roomNumbers.append(room.roomNumber)
 	for roomNumber in roomNumbers:
-		nextTimeSlot = getNextTimeSlot(roomNumber, date, time)
+		nextTimeSlot = getNextTimeSlot(roomNumber=roomNumber, date=date, time=time)
 		if nextTimeSlot is not None:
-			if isRoomAvailable(roomNumber, date, nextTimeSlot):
-				nextTimeSlot = getNextTimeSlot(roomNumber, date, nextTimeSlot)
+			if isRoomAvailable(roomNumber=roomNumber, date=date, time=nextTimeSlot):
+				nextTimeSlot = getNextTimeSlot(roomNumber=roomNumber, date=date, time=nextTimeSlot)
 				if nextTimeSlot is not None:
-					if isRoomAvailable(roomNumber,date, nextTimeSlot):
+					if isRoomAvailable(roomNumber=roomNumber, date=date, time=nextTimeSlot):
 						return roomNumber
 	return None
 
@@ -55,20 +57,20 @@ def toggleRoomTimeSlot(roomNumber, date, time):
 	room = getRoom(roomNumber)
 	if room is not None:
 		if isRoomAvailable(roomNumber, date, time):
-			makeTimeSlotUnavailable(roomNumber, date, time)
+			makeTimeSlotUnavailable(roomNumber=roomNumber, date=date, time=time)
 		else:
-			makeTimeSlotAvailable(roomNumber, date, time)
+			makeTimeSlotAvailable(roomNumber=roomNumber, date=date, time=time)
 		response = True
 	return response
 
 # Return true if slot is available, else return false.
 def isRoomAvailable(roomNumber, date, time):
-    timeSlots = getTimeSlotsByDateAndRoom(roomNumber, date)
+    timeSlots = getTimeSlotsByDateAndRoom(roomNumber=roomNumber, date=date)
     if timeSlots is not None:
         fulltime = time + ':true'
         return fulltime in timeSlots
     else:
-        return None
+        return False
 
 # Return the next time slot. If no next time slot, then return None.
 def getNextTimeSlot(roomNumber, date, time):
@@ -77,7 +79,7 @@ def getNextTimeSlot(roomNumber, date, time):
     else:
         timeSlots = getTimeSlotsByDateAndRoom(roomNumber=roomNumber, date=date)
         index = None
-        if isRoomAvailable(roomNumber, date, time):
+        if isRoomAvailable(roomNumber=roomNumber, date=date, time=time):
             index = timeSlots.index(time + ':true')
             return timeSlots[index+1][:-5] #increment the index to get next time slot
         else:
@@ -86,7 +88,7 @@ def getNextTimeSlot(roomNumber, date, time):
 
 # makes a timeslot available
 def makeTimeSlotAvailable(roomNumber, date, time):
-    timeSlots = getTimeSlotsByDateAndRoom(roomNumber, date)
+    timeSlots = getTimeSlotsByDateAndRoom(roomNumber=roomNumber, date=date)
     index = timeSlots.index(time + ':false')
     timeSlots[index] = time + ':true'
     timeSlots = ','.join(timeSlots)
@@ -94,16 +96,16 @@ def makeTimeSlotAvailable(roomNumber, date, time):
 
 # if the appointment is an annual, make all slots available
 def makeTimeSlotAvailableAnnual(roomNumber, date, time):
-    roomNextTimeSlot = getNextTimeSlot(roomNumber, date, time)
-    roomNextNextTimeSlot = getNextTimeSlot(roomNumber, date, roomNextTimeSlot)
+    roomNextTimeSlot = getNextTimeSlot(roomNumber=roomNumber, date=date, time=time)
+    roomNextNextTimeSlot = getNextTimeSlot(roomNumber=roomNumber, date=date, time=roomNextTimeSlot)
 
-    makeTimeSlotAvailable(roomNumber, date, time)
-    makeTimeSlotAvailable(roomNumber, date, roomNextTimeSlot)
-    makeTimeSlotAvailable(roomNumber, date, roomNextNextTimeSlot)
+    makeTimeSlotAvailable(roomNumber=roomNumber, date=date, time=time)
+    makeTimeSlotAvailable(roomNumber=roomNumber, date=date, time=roomNextTimeSlot)
+    makeTimeSlotAvailable(roomNumber=roomNumber, date=date, time=roomNextNextTimeSlot)
 
 #makes a timeslot unavailable
 def makeTimeSlotUnavailable(roomNumber, date, time):
-    timeSlots = getTimeSlotsByDateAndRoom(roomNumber, date)
+    timeSlots = getTimeSlotsByDateAndRoom(roomNumber=roomNumber, date=date)
     index = timeSlots.index(time + ':true')
     timeSlots[index] = time + ':false'
     timeSlots = ','.join(timeSlots)
@@ -111,9 +113,9 @@ def makeTimeSlotUnavailable(roomNumber, date, time):
 
 # if the appointment is an annual, make all slots unavailable
 def makeTimeSlotUnavailableAnnual(roomNumber, date, time):
-    roomNextTimeSlot = getNextTimeSlot(roomNumber, date, time)
-    roomNextNextTimeSlot = getNextTimeSlot(roomNumber, date, roomNextTimeSlot)
+    roomNextTimeSlot = getNextTimeSlot(roomNumber=roomNumber, date=date, time=time)
+    roomNextNextTimeSlot = getNextTimeSlot(roomNumber=roomNumber, date=date, time=roomNextTimeSlot)
 
-    makeTimeSlotUnavailable(roomNumber, date, time)
-    makeTimeSlotUnavailable(roomNumber, date, roomNextTimeSlot)
-    makeTimeSlotUnavailable(roomNumber, date, roomNextNextTimeSlot)
+    makeTimeSlotUnavailable(roomNumber=roomNumber, date=date, time=time)
+    makeTimeSlotUnavailable(roomNumber=roomNumber, date=date, time=roomNextTimeSlot)
+    makeTimeSlotUnavailable(roomNumber=roomNumber, date=date, time=roomNextNextTimeSlot)
