@@ -6,8 +6,11 @@ def findAllbyPermit(permit_number):
     return DoctorSchedule.query.filter_by(permit_number=permit_number).timeSlots
 
 # return all of a date's timeslots
-def findAllbyDate(date):
+def findAllTimeslotsByDate(date):
     return DoctorSchedule.query.filter_by(date=date).timeSlots
+
+def findAllDoctorsByDate(date):
+    return DoctorSchedule.query.filter_by(date=date).all()
 
 # return all timeslots based on permit number and date
 def find(permit_number, date):

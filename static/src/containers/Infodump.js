@@ -19,6 +19,7 @@ class infodump extends Component {
     this.registerAdmin()
     this.addRoom()
     this.addDoctor()
+    this.checkAvailabilities()
     this.addNurse()
   }
 
@@ -27,16 +28,16 @@ class infodump extends Component {
   */
 
   async registerPatient(){
-    let patientData= { 
+    let patientData= {
       hcnumber: "LOUX 0803 2317",
       fname: "John",
-      lname: "Doe", 
+      lname: "Doe",
       birthday: "1995-10-10",
       gender: "M",
       phone: "4501234567",
-      email: "johndoe@gmail.com", 
+      email: "johndoe@gmail.com",
       address: "123 St. Catherine, Montreal QC",
-      password: "lol", 
+      password: "lol",
       lastAnnual: "2010-10-10"
     }
     fetchAPI("PUT", "/api/patient/", patientData).then(
@@ -56,7 +57,7 @@ class infodump extends Component {
   }
 
   async registerAdmin(){
-    let adminData= { 
+    let adminData= {
       username: 'admin',
       password: 'lol'
     }
@@ -75,8 +76,16 @@ class infodump extends Component {
       ).catch((e)=>console.error("Error:", e))
   }
 
+  async checkAvailabilities(){
+    fetchAPI("GET","/api/appointment/find?date=02-03-2019").then(
+        response => {
+          console.log(response.httpRequestStatusCode)
+        }
+    )
+  }
+
   async addRoom(){
-    let room= { 
+    let room= {
       roomNumber: '10'
     }
     fetchAPI("PUT", "/api/room/", room).then(
@@ -94,7 +103,28 @@ class infodump extends Component {
       ).catch((e)=>console.error("Error:", e))
   }
   async addDoctor(){
-    let doctor= { 
+    let doctor= {
+      permit_number: '7777777',
+      fname: "Jill",
+      lname: "Doe",
+      specialty: "Dermatologist",
+      password: "lol",
+      city: "Mtl"
+    }
+    fetchAPI("PUT", "/api/doctor/", doctor).then(
+        response => {
+          try{
+            if (response.success){
+              console.log('it is a success mate')
+              this.setState({sendDataAns: response.message})
+            }
+            else {
+              console.log('it is a fail mate');
+            }
+          } catch(e){console.error("Error", e)}
+        }
+      ).catch((e)=>console.error("Error:", e))
+    doctor= {
       permit_number: '1234567',
       fname: "Jill",
       lname: "Doe",
@@ -139,7 +169,7 @@ class infodump extends Component {
   }
   async book(){
 
-    let appointment= { 
+    let appointment= {
       hcnumber: 'LOUX 0803 2317',
       length: '20',
       time: '8:00',
