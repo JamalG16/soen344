@@ -166,26 +166,15 @@ def updateAppointment(id, patient_hcnumber, length, time, date):
 		return True
 
 
-def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, specifiedRoomNumber):
+def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList):
 	available_time_slots = [False] * 36
-	doctor_time_slots=[]
-	room_time_slots=[]
-	# we have created a specific room schedule, might as well use that to save us some search cycles
-	if specifiedRoomNumber is not None:
-		room_time_slots = RoomScheduleService.getTimeSlotsByDateAndRoom(date,specifiedRoomNumber)
 	# preferential filtering by doctors, since they are the ones to most likely have fewer availabilities
 	for permit_number in doctorPermitNumberList:
 		doctor_time_slots = DoctorScheduleService.getTimeSlotsByDateAndDoctor(permit_number,date)
-		# if we have created a room timeslot, use that to display availabilities
-		if len(room_time_slots)!=0:
-			# concatenate existing availabilities with the crossavailabilities of the new room and the doc schedule
-			common_time_slots = BooleanArrayOperations.getCommonTimeslots(doctor_time_slots, room_time_slots)
+		# for all available rooms
+		# concatenate existing availabilities with the crossavailabilities of each room and the doc schedule
+		for roomNumber in roomList:
+			room_slots=RoomScheduleService.getTimeSlotsByDateAndRoom(date,roomNumber)
+			common_time_slots =  BooleanArrayOperations.getCommonTimeslots(doctor_time_slots, room_slots)
 			available_time_slots = BooleanArrayOperations.concatenateBooleanLists(available_time_slots,common_time_slots)
-		else:
-			# for all available rooms
-			# concatenate existing availabilities with the crossavailabilities of each room and the doc schedule
-			for roomNumber in roomList:
-				available_room_slots=RoomScheduleService.getTimeSlotsByDateAndRoom(roomNumber,date)
-				common_time_slots =  BooleanArrayOperations.getCommonTimeslots(doctor_time_slots, available_room_slots)
-				available_time_slots = BooleanArrayOperations.concatenateBooleanLists(available_time_slots,common_time_slots)
 	return available_time_slots
