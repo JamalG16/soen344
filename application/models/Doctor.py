@@ -136,16 +136,3 @@ def findDoctorForAnnual(time):
                         return permit_number
     return None
 
-
-# Given an array of timeslots, a date and a permit number, create schedules for time slots in the date.
-def setAvailability(permit_number, date, timeslots):
-    schedule_timeslots = getTimeSlotsByDateAndDoctor(permit_number, date)
-    if schedule_timeslots is None:
-        schedule_timeslots = createTimeSlots(permit_number, date)
-
-    schedule_timeslots = format(schedule_timeslots)
-    for new_time in timeslots:
-        for old_time in schedule_timeslots:
-            old_time = new_time
-
-    return

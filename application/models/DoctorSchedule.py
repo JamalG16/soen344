@@ -3,6 +3,7 @@ from datetime import datetime
 from datetime import time
 import json
 
+
 # PickleType coverts python object to a string so that it can be stored on the database
 class DoctorSchedule(db.Model):
     owner = db.Column(db.String(), nullable=False, primary_key=True)
@@ -14,6 +15,7 @@ class DoctorSchedule(db.Model):
         yield 'date', self.date
         yield 'timeSlots', self.timeSlots
 
+
 # Initializes the database
 db.create_all()
 
@@ -23,30 +25,45 @@ db.create_all()
 # Create an with all possible timeslots and unavailable by default
 SLOTS = '8:00:false,8:20:false,8:40:false,9:00:false,9:20:false,9:40:false,10:00:false,10:20:false,10:40:false,11:00:false,11:20:false,11:40:false,12:00:false,12:20:false,12:40:false,13:00:false,13:20:false,13:40:false,14:00:false,14:20:false,14:40:false,15:00:false,15:20:false,15:40:false,16:00:false,16:20:false,16:40:false,17:00:false,17:20:false,17:40:false,18:00:false,18:20:false,18:40:false,19:00:false,19:20:false,19:40:false'
 
+
 def createTimeSlots(permit_number, date):
-    newDoctorSchedule = DoctorSchedule(permit_number=permit_number, timeSlots=SLOTS, date=date)
+    newDoctorSchedule = DoctorSchedule(owner=permit_number, timeSlots=SLOTS, date=date)
     db.session.add(newDoctorSchedule)
     db.session.commit()
     return newDoctorSchedule
 
+
 def getAllTimeSlotsByDoctor(permit_number):
-    return format(DoctorSchedule.query.filter_by(permit_number=permit_number).timeSlots)
+    return format(DoctorSchedule.query.filter_by(owner=permit_number).timeSlots)
+
 
 def getAllTimeSlotsByDate(date):
     return format(DoctorSchedule.query.filter_by(date=date).timeSlots)
 
+def getAllSchedulesByDateExceptDoctor(date, permit_number):
+    return DoctorSchedule.query.filter(DoctorSchedule.owner != permit_number).filter(DoctorSchedule.date == date).all()
+
 def getTimeSlotsByDateAndDoctor(permit_number, date):
-    return format(DoctorSchedule.query.filter_by(permit_number=permit_number, date=date).first().timeSlots)
+    schedule = DoctorSchedule.query.filter_by(owner=permit_number, date=date).first()
+    if schedule is None:
+        timeslot = createTimeSlots(permit_number, date).timeSlots
+    else:
+        timeslot = schedule.timeSlots
+
+    return format(timeslot)
+
 
 # transform timeslots string into an array
 def format(timeSlots):
-	return timeSlots.split(",")
+    return timeSlots.split(",")
+
 
 # Return true if slot is available, else return false.
 def isTimeSlotAvailable(permit_number, date, time):
     timeSlots = getTimeSlotsByDateAndDoctor(permit_number, date)
     fulltime = time + ':true'
     return fulltime in timeSlots
+
 
 # Return the next time slot. If no next time slot, then return None.
 def getNextTimeSlot(permit_number, date, time):
@@ -68,8 +85,9 @@ def makeTimeSlotAvailable(permit_number, date, time):
     timeSlots = getTimeSlotsByDateAndDoctor(permit_number, date)
     index = timeSlots.index(time + ':false')
     timeSlots[index] = time + ':true'
-    DoctorSchedule.query.filter_by(permit_number=permit_number, date=date).first().timeSlots = ','.join(timeSlots) # put back into db as a string
+    DoctorSchedule.query.filter_by(owner=permit_number, date=date).first().timeSlots = ','.join(timeSlots) # put back into db as a string
     db.session.commit()
+
 
 # if the appointment is an annual, make all necessary slots available
 def makeTimeSlotAvailableAnnual(permit_number, date, time):
@@ -81,13 +99,15 @@ def makeTimeSlotAvailableAnnual(permit_number, date, time):
     makeTimeSlotAvailable(permit_number, date, doctorNextNextTimeSlot)
     db.session.commit()
 
+
 #makes a specific timeslot unavailable
 def makeTimeSlotUnavailable(permit_number, date, time):
     timeSlots = getTimeSlotsByDateAndDoctor(permit_number, date)
     index = timeSlots.index(time + ':true')
     timeSlots[index] = time + ':false'
-    DoctorSchedule.query.filter_by(permit_number=permit_number, date=date).first().timeSlots = ','.join(timeSlots) #put back into db as a string
+    DoctorSchedule.query.filter_by(owner=permit_number, date=date).first().timeSlots = ','.join(timeSlots) #put back into db as a string
     db.session.commit()
+
 
 # if the appointment is an annual, make all necessary slots unavailable
 def makeTimeSlotUnavailableAnnual(permit_number, date, time):
@@ -98,3 +118,61 @@ def makeTimeSlotUnavailableAnnual(permit_number, date, time):
     makeTimeSlotUnavailable(permit_number, date, doctorNextTimeSlot)
     makeTimeSlotUnavailable(permit_number, date, doctorNextNextTimeSlot)
     db.session.commit()
+
+
+# Given an array of timeslots, a date and a permit number, create schedules for time slots in the date.
+def setAvailability(permit_number, date, timeslots):
+    schedule_timeslots = getTimeSlotsByDateAndDoctor(permit_number, date)
+    # should not happend
+    if schedule_timeslots is None:
+        schedule_timeslots = format(createTimeSlots(permit_number, date).timeSlots)
+
+    doctors_schedule = getAllSchedulesByDateExceptDoctor(date, permit_number)
+    i = 0
+    for new_value in timeslots:
+        if new_value:
+            # if doctor wants to be available check that 7 doctors are not available at that time
+            number_of_doctor = 0
+            for schedule in doctors_schedule:
+                if getBooleanValue(format(schedule.timeSlots)[i]):
+                    number_of_doctor = number_of_doctor + 1
+
+            if number_of_doctor >= 7:
+                return False
+
+            schedule_timeslots[i] = getTimeValue(schedule_timeslots[i]) + 'true'
+        else:
+            schedule_timeslots[i] = getTimeValue(schedule_timeslots[i]) + 'false'
+        i = i+1
+
+    DoctorSchedule.query.filter_by(owner=permit_number, date=date).first().timeSlots = ','.join(
+        schedule_timeslots)  # put back into db as a string
+    db.session.commit()
+    return True
+
+
+# Given an array of timeslots, a date and a permit number, create schedules for time slots in the date.
+def getAvailability(permit_number, date):
+    schedule_timeslots = getTimeSlotsByDateAndDoctor(permit_number, date)
+
+    return schedule_timeslots
+
+
+def getTimeValue(timeslot):
+    index = 0
+    if timeslot.find('t') is not -1:
+        index = timeslot.index('t')
+    else:
+        index = timeslot.index('f')
+
+    return timeslot[:index]
+
+
+def getBooleanValue(timeslot):
+    index = 0
+    if timeslot.find('t') is not -1:
+        index = timeslot.index('t')
+    else:
+        index = timeslot.index('f')
+
+    return timeslot[index:]
