@@ -6,7 +6,7 @@ This file documents the api routes for doctor related events
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
 from application.models import Doctor
-from application.services import DoctorService
+from application.services import DoctorService, DoctorScheduleService
 from application.util import *
 from passlib.hash import sha256_crypt
 from application.util import convertRequestDataToDict as toDict
@@ -37,7 +37,7 @@ def newDoctor():
     success = False
 
     # Create a doctor and find our whether it is successful or not
-    success = Doctor.createDoctor(permit_number=data['permit_number'], fname=data['fname'], lname=data['lname'], specialty=data['specialty'], password=data['password'], city=data['city'])
+    success = DoctorService.createDoctor(permit_number=data['permit_number'], fname=data['fname'], lname=data['lname'], specialty=data['specialty'], password=data['password'], city=data['city'])
 
     if success:
         message = "Doctor has been created"
@@ -61,13 +61,13 @@ def userAuthenticate():
     user = {}
 
     # check if permit number exists
-    success = Doctor.doctorExists(data['permit_number'])
+    success = DoctorService.doctorExists(data['permit_number'])
     # Verify User
-    success = Doctor.authenticate(data['permit_number'], data['password'])
+    success = DoctorService.authenticate(data['permit_number'], data['password'])
 
     # if permit number exists & authenticated, then get the patient
     if success:
-        user = Doctor.getDoctor(data['permit_number'])
+        user = DoctorService.getDoctor(data['permit_number'])
         # convert datetimes to strings
         message = "Doctor authenticated."
         status = "OK"
@@ -93,13 +93,13 @@ def setAvailability():
     user = {}
 
     # check if permit number exists
-    success = Doctor.doctorExists(data['permit_number'])
+    success = DoctorService.doctorExists(data['permit_number'])
     # Verify User
-    success = Doctor.verifyHash(data['permit_number'], data['password_hash'])
+    success = DoctorService.verifyHash(data['permit_number'], data['password_hash'])
 
     # if permit number exists & authenticated, then get the patient
     if success:
-        success = DoctorSchedule.setAvailability(data['permit_number'], data["date"], data["timeslots"])
+        success = DoctorScheduleService.setAvailability(data['permit_number'], data["date"], data["timeslots"])
         if success:
             message = "Availability Modified."
             status = "OK"
@@ -130,12 +130,12 @@ def getAvailability():
     schedule = {}
 
     # check if permit number exists
-    success = Doctor.doctorExists(data['permit_number']) and \
-                Doctor.verifyHash(data['permit_number'], data['password_hash'])
+    success = DoctorService.doctorExists(data['permit_number']) and \
+                DoctorService.verifyHash(data['permit_number'], data['password_hash'])
 
     # if permit number exists & authenticated, then get the patient
     if success:
-        schedule = DoctorSchedule.getAvailability(data['permit_number'], data['date'])
+        schedule = DoctorScheduleService.getAvailability(data['permit_number'], data['date'])
         # convert datetimes to strings
         message = "schedule found."
         status = "OK"

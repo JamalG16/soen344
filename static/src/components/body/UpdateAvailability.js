@@ -23,16 +23,16 @@ class UpdateAvailability extends Component {
    }
 
    async updateAvailability(){
-    var date = this.state.day + "_" + this.state.month + "_"
+    var date =  "-" + ((this.state.month < 10)? "0"+this.state.month : this.state.month) + "-" + ((this.state.day < 10)? "0"+this.state.day : this.state.day)
     var now = new Date()
     var year = now.getFullYear()
     if (now.getMonth() > this.state.month) {
         year++;
     }
-    date = date + year
+    date = year + date
     let availability = {timeslots: this.state.buttons, date: date, permit_number: this.props.user.permit_number,
                         password_hash: this.props.user.password_hash}
-
+    console.log(availability)
     fetchAPI("POST", "/api/doctor/availability/", availability).then(
       response => {
         try{
@@ -53,13 +53,13 @@ class UpdateAvailability extends Component {
     if (this.state.day == -1 || this.state.month == -1) {
         return
     }
-    var date = this.state.day + "_" + this.state.month + "_"
+    var date =  "-" + ((this.state.month < 10)? "0"+this.state.month : this.state.month) + "-" + ((this.state.day < 10)? "0"+this.state.day : this.state.day)
     var now = new Date()
     var year = now.getFullYear()
     if (now.getMonth() > this.state.month) {
         year++;
     }
-    date = date + year
+    date = year + date
 
     fetchAPI("GET", "/api/doctor/availability?permit_number=" + this.props.user.permit_number +
                         "&password_hash=" + this.props.user.password_hash +
