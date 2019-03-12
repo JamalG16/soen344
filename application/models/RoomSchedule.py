@@ -2,7 +2,6 @@ from index import db
 from datetime import datetime
 from datetime import time
 
-# PickleType coverts python object to a string so that it can be stored on the database
 class RoomSchedule(db.Model):
     roomNumber = db.Column(db.String(), nullable=False, primary_key=True)
     date = db.Column(db.String(), nullable=False, primary_key=True)

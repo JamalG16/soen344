@@ -4,7 +4,7 @@ from index import db
 # return all timeslots based on permit number and date
 def find(permit_number, date):
     return DoctorSchedule.query.filter_by(permit_number=permit_number, date=date).first()
-    
+
 # create timeslots of a doctor on a specific date
 def create(permit_number,timeSlots, date):
     newDoctorSchedule = DoctorSchedule(permit_number=permit_number, timeSlots=timeSlots, date=date)
@@ -15,3 +15,9 @@ def create(permit_number,timeSlots, date):
 def update(permit_number, date, timeSlots):
     DoctorSchedule.query.filter_by(permit_number=permit_number, date=date).first().timeSlots = timeSlots
     db.session.commit()
+
+# get schedules for all doctors except for one
+def getAllSchedulesByDateExceptDoctor(date, permit_number):
+    return DoctorSchedule.query.filter(DoctorSchedule.permit_number != permit_number)\
+                               .filter(DoctorSchedule.date == date).all()
+

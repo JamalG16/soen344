@@ -43,3 +43,13 @@ def createDoctor(permit_number, fname, lname, specialty, password, city):
 		DoctorTDG.create(permit_number=permit_number, fname=fname, lname=lname, password_hash=password_hash, specialty=specialty, city=city)
 		reponse = True
 	return reponse
+
+
+# Returns true if password hash is the right one
+def verifyHash(permit_number, password_hash):
+	verified = False
+	user = getDoctor(permit_number)
+	if user is not None:
+		verified = (password_hash == user['password_hash'])
+
+	return verified

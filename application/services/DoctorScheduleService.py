@@ -127,3 +127,63 @@ def makeTimeSlotUnavailableAnnual(permit_number, date, time):
     makeTimeSlotUnavailable(permit_number, date, time)
     makeTimeSlotUnavailable(permit_number, date, doctorNextTimeSlot)
     makeTimeSlotUnavailable(permit_number, date, doctorNextNextTimeSlot)
+
+
+# Given an array of timeslots, a date and a permit number, create schedules for time slots in the date.
+def setAvailability(permit_number, date, timeslots):
+    schedule_timeslots = getTimeSlotsByDateAndDoctor(permit_number, date)
+    # should not happend
+    if schedule_timeslots is None:
+        createTimeSlots(permit_number, date)
+        schedule_timeslots = format(DoctorScheduleTDG.find(permit_number, date).timeSlots)
+
+    doctors_schedule = DoctorScheduleTDG.getAllSchedulesByDateExceptDoctor(date, permit_number)
+    i = 0
+    for new_value in timeslots:
+        if new_value:
+            # if doctor wants to be available check that 7 doctors are not available at that time
+            number_of_doctor = 0
+            for schedule in doctors_schedule:
+                if getBooleanValue(format(schedule.timeSlots)[i]):
+                    number_of_doctor = number_of_doctor + 1
+
+            if number_of_doctor >= 7:
+                return False
+
+            schedule_timeslots[i] = getTimeValue(schedule_timeslots[i]) + 'true'
+        else:
+            schedule_timeslots[i] = getTimeValue(schedule_timeslots[i]) + 'false'
+        i = i+1
+
+    DoctorScheduleTDG.update(permit_number, date, ','.join(schedule_timeslots))
+    return True
+
+
+# Given an array of timeslots, a date and a permit number, create schedules for time slots in the date.
+def getAvailability(permit_number, date):
+    schedule_timeslots = getTimeSlotsByDateAndDoctor(permit_number, date)
+    if schedule_timeslots is None:
+        createTimeSlots(permit_number, date)
+        schedule_timeslots = format(DoctorScheduleTDG.find(permit_number, date).timeSlots)
+
+    return schedule_timeslots
+
+
+def getTimeValue(timeslot):
+    index = 0
+    if timeslot.find('t') is not -1:
+        index = timeslot.index('t')
+    else:
+        index = timeslot.index('f')
+
+    return timeslot[:index]
+
+
+def getBooleanValue(timeslot):
+    index = 0
+    if timeslot.find('t') is not -1:
+        index = timeslot.index('t')
+    else:
+        index = timeslot.index('f')
+
+    return timeslot[index:]
