@@ -11,7 +11,7 @@ import 'antd/es/popconfirm/style/css.js';
 class AppointmentCart extends Component {
     constructor() {
         super();
-        this.state = { visible: false , selected: {}}
+        this.state = { visible: false , selected: []}
     }
 
     showModal = () => {
@@ -54,17 +54,17 @@ class AppointmentCart extends Component {
                 dataIndex: 'select'
             }
         ];
-        const cart= [['Checkup','2019-04-05','8:00'],['Checkup','2019-04-05','8:20']]
+
         const data = []
-        for (let i=0; i<2; i++){
+        this.props.cart.map(function(appointment){
             data.push({
-                type: cart[i][0],
-                time: cart[i][2],
-                date: cart[i][1],
+                type: appointment[0],
+                time: appointment[2],
+                date: appointment[1],
                 price: '50$',
                 select: <Checkbox style={{float: 'right'}} onChange={onChange}></Checkbox>
             })
-        }
+        })
 
         return (
             <div>
@@ -126,7 +126,9 @@ class AppointmentCart extends Component {
 }
 
 function onChange(e) {
-    console.log(`checked = ${e.target.checked}`);
+    if (e.target.checked)
+        this.setState({selected : this.state.selected.append([[e.target.type], [e.target.time], [e.target.date]])})
+    console.log(this.state.selected);
 }
 
 function confirmation() {
