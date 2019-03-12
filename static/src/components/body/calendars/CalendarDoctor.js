@@ -1,6 +1,6 @@
 import {Component} from "react";
 import React from "react";
-import { Calendar, Alert , Table, Button, Tabs, Radio, Typography, Divider} from 'antd';
+import { Calendar, Alert , Table} from 'antd';
 import * as moment from 'moment';
 import 'antd/es/calendar/style/index.css';
 import 'antd/es/alert/style/index.css';

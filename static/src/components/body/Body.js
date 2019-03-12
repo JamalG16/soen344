@@ -1,14 +1,15 @@
 import React, { Component } from 'react'
 import { Row, Col, Grid } from 'react-bootstrap'
-import Login from './Login'
-import Register from './Register'
-import CalendarPatient from './CalendarPatient'
+import Login from './login//Login'
+import Register from './register/Register'
+import CalendarPatient from './calendars/CalendarPatient'
 import { connect } from 'react-redux'
 import { Route } from 'react-router-dom'
 import CalendarDoctor from "./calendars/CalendarDoctor";
 import CalendarNurse from "./calendars/CalendarNurse";
 import AppointmentCart from "./AppointmentCart";
 import Homepage from "./homepages/Homepage";
+import UpdateAvailability from "./doctor avail/UpdateAvailability"
 
 class Body extends Component {
 

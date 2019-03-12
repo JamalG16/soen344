@@ -144,7 +144,7 @@ def findAppointments():
 	if(date is None):
 		message = 'Enter a date to find the appointments for'
 		return message, 404
-	#DoctorScheduleService.createTimeSlots('1234567', '2019-04-05')
+
 	availableDoctorPermitNumbers = DoctorScheduleService.getAllAvailableDoctorPermitsByDate(date)
 	availableRoomNumbers = RoomService.getAllRoomNumbers()
 	if(availableDoctorPermitNumbers is None):
