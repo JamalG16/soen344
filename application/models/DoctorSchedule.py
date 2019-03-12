@@ -1,7 +1,6 @@
 from index import db
 from datetime import datetime
 from datetime import time
-import json
 
 
 # PickleType coverts python object to a string so that it can be stored on the database

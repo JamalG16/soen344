@@ -6,6 +6,7 @@ This file documents the api routes for doctor related events
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
 from application.models import Doctor
+from application.services import DoctorService
 from application.util import *
 from passlib.hash import sha256_crypt
 from application.util import convertRequestDataToDict as toDict
@@ -82,7 +83,6 @@ def userAuthenticate():
 
 @doctor.route('/api/doctor/availability/', methods=['POST'])
 def setAvailability():
-
     # convert request data to dictionary
     data = toDict(request.data)
 

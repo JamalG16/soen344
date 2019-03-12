@@ -1,7 +1,7 @@
 from index import db
-from datetime import datetime
 from passlib.hash import sha256_crypt
 from .DoctorSchedule import getTimeSlotsByDateAndDoctor, makeTimeSlotAvailable, makeTimeSlotUnavailable, getNextTimeSlot
+
 
 class Doctor(db.Model):
     permit_number = db.Column(db.String(7), nullable=False, primary_key=True)
@@ -25,7 +25,6 @@ class Doctor(db.Model):
 
 # Initializes the database
 db.create_all()
-
 
 # Returns True if doctor exists
 def doctorExists(permit_number):

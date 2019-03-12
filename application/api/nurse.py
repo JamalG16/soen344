@@ -5,7 +5,7 @@ This file documents the api routes for nurse related events
 
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
-from application.models import Nurse
+from application.services import NurseService
 from application.util import *
 from passlib.hash import sha256_crypt
 from application.util import convertRequestDataToDict as toDict
@@ -33,7 +33,7 @@ def newDoctor():
 	success = False
 
 	# Create a nurse and find our whether it is successful or not
-	success = Nurse.createNurse(access_ID=data['access_ID'], fname=data['fname'], lname=data['lname'], password=data['password'])
+	success = NurseService.createNurse(access_ID=data['access_ID'], fname=data['fname'], lname=data['lname'], password=data['password'])
 	if success:
 		message = "Nurse has been created"
 	else:
@@ -56,13 +56,13 @@ def userAuthenticate():
 	user = {}
 
 	# check if access ID exists
-	success = Nurse.nurseExists(data['access_ID'])
+	success = NurseService.nurseExists(data['access_ID'])
 	# Verify User  
-	success = Nurse.authenticate(data['access_ID'], data['password'])
+	success = NurseService.authenticate(data['access_ID'], data['password'])
 
 	# if access ID exists & authenticated, then get the patient
 	if success:
-		user = Nurse.getNurse(data['access_ID'])
+		user = NurseService.getNurse(data['access_ID'])
 		# convert datetimes to strings
 		message = "Nurse authenticated."
 		status = "OK"

@@ -1,10 +1,8 @@
 import React, {Component} from 'react'
-import {PageHeader, Button} from 'react-bootstrap'
-import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { logOut } from '../../actions/auth'
-import { Col, Row, Grid} from 'react-bootstrap'
-import Menu from './Menu'
+import {Icon} from 'antd';
+import 'antd/es/icon/style/index.css';
 
 class PatientMenu extends Component {
   
@@ -13,8 +11,12 @@ class PatientMenu extends Component {
         <div>
             Welcome {this.props.user.fname}!
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <Link to="/book">
+            <Link to="/CalendarPatient">
                 Book an Appointment
+            </Link>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <Link to="/AppointmentCart">
+                <Icon type="shopping-cart" /> Cart
             </Link>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <Link to="/" onClick={logOut}>

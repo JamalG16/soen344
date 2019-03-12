@@ -3,8 +3,13 @@ import { Row, Col, Grid } from 'react-bootstrap'
 import Login from './Login'
 import Register from './Register'
 import UpdateAvailability from './UpdateAvailability'
+import CalendarPatient from './CalendarPatient'
 import { connect } from 'react-redux'
 import { Route } from 'react-router-dom'
+import CalendarDoctor from "./CalendarDoctor";
+import CalendarNurse from "./CalendarNurse";
+import AppointmentCart from "./AppointmentCart";
+import Homepage from "./homepages/Homepage";
 
 class Body extends Component {
 
@@ -26,12 +31,22 @@ class Body extends Component {
                       {Login}
                       {Register}
                       {UpdateAvailability}
+                      {CalendarPatient}
+                      {CalendarDoctor}
+                      {CalendarNurse}
+                      {AppointmentCart}
+                      {Homepage}
                     </div>
                   )
                 }} />
 				<Route path='/Login' component={Login}/>
                 <Route path='/Register' component={Register}/>
                 <Route path='/UpdateAvailability' component={UpdateAvailability}/>
+                <Route path='/CalendarPatient' component={CalendarPatient}/>
+                <Route path='/CalendarDoctor' component={CalendarDoctor} />
+                <Route path='/CalendarNurse' component={CalendarNurse} />
+                <Route path='/AppointmentCart' component={AppointmentCart} />
+                <Route path='/Homepage' component={Homepage} />
           </Row>
         </Grid>
       </div>

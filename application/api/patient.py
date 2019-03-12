@@ -5,7 +5,7 @@ This file documents the api routes for patient related events
 
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
-from application.models import Patient
+from application.services import PatientService
 from application.util import *
 from passlib.hash import sha256_crypt
 from application.util import convertRequestDataToDict as toDict
@@ -33,7 +33,7 @@ def newPatient():
 	success = False
 
 	# Create a patient and find our whether it is successful or not
-	success = Patient.createPatient(hcnumber=data['hcnumber'], fname=data['fname'], lname=data['lname'], birthday=data['birthday'], gender=data['gender'], phone=data['phone'], email=data['email'], address=data['address'], password=data['password'], lastAnnual=data['lastAnnual'])
+	success = PatientService.createPatient(hcnumber=data['hcnumber'], fname=data['fname'], lname=data['lname'], birthday=data['birthday'], gender=data['gender'], phone=data['phone'], email=data['email'], address=data['address'], password=data['password'], lastAnnual=data['lastAnnual'])
 	if success:
 		message = "Patient has been created"
 	else:
@@ -57,13 +57,13 @@ def userAuthenticate():
 	# logging in
 	
 	# check if health card number exists
-	success = Patient.patientExists(data['hcnumber'])
+	success = PatientService.patientExists(data['hcnumber'])
 	# Verify User  
-	success = Patient.authenticate(data['hcnumber'], data['password'])
+	success = PatientService.authenticate(data['hcnumber'], data['password'])
 	
 	# if health card number exists & authenticated, then get the patient
 	if success:
-		user = Patient.getPatient(data['hcnumber'])
+		user = PatientService.getPatient(data['hcnumber'])
 		# convert datetimes to strings
 		user['birthday'] = user['birthday'].strftime("%Y-%m-%d")
 		if user['lastAnnual'] is not None:
