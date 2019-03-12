@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import { Row, Col, Grid } from 'react-bootstrap'
-import Login from './Login'
-import Register from './Register'
-import UpdateAvailability from './UpdateAvailability'
-import CalendarPatient from './CalendarPatient'
+import Login from './login/Login'
+import Register from './register/Register'
+import UpdateAvailability from './doctor avail/UpdateAvailability'
+import CalendarPatient from './calendars/CalendarPatient'
 import { connect } from 'react-redux'
 import { Route } from 'react-router-dom'
-import CalendarDoctor from "./CalendarDoctor";
-import CalendarNurse from "./CalendarNurse";
+import CalendarDoctor from "./calendars/CalendarDoctor";
+import CalendarNurse from "./calendars/CalendarNurse";
 import AppointmentCart from "./AppointmentCart";
 import Homepage from "./homepages/Homepage";
 
@@ -63,8 +63,8 @@ class Body extends Component {
                 }} />
 				        <Route path='/Login' component={Login}/>
                 <Route path='/Register' component={Register}/>
-                <Route path='/CalendarPatient' render={(props) => <CalendarPatient {...props} addToCart={this.addToCart} cart={this.state.cart}/>}/>
                 <Route path='/UpdateAvailability' component={UpdateAvailability}/>
+                <Route path='/CalendarPatient' render={(props) => <CalendarPatient {...props} addToCart={this.addToCart} cart={this.state.cart}/>}/>
                 <Route path='/CalendarDoctor' component={CalendarDoctor} />
                 <Route path='/CalendarNurse' component={CalendarNurse} />
                 <Route path='/AppointmentCart' render={(props) => <AppointmentCart {...props} removeFromCart={this.removeFromCart} cart={this.state.cart} user={this.props.user}/>}/>

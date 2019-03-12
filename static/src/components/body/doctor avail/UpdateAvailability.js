@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux'
 import { FormGroup, FormControl, ControlLabel, Button, Alert } from "react-bootstrap";
-import { fetchAPI } from '../utility'
+import { fetchAPI } from '../../utility'
 import './update_availability.css'
 
 class UpdateAvailability extends Component {

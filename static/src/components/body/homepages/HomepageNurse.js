@@ -1,10 +1,10 @@
 import {Component} from "react";
 import React from "react";
 import {Tab, Tabs} from "react-bootstrap";
-import RegisterPatient from "../Register";
-import CalendarPatient from "../CalendarPatient";
+import RegisterPatient from "../register/RegisterPatient";
+import CalendarPatient from "../calendars/CalendarPatient";
 import HomepagePatient from "./HomepagePatient";
-import CalendarDoctor from "../CalendarDoctor";
+import CalendarDoctor from "../calendars/CalendarDoctor";
 import HomepageDoctor from "./HomepageDoctor";
 
 class HomepageNurse extends Component {

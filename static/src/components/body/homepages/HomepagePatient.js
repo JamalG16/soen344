@@ -3,7 +3,7 @@ import React from "react";
 import {Card, Modal, Button} from 'antd';
 import 'antd/es/card/style/index.css';
 import 'antd/es/modal/style/index.css';
-import {fetchAPI} from "../../utility";
+import {fetchAPI} from "./../../utility";
 
 class HomepagePatient extends Component {
  constructor(props) {
