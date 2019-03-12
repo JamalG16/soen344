@@ -117,6 +117,7 @@ def updateAppointment():
 def findAppointments():
 	date = request.args.get('date')
 	randomRoomNumber=None
+	DoctorScheduleService.getAllTimeSlotsByDate(date)
 	if(date is None):
 		message = 'Enter a date to find the appointments for'
 		return message, 404
@@ -134,4 +135,5 @@ def findAppointments():
 	if listOfAvailableAppointments is None:
 		return 204
 	else:
-		return listOfAvailableAppointments,200
+		response = json.dumps({"listOfAvailableAppointments": listOfAvailableAppointments, "date":date})
+		return response,200
