@@ -133,8 +133,6 @@ def getAvailability():
     success = Doctor.doctorExists(data['permit_number']) and \
                 Doctor.verifyHash(data['permit_number'], data['password_hash'])
 
-    app.logger.info("success: %s", success)
-
     # if permit number exists & authenticated, then get the patient
     if success:
         schedule = DoctorSchedule.getAvailability(data['permit_number'], data['date'])

@@ -2,12 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9827dd8a-fa2b-41fb-84b2-80b7585d77b6" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/static/src/components/body/update_availability.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/api/doctor.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/api/doctor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/models/Doctor.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/models/Doctor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/models/DoctorSchedule.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/models/DoctorSchedule.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/src/components/body/UpdateAvailability.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/src/components/body/UpdateAvailability.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/models/RoomSchedule.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/models/RoomSchedule.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -31,17 +29,19 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="css" value="2" />
-          <entry key="js" value="23" />
+          <entry key="gitignore" value="1" />
+          <entry key="js" value="24" />
           <entry key="json" value="2" />
-          <entry key="py" value="38" />
+          <entry key="py" value="43" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CSS" value="2" />
           <entry key="JSON" value="2" />
-          <entry key="JavaScript" value="23" />
-          <entry key="Python" value="38" />
+          <entry key="JavaScript" value="24" />
+          <entry key="PLAIN_TEXT" value="1" />
+          <entry key="Python" value="43" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -49,21 +49,21 @@
           <entry key="Python Console" value="15" />
           <entry key="css" value="48" />
           <entry key="js" value="6026" />
-          <entry key="py" value="2334" />
+          <entry key="py" value="2350" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CSS" value="48" />
           <entry key="JavaScript" value="6026" />
-          <entry key="Python" value="2349" />
+          <entry key="Python" value="2365" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/static/src/components/body/UpdateAvailability.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="265">
@@ -72,27 +72,34 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/src/components/utility.js">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/application/api/doctor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-204" />
+            <state relative-caret-position="874">
+              <caret line="132" selection-start-line="132" selection-end-line="132" />
+              <folding>
+                <element signature="e#71#168#0" expanded="true" />
+                <marker date="1552402732566" expanded="true" signature="979:984" ph="..." />
+                <marker date="1552402732566" expanded="true" signature="1658:1660" ph="..." />
+                <marker date="1552402732566" expanded="true" signature="1658:1664" ph="..." />
+                <marker date="1552402732566" expanded="true" signature="2718:2720" ph="..." />
+                <marker date="1552402732566" expanded="true" signature="2718:2724" ph="..." />
+                <marker date="1552402732566" expanded="true" signature="3965:3970" ph="..." />
+              </folding>
+            </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/application/api/doctor.py">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/application/api/admin.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="122">
-              <caret line="103" column="24" lean-forward="true" selection-start-line="103" selection-start-column="24" selection-end-line="103" selection-end-column="24" />
-              <folding>
-                <element signature="e#71#168#0" expanded="true" />
-                <marker date="1552396067634" expanded="true" signature="979:984" ph="..." />
-                <marker date="1552396067634" expanded="true" signature="1658:1660" ph="..." />
-                <marker date="1552396067634" expanded="true" signature="1658:1664" ph="..." />
-                <marker date="1552396067634" expanded="true" signature="2718:2720" ph="..." />
-                <marker date="1552396067634" expanded="true" signature="2718:2724" ph="..." />
-                <marker date="1552396067634" expanded="true" signature="3965:3970" ph="..." />
-              </folding>
+            <state relative-caret-position="256">
+              <caret line="30" selection-start-line="30" selection-end-line="30" />
             </state>
           </provider>
         </entry>
@@ -100,8 +107,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/site-packages/flask/app.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="125">
+            <state relative-caret-position="341">
               <caret line="1597" selection-start-line="1597" selection-end-line="1597" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/site-packages/werkzeug/datastructures.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="285">
+              <caret line="429" selection-start-line="429" selection-end-line="429" />
             </state>
           </provider>
         </entry>
@@ -109,20 +125,12 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/models/Doctor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="131">
-              <caret line="10" column="43" selection-start-line="10" selection-start-column="43" selection-end-line="10" selection-end-column="43" />
+            <state relative-caret-position="235">
+              <caret line="134" lean-forward="true" selection-start-line="134" selection-end-line="134" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
+                <marker date="1552402195035" expanded="true" signature="4590:4595" ph="..." />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/application/api/appointment.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="50" column="4" lean-forward="true" selection-start-line="50" selection-start-column="4" selection-end-line="51" selection-end-column="27" />
             </state>
           </provider>
         </entry>
@@ -130,13 +138,22 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/models/DoctorSchedule.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="182">
-              <caret line="140" column="28" lean-forward="true" selection-start-line="140" selection-start-column="28" selection-end-line="140" selection-end-column="28" />
+            <state relative-caret-position="114">
+              <caret line="8" column="17" selection-start-line="8" selection-start-column="4" selection-end-line="8" selection-end-column="17" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
-                <marker date="1552401617995" expanded="true" signature="2815:2937" ph="..." />
-                <marker date="1552401617995" expanded="true" signature="7583:7717" ph="..." />
+                <marker date="1552402398403" expanded="true" signature="2839:2969" ph="..." />
+                <marker date="1552402398403" expanded="true" signature="7647:7781" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/src/components/body/RegisterAdmin.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="231">
+              <caret line="54" column="44" selection-start-line="54" selection-start-column="39" selection-end-line="54" selection-end-column="44" />
             </state>
           </provider>
         </entry>
@@ -150,21 +167,10 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/src/components/body/RegisterAdmin.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="262">
-              <caret line="54" column="8" selection-start-line="54" selection-start-column="8" selection-end-line="54" selection-end-column="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>onclic</find>
-      <find>onc</find>
       <find>handleChange</find>
       <find>onClic</find>
       <find>oncl</find>
@@ -181,18 +187,20 @@
       <find>props</find>
       <find>connect</find>
       <find>log</find>
-      <find>getTimeSlotsByDateAndDoctor</find>
       <find>getTable</find>
-      <find>permit_number</find>
       <find>GET</find>
       <find>fetchAPI</find>
       <find>list</find>
       <find>getState</find>
       <find>getNextTimeSlot</find>
       <find>update_success</find>
+      <find>owner</find>
+      <find>getTimeSlotsByDateAndDoctor</find>
       <find>console.log</find>
+      <find>admin</find>
       <find>0000</find>
       <find>000</find>
+      <find>permit_number</find>
     </findStrings>
     <dirStrings>
       <dir>C:\Users\nicol\Documents\Ecole\soen344\soen344\static</dir>
@@ -211,11 +219,11 @@
         <option value="$PROJECT_DIR$/static/src/components/body/Body.js" />
         <option value="$PROJECT_DIR$/static/src/components/header/DoctorMenu.js" />
         <option value="$PROJECT_DIR$/application/models/Schedule.py" />
-        <option value="$PROJECT_DIR$/application/models/Doctor.py" />
         <option value="$PROJECT_DIR$/static/src/components/body/update_availability.css" />
-        <option value="$PROJECT_DIR$/application/api/doctor.py" />
-        <option value="$PROJECT_DIR$/application/models/DoctorSchedule.py" />
         <option value="$PROJECT_DIR$/static/src/components/body/UpdateAvailability.js" />
+        <option value="$PROJECT_DIR$/application/models/Doctor.py" />
+        <option value="$PROJECT_DIR$/application/models/DoctorSchedule.py" />
+        <option value="$PROJECT_DIR$/application/api/doctor.py" />
       </list>
     </option>
   </component>
@@ -390,7 +398,7 @@
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32907802" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -417,8 +425,13 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/application/api/doctor.py</url>
+          <line>132</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/application/api/doctor.py</url>
           <line>97</line>
-          <option name="timeStamp" value="25" />
+          <option name="timeStamp" value="30" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -457,11 +470,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/application/models/Admin.py">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/application/api/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-203" />
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/package-lock.json" />
     <entry file="file://$PROJECT_DIR$/static/package.json">
@@ -620,24 +628,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/site-packages/werkzeug/datastructures.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="429" selection-start-line="429" selection-end-line="429" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/site-packages/flask_sqlalchemy/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="234">
           <caret line="510" selection-start-line="510" selection-end-line="510" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/src/components/body/RegisterAdmin.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="262">
-          <caret line="54" column="8" selection-start-line="54" selection-start-column="8" selection-end-line="54" selection-end-column="8" />
         </state>
       </provider>
     </entry>
@@ -653,23 +647,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/site-packages/flask/app.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="125">
-          <caret line="1597" selection-start-line="1597" selection-end-line="1597" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/application/models/Doctor.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="131">
-          <caret line="10" column="43" selection-start-line="10" selection-start-column="43" selection-end-line="10" selection-end-column="43" />
-          <folding>
-            <element signature="e#0#20#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/site-packages/sqlalchemy/orm/attributes.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="183">
@@ -677,38 +654,80 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/application/api/doctor.py">
+    <entry file="file://$PROJECT_DIR$/static/src/components/body/UpdateAvailability.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="122">
-          <caret line="103" column="24" lean-forward="true" selection-start-line="103" selection-start-column="24" selection-end-line="103" selection-end-column="24" />
+        <state relative-caret-position="265">
+          <caret line="229" column="95" selection-start-line="229" selection-start-column="95" selection-end-line="229" selection-end-column="95" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/site-packages/werkzeug/datastructures.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="429" selection-start-line="429" selection-end-line="429" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/api/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="256">
+          <caret line="30" selection-start-line="30" selection-end-line="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/site-packages/flask/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="341">
+          <caret line="1597" selection-start-line="1597" selection-end-line="1597" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/src/components/body/RegisterAdmin.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="54" column="44" selection-start-line="54" selection-start-column="39" selection-end-line="54" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/models/Doctor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="235">
+          <caret line="134" lean-forward="true" selection-start-line="134" selection-end-line="134" />
           <folding>
-            <element signature="e#71#168#0" expanded="true" />
-            <marker date="1552396067634" expanded="true" signature="979:984" ph="..." />
-            <marker date="1552396067634" expanded="true" signature="1658:1660" ph="..." />
-            <marker date="1552396067634" expanded="true" signature="1658:1664" ph="..." />
-            <marker date="1552396067634" expanded="true" signature="2718:2720" ph="..." />
-            <marker date="1552396067634" expanded="true" signature="2718:2724" ph="..." />
-            <marker date="1552396067634" expanded="true" signature="3965:3970" ph="..." />
+            <element signature="e#0#20#0" expanded="true" />
+            <marker date="1552402195035" expanded="true" signature="4590:4595" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/models/DoctorSchedule.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="140" column="28" lean-forward="true" selection-start-line="140" selection-start-column="28" selection-end-line="140" selection-end-column="28" />
+        <state relative-caret-position="114">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="4" selection-end-line="8" selection-end-column="17" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
-            <marker date="1552401617995" expanded="true" signature="2815:2937" ph="..." />
-            <marker date="1552401617995" expanded="true" signature="7583:7717" ph="..." />
+            <marker date="1552402398403" expanded="true" signature="2839:2969" ph="..." />
+            <marker date="1552402398403" expanded="true" signature="7647:7781" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/src/components/body/UpdateAvailability.js">
+    <entry file="file://$PROJECT_DIR$/application/api/doctor.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="265">
-          <caret line="229" column="95" selection-start-line="229" selection-start-column="95" selection-end-line="229" selection-end-column="95" />
+        <state relative-caret-position="874">
+          <caret line="132" selection-start-line="132" selection-end-line="132" />
+          <folding>
+            <element signature="e#71#168#0" expanded="true" />
+            <marker date="1552402732566" expanded="true" signature="979:984" ph="..." />
+            <marker date="1552402732566" expanded="true" signature="1658:1660" ph="..." />
+            <marker date="1552402732566" expanded="true" signature="1658:1664" ph="..." />
+            <marker date="1552402732566" expanded="true" signature="2718:2720" ph="..." />
+            <marker date="1552402732566" expanded="true" signature="2718:2724" ph="..." />
+            <marker date="1552402732566" expanded="true" signature="3965:3970" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>

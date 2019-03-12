@@ -84,38 +84,35 @@ def createDoctor(permit_number, fname, lname, specialty, password, city):
 
 
 # check if doctor is available at a specific time
-def doctorAvailable(permit_number, time):
-    if doctorExists(permit_number):
-        doctorTimeSlots = format(getTimeSlotsByDateAndDoctor(permit_number, datetime(2009, 5, 5)))
-        time = time + ':true'
-        return time in doctorTimeSlots
-    else:
-        return False
-
+def doctorAvailable(permit_number, date, time):
+	if doctorExists(permit_number):
+		doctorTimeSlots = format(getTimeSlotsByDateAndDoctor(permit_number, date))
+		time = time + ':true'
+		return time in doctorTimeSlots
+	else:
+		return False
 
 # check if there is an available doctor at a specific time. If so, return the first doctor found to be available.
 # Else, return None.
-def findDoctorAtTime(time):
-    permit_number = None
-    for doctor in db.session.query(Doctor.permit_number).all():
-        if doctorAvailable(doctor.permit_number, time):
-            permit_number = doctor.permit_number
-            break
-    return permit_number
-
+def findDoctorAtTime(date, time):
+	permit_number = None
+	for doctor in db.session.query(Doctor.permit_number).all():
+		if doctorAvailable(doctor.permit_number, date, time):
+			permit_number = doctor.permit_number
+			break
+	return permit_number
 
 # Returns true if doctor's timeslot has been modified.
-def toggleDoctorTimeSlot(permit_number, time):
-    response = False
-    doctor = getDoctor(permit_number)
-    if doctor is not None:
-        if doctorAvailable(permit_number, time):
-            makeTimeSlotUnavailable(permit_number, time)
-        else:
-            makeTimeSlotAvailable(permit_number, time)
-        response = True
-    return response
-
+def toggleDoctorTimeSlot(permit_number, date, time):
+	response = False
+	doctor = getDoctor(permit_number)
+	if doctor is not None:
+		if doctorAvailable(permit_number, date, time):
+			makeTimeSlotUnavailable(permit_number, date, time)
+		else:
+			makeTimeSlotAvailable(permit_number, date, time)
+		response = True
+	return response
 
 # Given a time, get a list that has all doctors available at the specified time.
 # Then, check these doctors to find if a doctor is available for 3 consecutive time slots.
@@ -136,3 +133,19 @@ def findDoctorForAnnual(time):
                         return permit_number
     return None
 
+
+def findDoctorForAnnual(date, time):
+    permit_numbers = []
+    nextTimeSlot = None
+    for doctor in db.session.query(Doctor.permit_number).all():
+        if doctorAvailable(doctor.permit_number, date, time):
+            permit_numbers.append(doctor.permit_number)
+    for permit_number in permit_numbers:
+        nextTimeSlot = getNextTimeSlot(permit_number, date, time)
+        if nextTimeSlot is not None:
+            if doctorAvailable(permit_number, date, nextTimeSlot):
+                nextTimeSlot = getNextTimeSlot(permit_number, date, nextTimeSlot)
+                if nextTimeSlot is not None:
+                    if doctorAvailable(permit_number, date, nextTimeSlot):
+                        return permit_number
+    return None

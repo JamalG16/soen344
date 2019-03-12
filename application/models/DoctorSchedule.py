@@ -6,7 +6,7 @@ import json
 
 # PickleType coverts python object to a string so that it can be stored on the database
 class DoctorSchedule(db.Model):
-    owner = db.Column(db.String(), nullable=False, primary_key=True)
+    permit_number = db.Column(db.String(), nullable=False, primary_key=True)
     date = db.Column(db.String(), nullable=False, primary_key=True)
     timeSlots = db.Column(db.String(), nullable=False)
 
@@ -27,24 +27,24 @@ SLOTS = '8:00:false,8:20:false,8:40:false,9:00:false,9:20:false,9:40:false,10:00
 
 
 def createTimeSlots(permit_number, date):
-    newDoctorSchedule = DoctorSchedule(owner=permit_number, timeSlots=SLOTS, date=date)
+    newDoctorSchedule = DoctorSchedule(permit_number=permit_number, timeSlots=SLOTS, date=date)
     db.session.add(newDoctorSchedule)
     db.session.commit()
     return newDoctorSchedule
 
 
 def getAllTimeSlotsByDoctor(permit_number):
-    return format(DoctorSchedule.query.filter_by(owner=permit_number).timeSlots)
+    return format(DoctorSchedule.query.filter_by(permit_number=permit_number).timeSlots)
 
 
 def getAllTimeSlotsByDate(date):
     return format(DoctorSchedule.query.filter_by(date=date).timeSlots)
 
 def getAllSchedulesByDateExceptDoctor(date, permit_number):
-    return DoctorSchedule.query.filter(DoctorSchedule.owner != permit_number).filter(DoctorSchedule.date == date).all()
+    return DoctorSchedule.query.filter(DoctorSchedule.permit_number != permit_number).filter(DoctorSchedule.date == date).all()
 
 def getTimeSlotsByDateAndDoctor(permit_number, date):
-    schedule = DoctorSchedule.query.filter_by(owner=permit_number, date=date).first()
+    schedule = DoctorSchedule.query.filter_by(permit_number=permit_number, date=date).first()
     if schedule is None:
         timeslot = createTimeSlots(permit_number, date).timeSlots
     else:
@@ -85,7 +85,7 @@ def makeTimeSlotAvailable(permit_number, date, time):
     timeSlots = getTimeSlotsByDateAndDoctor(permit_number, date)
     index = timeSlots.index(time + ':false')
     timeSlots[index] = time + ':true'
-    DoctorSchedule.query.filter_by(owner=permit_number, date=date).first().timeSlots = ','.join(timeSlots) # put back into db as a string
+    DoctorSchedule.query.filter_by(permit_number=permit_number, date=date).first().timeSlots = ','.join(timeSlots) # put back into db as a string
     db.session.commit()
 
 
@@ -105,7 +105,7 @@ def makeTimeSlotUnavailable(permit_number, date, time):
     timeSlots = getTimeSlotsByDateAndDoctor(permit_number, date)
     index = timeSlots.index(time + ':true')
     timeSlots[index] = time + ':false'
-    DoctorSchedule.query.filter_by(owner=permit_number, date=date).first().timeSlots = ','.join(timeSlots) #put back into db as a string
+    DoctorSchedule.query.filter_by(permit_number=permit_number, date=date).first().timeSlots = ','.join(timeSlots) #put back into db as a string
     db.session.commit()
 
 
@@ -145,7 +145,7 @@ def setAvailability(permit_number, date, timeslots):
             schedule_timeslots[i] = getTimeValue(schedule_timeslots[i]) + 'false'
         i = i+1
 
-    DoctorSchedule.query.filter_by(owner=permit_number, date=date).first().timeSlots = ','.join(
+    DoctorSchedule.query.filter_by(permit_number=permit_number, date=date).first().timeSlots = ','.join(
         schedule_timeslots)  # put back into db as a string
     db.session.commit()
     return True
