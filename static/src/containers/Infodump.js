@@ -19,7 +19,6 @@ class infodump extends Component {
     this.registerAdmin()
     this.addRoom()
     this.addDoctor()
-    this.checkAvailabilities()
     this.addNurse()
     this.book()
   }
@@ -75,14 +74,6 @@ class infodump extends Component {
           } catch(e){console.error("Error", e)}
         }
       ).catch((e)=>console.error("Error:", e))
-  }
-
-  async checkAvailabilities(){
-    fetchAPI("GET","/api/appointment/find?date=02-03-2019").then(
-        response => {
-          console.log(response.httpRequestStatusCode)
-        }
-    )
   }
 
   async addRoom(){

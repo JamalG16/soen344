@@ -84,6 +84,7 @@ class CalendarPatient extends Component {
                             })
                     }
                     this.setState({display1: data1, display2:data2})
+                    this.setState({availableTimeSlots: []})
                 }
                 else {
                   console.log('it is a fail mate' + response.message);
@@ -140,16 +141,6 @@ function AppointmentTable(props) {
     }, {
       dataIndex: "button"
     }];
-    
-    const data2 = [{
-      time: moment().format('HH:mm A') + " - " + (moment().add(60, 'minutes')).format('HH:mm A'),
-      button: <Button type="primary" icon="plus" size="large">ADD TO CART</Button>
-    },
-    {
-      time: moment().format('HH:mm A') + " - " + (moment().add(60, 'minutes')).format('HH:mm A'),
-      button: <Button type="primary" icon="plus" size="large">ADD TO CART</Button>
-    }
-    ];
 
 
     if (!props.success) {
