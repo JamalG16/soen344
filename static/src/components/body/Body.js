@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import { Row, Col, Grid } from 'react-bootstrap'
-import Login from './login/Login'
-import Register from './register/Register'
-import UpdateAvailability from './doctor avail/UpdateAvailability'
-import CalendarPatient from './calendars/CalendarPatient'
+import Login from './Login'
+import Register from './Register'
+import CalendarPatient from './CalendarPatient'
 import { connect } from 'react-redux'
 import { Route } from 'react-router-dom'
 import CalendarDoctor from "./calendars/CalendarDoctor";
