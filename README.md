@@ -40,7 +40,6 @@ $ python run.py
 To run the frontend, navigate to root/static and run the following command:
 ```
 $ npm start
-$ npm install antd
 ```
 
 The frontend should be running on localhost:3000, while the backend server should be running on localhost:5000.
