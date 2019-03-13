@@ -88,6 +88,7 @@ def cancelAppointment(id):
 		elif appointment['length'] == 60:
 			DoctorScheduleService.makeTimeSlotAvailableAnnual(doctor, date, time)
 			RoomScheduleService.makeTimeSlotAvailableAnnual(room, date, time)
+			updateAnnual(appointment['patient_hcnumber'], None)
 			AppointmentTDG.delete(appointment['id'])
 			return True
 		else:
@@ -134,6 +135,7 @@ def updateAppointment(id, patient_hcnumber, length, time, date):
 			RoomScheduleService.makeTimeSlotAvailable(appointment['room'], appointment['date'], appointment['time'])
 			DoctorScheduleService.makeTimeSlotUnavailableAnnual(available_doctor, date, time)
 			RoomScheduleService.makeTimeSlotUnavailableAnnual(available_room, date, time)
+			updateAnnual(appointment['patient_hcnumber'], date)
 			#updates
 			updateDB(appointment['id'], available_room, available_doctor, length, time, date)
 
@@ -148,6 +150,7 @@ def updateAppointment(id, patient_hcnumber, length, time, date):
 			RoomScheduleService.makeTimeSlotAvailableAnnual(appointment['room'], appointment['date'], appointment['time'])
 			DoctorScheduleService.makeTimeSlotUnavailable(available_doctor, date, time)
 			RoomScheduleService.makeTimeSlotUnavailable(available_room, date, time)
+			updateAnnual(appointment['patient_hcnumber'], None)
 			#updates
 			updateDB(appointment['id'], available_room, available_doctor, length, time, date)
 		elif appointment['length'] == 60 and length == '60':
@@ -161,6 +164,7 @@ def updateAppointment(id, patient_hcnumber, length, time, date):
 			RoomScheduleService.makeTimeSlotAvailableAnnual(appointment['room'], appointment['date'], appointment['time'])
 			DoctorScheduleService.makeTimeSlotUnavailableAnnual(available_doctor, date, time)
 			RoomScheduleService.makeTimeSlotUnavailableAnnual(available_room, date, time)
+			updateAnnual(appointment['patient_hcnumber'], date)
 			#updates
 			updateDB(appointment['id'], available_room, available_doctor,length, time, date)
 		return True

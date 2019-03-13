@@ -18,7 +18,8 @@ class AppointmentCart extends Component {
             time:'',
             //alert notifies if appointment already exists
             alert: false,
-            success: false }
+            success: false,
+            annualAlert: false }
         this.onCheckout = this.onCheckout.bind(this)
         this.TableGenerator = this.TableGenerator.bind(this)
         
@@ -121,11 +122,14 @@ class AppointmentCart extends Component {
                         this.onRemove(['Checkup', this.state.date, this.state.time])
                     else
                         this.onRemove(['Annual', this.state.date, this.state.time])
-                    this.setState({alert: false, success: true})
+                    this.setState({alert: false, success: true, annualAlert: false})
                 }
                 else {
                   console.log('it is a fail mate' + response.message + response.info);
-                  this.setState({alert: true, success: false})
+                  if (response.bookableAnnual)
+                    this.setState({alert: true, success: false, annualAlert: false})
+                  else
+                    this.setState({alert: false, success: false, annualAlert: true})
                 }
               } catch(e){console.error("Error", e)}
             }
@@ -133,7 +137,7 @@ class AppointmentCart extends Component {
     }
 
     render() {
-        let alert, success;
+        let alert, success, annualAlert;
 
         if (this.state.alert){
             alert = <div className="flash animated" id="welcome"><Alert bsStyle="warning">Appointment time is not available anymore.</Alert></div>
@@ -149,10 +153,18 @@ class AppointmentCart extends Component {
             success = null
         }
 
+        if (this.state.annualAlert){
+            annualAlert = <div className="flash animated" id="welcome"><Alert bsStyle="warning">It has not been a year since your last annual!</Alert></div>
+        }
+        else{
+            annualAlert = null
+        }
+
         return (
             <div>
                 {alert}
                 {success}
+                {annualAlert}
                 <h1>Appointment Cart</h1>
                 {this.TableGenerator()}
                 <Modal
