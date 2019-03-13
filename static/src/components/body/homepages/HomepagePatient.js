@@ -1,7 +1,7 @@
 import {Component} from "react";
 import React from "react";
 import {Modal} from 'react-bootstrap';
-import { Button } from 'react-bootstrap';
+import { Button, Alert } from 'react-bootstrap';
 import {Card} from 'antd';
 import 'antd/es/card/style/index.css';
 import 'antd/es/modal/style/index.css';
@@ -17,7 +17,9 @@ class HomepagePatient extends Component {
             isLoading: true,
             modal: false,
             appointment: {},
-            newAppointment: []
+            newAppointment: [],
+            annualAlert: false,
+            alert: false
         };
         this.handleAppointmentsPatient();
         this.cancel = this.cancel.bind(this)
@@ -50,12 +52,16 @@ class HomepagePatient extends Component {
                 try{
                     if(response.success){
                         this.setState({
-                            newAppointment: [], appointment:{}, modal: false
+                            newAppointment: [], appointment:{}, modal: false, alert: false, annualAlert: false
                         });
                         console.log("Patient " + this.props.user.hcnumber + " successfully updated appointment")
                     }
                     else {
                         console.log("Patient " + this.props.user.hcnumber + " failed to update appointment")
+                        if (response.bookableAnnual)
+                            this.setState({alert: false, annualAlert: false})
+                        else
+                            this.setState({alert: false, annualAlert: true})
                     }
                     this.handleAppointmentsPatient();
                 } catch(e) {console.error("Error getting appointments for patient:", e)}
@@ -128,6 +134,21 @@ class HomepagePatient extends Component {
     }
 
     render(){
+        let alert, annualAlert;
+
+        if (this.state.alert){
+            alert = <div className="flash animated" id="welcome"><Alert bsStyle="warning">Appointment time is not available anymore.</Alert></div>
+        }
+        else{
+            alert = null
+        }
+
+        if (this.state.annualAlert){
+            annualAlert = <div className="flash animated" id="welcome"><Alert bsStyle="warning">It has not been a year since your last annual!</Alert></div>
+        }
+        else{
+            annualAlert = null
+        }
        return (
             <div>
                 <br/>
@@ -138,6 +159,8 @@ class HomepagePatient extends Component {
                         <Modal.Title>Select a New Appointment Date</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
+                        {alert}
+                        {annualAlert}
                         <UpdateAppointment currentAppointment={this.state.appointment} handleSelect={this.handleSelect.bind(this)}></UpdateAppointment>
                     </Modal.Body>
                     <Modal.Footer>

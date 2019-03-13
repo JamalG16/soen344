@@ -6,7 +6,7 @@ This file documents the api routes for appointment related events.
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
 from application.models import Appointment, Doctor, Room, Patient
-from application.services import AppointmentService, DoctorScheduleService, RoomScheduleService, RoomService, DoctorService
+from application.services import AppointmentService, DoctorScheduleService, RoomScheduleService, RoomService, DoctorService, PatientService
 from application.TDG import RoomScheduleTDG
 from application.util import *
 from passlib.hash import sha256_crypt
@@ -33,16 +33,19 @@ def newAppointment():
 	data = json.loads(data)
 	print(data)
 	success = False
-	info =None
+	bookableAnnual = None
 	message=""
-
+	
+	if (data['length'] is '60'):
+		bookableAnnual = PatientService.canBookAnnual(data['hcnumber'])
+	
 	success = AppointmentService.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
 	if success:
 		message = "Appointment has been created"
 	else:
-		message = "Appointment already exists or there are no doctors/rooms available. If annual appointment, may not have been a year yet."
+		message = "Appointment already exists or there are no doctors/rooms available, or annual cannot be booked."
 
-	response = json.dumps({"success":success, "message":message, "info":info})
+	response = json.dumps({"success":success, "message":message, "bookableAnnual":bookableAnnual})
 	return response
 
 # Returns an array of appointments consisting of the patient specified
@@ -119,7 +122,11 @@ def updateAppointment():
 	print(data)
 	success = False
 	appointment = None
+	bookableAnnual=None
 
+	if (data['length'] is '60'):
+		bookableAnnual = PatientService.canBookAnnual(data['hcnumber'])
+	
 	if AppointmentService.getAppointment(data['id']) is not None:
 		success = AppointmentService.updateAppointment(data['id'], data['hcnumber'], data['length'], data['time'], data['date'])
 	if success:
@@ -128,7 +135,7 @@ def updateAppointment():
 	else:
 		message = 'Appointment has not been updated.'
 
-	response = json.dumps({"success": success, "message":message, "appointment":appointment})
+	response = json.dumps({"success": success, "message":message, "appointment":appointment, "bookableAnnual":bookableAnnual})
 	return response
 
 

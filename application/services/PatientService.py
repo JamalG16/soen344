@@ -65,5 +65,11 @@ def updateAnnual(hcnumber, date):
 	if getPatient(hcnumber) is None:
 		return False
 	else:
-		PatientTDG.update(hcnumber=hcnumber, date=date)
-		return True
+		if date is not None:
+			lastannualSplit = date.split("-")
+			date = datetime.datetime.strptime(lastannualSplit[0] + lastannualSplit[1] + lastannualSplit[2], '%Y%m%d').date()
+			PatientTDG.update(hcnumber=hcnumber, date=date)
+			return True
+		else:
+			PatientTDG.update(hcnumber=hcnumber, date=None)
+			return True
