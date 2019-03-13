@@ -23,7 +23,7 @@ def getCommonTimeslots(timeslot1, timeslot2):
     booleanList2 = filterOutBooleanList(timeslot2)
     commonList=[]
     for x in range(len(booleanList1)):
-        commonList.append(booleanList1[x]==booleanList2[x])
+        commonList.append(booleanList1[x] & booleanList2[x])
     return commonList
 
 def concatenateBooleanLists(booleanList1, booleanList2):

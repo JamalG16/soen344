@@ -65,7 +65,7 @@ class CalendarPatient extends Component {
             response => {
               try{
                 if (response.success){
-                    console.log('it is a success mate' + response.listOfAvailableAppointments + response.message)
+                    console.log('it is a success mate')
                     this.setState({availableTimeSlots: response.listOfAvailableAppointments})
                     let data1 = [] //for checkups
                     let data2 = [] //for annuals

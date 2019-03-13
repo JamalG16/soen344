@@ -1,6 +1,7 @@
 import {Component} from "react";
 import React from "react";
 import {Table, Button, Checkbox, Modal, Input, Popconfirm, message} from 'antd';
+import { Alert } from 'react-bootstrap'
 import { fetchAPI } from '../utility'
 import 'antd/es/table/style/index.css';
 import 'antd/es/modal/style/index.css';
@@ -11,9 +12,16 @@ import 'antd/es/popconfirm/style/css.js';
 class AppointmentCart extends Component {
     constructor(props) {
         super(props);
-        this.state = { visible: false, length: '', date:'', time:'' }
+        this.state = { visible: false, 
+            length: '', 
+            date:'', 
+            time:'',
+            //alert notifies if appointment already exists
+            alert: false,
+            success: false }
         this.onCheckout = this.onCheckout.bind(this)
         this.TableGenerator = this.TableGenerator.bind(this)
+        
     }
 
     showModal = () => {
@@ -110,12 +118,14 @@ class AppointmentCart extends Component {
                 if (response.success){
                     console.log('it is a success mate')
                     if (this.state.length=='20')
-                     this.onRemove(['Checkup', this.state.date, this.state.time])
+                        this.onRemove(['Checkup', this.state.date, this.state.time])
                     else
-                     this.onRemove(['Annual', this.state.date, this.state.time])
+                        this.onRemove(['Annual', this.state.date, this.state.time])
+                    this.setState({alert: false, success: true})
                 }
                 else {
                   console.log('it is a fail mate' + response.message + response.info);
+                  this.setState({alert: true, success: false})
                 }
               } catch(e){console.error("Error", e)}
             }
@@ -123,9 +133,26 @@ class AppointmentCart extends Component {
     }
 
     render() {
+        let alert, success;
+
+        if (this.state.alert){
+            alert = <div className="flash animated" id="welcome"><Alert bsStyle="warning">Appointment time is not available anymore.</Alert></div>
+        }
+        else{
+            alert = null
+        }
+          
+        if (this.state.success){
+            success = <div className="flash animated" id="welcome"><Alert bsStyle="success">Appointment created!</Alert></div>
+        }
+        else{
+            success = null
+        }
 
         return (
             <div>
+                {alert}
+                {success}
                 <h1>Appointment Cart</h1>
                 {this.TableGenerator()}
                 <Modal

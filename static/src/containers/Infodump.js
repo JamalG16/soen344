@@ -20,7 +20,6 @@ class infodump extends Component {
     this.addRoom()
     this.addDoctor()
     this.addNurse()
-    this.book()
   }
 
   /* 
@@ -154,29 +153,6 @@ class infodump extends Component {
             }
             else {
               console.log('it is a fail mate');
-            }
-          } catch(e){console.error("Error", e)}
-        }
-      ).catch((e)=>console.error("Error:", e))
-  }
-  async book(){
-
-    let appointment= {
-      hcnumber: 'LOUX 0803 2317',
-      length: '20',
-      time: '8:00',
-      date: '2019-04-01'
-    }
-    fetchAPI("PUT", "/api/appointment/book", appointment).then(
-        response => {
-          try{
-            if (response.success){
-              console.log('it is a success matie!')
-              this.setState({sendDataAns: response.message})
-            }
-            else {
-              console.log('it is a fail matie!');
-              console.log(response.message)
             }
           } catch(e){console.error("Error", e)}
         }
