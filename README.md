@@ -14,7 +14,7 @@
 ## Requirements
 
 * Node v10.15.1
-* Python 3.6.4
+* Python 3.6.4 and higher
 
 ## Frontend and Backend Installation
 
