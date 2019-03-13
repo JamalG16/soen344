@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl, ControlLabel, Alert } from "react-bootstrap";
-import { fetchAPI } from '../utility'
-import { login } from '../../actions/auth'
+import { fetchAPI } from '../../utility'
+import { login } from '../../../actions/auth'
 import "./login.css";
 import { connect } from 'react-redux'
 

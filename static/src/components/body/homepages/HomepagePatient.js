@@ -3,7 +3,7 @@ import React from "react";
 import {Card, Modal, Button} from 'antd';
 import 'antd/es/card/style/index.css';
 import 'antd/es/modal/style/index.css';
-import {fetchAPI} from "../../utility";
+import {fetchAPI} from "./../../utility";
 
 class HomepagePatient extends Component {
  constructor(props) {
@@ -14,8 +14,8 @@ class HomepagePatient extends Component {
             isLoading: true
         };
         this.handleAppointmentsPatient();
+        this.cancel = this.cancel.bind(this)
     }
-
 
     async handleAppointmentsPatient(){
      let route = "/api/appointment/check?hcnumber=" + this.props.user.hcnumber;
@@ -38,13 +38,33 @@ class HomepagePatient extends Component {
         ).catch((e)=>console.error("Error getting appointments for patient:", e))
     }
 
+    async cancel(id){
+        let data = {id: id}
+        fetchAPI("DELETE", '/api/appointment/cancel', data).then(
+            response => {
+                try{
+                    if(response.success){
+                        this.setState({
+                            appointments: response.appointments
+                        });
+                        console.log("Patient " + this.props.user.hcnumber + " successfully cancelled appointment")
+                    }
+                    else {
+                        console.log("Patient " + this.props.user.hcnumber + " failed to cancel appointments")
+                    }
+                    this.handleAppointmentsPatient();
+                } catch(e) {console.error("Error getting appointments for patient:", e)}
+            }
+        ).catch((e)=>console.error("Error getting appointments for patient:", e))
+    }
+
     async generateCardList() {
-     let appointmentsAsCards = this.state.appointments.map(function (appointment) {
+     let appointmentsAsCards = this.state.appointments.map((appointment) => {
          return (
              <div>
                  <Card
                     title={appointment.date}
-                    extra={<a href="#">edit</a>}
+                    extra={<a href="" onClick={() => this.cancel(appointment.id)}>cancel</a>}
                     style={{ width: 800 }}>
                      <p>{appointment.length} minute appointment with doctor id: {appointment.doctor_permit_number}</p>
                      <p>Room: {appointment.room}</p>

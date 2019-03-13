@@ -1,6 +1,6 @@
 import {Component} from "react";
 import React from "react";
-import { Calendar, Alert , Table, Button, Tabs, Radio, Typography, Divider} from 'antd';
+import { Calendar, Alert , Table} from 'antd';
 import * as moment from 'moment';
 import 'antd/es/calendar/style/index.css';
 import 'antd/es/alert/style/index.css';
@@ -14,7 +14,7 @@ import 'antd/es/tabs/style/index.css';
 import 'antd/es/radio/style/index.css';
 import 'antd/es/typography/style/index.css';
 
-class CalendarNurse extends Component {
+class CalendarDoctor extends Component {
 
     state = {
         current : moment(),
@@ -168,4 +168,4 @@ function AppointmentTable(props) {
     );
 }
 
-export default CalendarNurse;
+export default CalendarDoctor;

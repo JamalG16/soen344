@@ -1,7 +1,8 @@
 import {Component} from "react";
 import React from "react";
 import {Table, Button, Checkbox, Modal, Input, Popconfirm, message} from 'antd';
-import * as moment from 'moment';
+import { Alert } from 'react-bootstrap'
+import { fetchAPI } from '../utility'
 import 'antd/es/table/style/index.css';
 import 'antd/es/modal/style/index.css';
 import 'antd/es/message/style/index.css';
@@ -9,8 +10,19 @@ import 'antd/es/popconfirm/style/css.js';
 
 
 class AppointmentCart extends Component {
-
-    state = { visible: false , selected: {}}
+    constructor(props) {
+        super(props);
+        this.state = { visible: false, 
+            length: '', 
+            date:'', 
+            time:'',
+            //alert notifies if appointment already exists
+            alert: false,
+            success: false }
+        this.onCheckout = this.onCheckout.bind(this)
+        this.TableGenerator = this.TableGenerator.bind(this)
+        
+    }
 
     showModal = () => {
         this.setState({
@@ -19,17 +31,39 @@ class AppointmentCart extends Component {
     }
 
     handleOk = (e) => {
-        console.log(e);
         this.setState({
             visible: false,
         });
+        this.checkout()
     }
 
     handleCancel = (e) => {
-        console.log(e);
         this.setState({
             visible: false,
+            length: '',
+            date: '',
+            time: '',
         });
+    }
+
+    onCheckout(appointment){
+        if (appointment[0] == 'Checkup'){
+            this.setState({length:'20', date: appointment[1], time: appointment[2]})
+            this.showModal()
+        }
+        if (appointment[0] == 'Annual'){
+            this.setState({length:'60', date: appointment[1], time: appointment[2]})
+            this.showModal()
+        }
+    }
+    
+    onRemove(appointment){
+        this.setState({
+            length: '',
+            date: '',
+            time: '',
+        });
+        this.props.removeFromCart(appointment)
     }
 
     TableGenerator() {
@@ -48,26 +82,26 @@ class AppointmentCart extends Component {
                 title: 'Price',
                 dataIndex: 'price',
             }, {
-                title: <div style={{float: 'right'}}>Select</div>,
-                dataIndex: 'select'
+                title: <div style={{float: 'left'}}>Action</div>,
+                dataIndex: 'button'
             }
         ];
 
-        const data = [{
-            type: 'Annual',
-            time: moment().format('HH:MM'),
-            date: '5th of March',
-            price: '50$',
-            select: <Checkbox style={{float: 'right'}} onChange={onChange}></Checkbox>
-        },
-            {
-                type: 'Check-In',
-                time: moment().format('HH:MM'),
-                date: '5th of March',
+        const data = []
+        this.props.cart.map((appointment) => {
+            data.push({
+                type: appointment[0],
+                time: appointment[2],
+                date: appointment[1],
                 price: '50$',
-                select: <Checkbox style={{float: 'right'}} onChange={onChange}></Checkbox>
-            }
-        ];
+                button: <div>
+                    <Button type="primary" icon="minus" style={{float: 'left'}} size="large" onClick={() => 
+                    this.onRemove(appointment)}>Remove</Button>
+                    <Button type="primary" icon="plus" style={{float: 'right'}} size="large" onClick={() => 
+                    this.onCheckout(appointment)}>Checkout</Button>
+                    </div>
+            })
+        })
 
         return (
             <div>
@@ -76,16 +110,51 @@ class AppointmentCart extends Component {
         );
     }
 
+    async checkout(){
+        let appointment = {hcnumber: this.props.user.hcnumber, length: this.state.length, time:this.state.time , date:this.state.date }
+        fetchAPI("PUT", "/api/appointment/book", appointment).then(
+            response => {
+              try{
+                if (response.success){
+                    console.log('it is a success mate')
+                    if (this.state.length=='20')
+                        this.onRemove(['Checkup', this.state.date, this.state.time])
+                    else
+                        this.onRemove(['Annual', this.state.date, this.state.time])
+                    this.setState({alert: false, success: true})
+                }
+                else {
+                  console.log('it is a fail mate' + response.message + response.info);
+                  this.setState({alert: true, success: false})
+                }
+              } catch(e){console.error("Error", e)}
+            }
+          ).catch((e)=>console.error("Error:", e))
+    }
+
     render() {
+        let alert, success;
+
+        if (this.state.alert){
+            alert = <div className="flash animated" id="welcome"><Alert bsStyle="warning">Appointment time is not available anymore.</Alert></div>
+        }
+        else{
+            alert = null
+        }
+          
+        if (this.state.success){
+            success = <div className="flash animated" id="welcome"><Alert bsStyle="success">Appointment created!</Alert></div>
+        }
+        else{
+            success = null
+        }
 
         return (
             <div>
+                {alert}
+                {success}
                 <h1>Appointment Cart</h1>
                 {this.TableGenerator()}
-                <Popconfirm title="Are you sure you want to remove these?" onConfirm={confirmation}  okText="Yes" cancelText="No">
-                    <Button style={{float:'right', color:'red'}} size="large">Remove</Button>
-                </Popconfirm>
-                <Button style={{float:'right', color:'blue'}} onClick={this.showModal} size="large">Check-Out</Button>
                 <Modal
                     title="Credit Card Information"
                     visible={this.state.visible}
@@ -110,10 +179,6 @@ class AppointmentCart extends Component {
             </div>
         );
     }
-}
-
-function onChange(e) {
-    console.log(`checked = ${e.target.checked}`);
 }
 
 function confirmation() {

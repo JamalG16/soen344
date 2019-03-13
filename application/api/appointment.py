@@ -133,12 +133,18 @@ def updateAppointment():
 
 
 # /api/appointment/find?date=<insert_date_here>
-@appointment.route('/api/appointment/find', methods=['GET'])
+@appointment.route('/api/appointment/find', methods=['POST'])
 def findAppointments():
-	date = request.args.get('date')
+	data = request.data
+	data  = data.decode('utf8').replace("'",'"')
+	data = json.loads(data)
+	date = data['date']
+	message = "hi"
+	success = False
 	if(date is None):
 		message = 'Enter a date to find the appointments for'
 		return message, 404
+
 	availableDoctorPermitNumbers = DoctorScheduleService.getAllAvailableDoctorPermitsByDate(date)
 	availableRoomNumbers = RoomService.getAllRoomNumbers()
 	if(availableDoctorPermitNumbers is None):
@@ -151,5 +157,6 @@ def findAppointments():
 	if listOfAvailableAppointments is None:
 		return 204
 	else:
-		response = json.dumps({"listOfAvailableAppointments": listOfAvailableAppointments, "date":date})
+		success = True
+		response = json.dumps({"success":success, "listOfAvailableAppointments": listOfAvailableAppointments, "date":date, "message":message})
 		return response,200

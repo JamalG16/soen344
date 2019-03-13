@@ -19,9 +19,7 @@ class infodump extends Component {
     this.registerAdmin()
     this.addRoom()
     this.addDoctor()
-    this.checkAvailabilities()
     this.addNurse()
-    this.book()
   }
 
   /* 
@@ -75,14 +73,6 @@ class infodump extends Component {
           } catch(e){console.error("Error", e)}
         }
       ).catch((e)=>console.error("Error:", e))
-  }
-
-  async checkAvailabilities(){
-    fetchAPI("GET","/api/appointment/find?date=02-03-2019").then(
-        response => {
-          console.log(response.httpRequestStatusCode)
-        }
-    )
   }
 
   async addRoom(){
@@ -163,29 +153,6 @@ class infodump extends Component {
             }
             else {
               console.log('it is a fail mate');
-            }
-          } catch(e){console.error("Error", e)}
-        }
-      ).catch((e)=>console.error("Error:", e))
-  }
-  async book(){
-
-    let appointment= {
-      hcnumber: 'LOUX 0803 2317',
-      length: '20',
-      time: '8:00',
-      date: '2019-04-01'
-    }
-    fetchAPI("PUT", "/api/appointment/book", appointment).then(
-        response => {
-          try{
-            if (response.success){
-              console.log('it is a success matie!')
-              this.setState({sendDataAns: response.message})
-            }
-            else {
-              console.log('it is a fail matie!');
-              console.log(response.message)
             }
           } catch(e){console.error("Error", e)}
         }

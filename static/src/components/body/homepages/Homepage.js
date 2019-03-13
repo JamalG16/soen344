@@ -27,9 +27,13 @@ class Homepage extends Component {
                 <HomepageNurse user={this.props.user}/>
             </div>
         //if admin is logged in
+        } else if (typeof(this.props.user.username) !== 'undefined') {
+            homepage = <div>
+                <p> hello administrator!</p>
+            </div>
         } else {
                homepage = <div>
-                <p>You're not logged in!</p>
+                <p>welcome guest, please log in or register!</p>
             </div>
         }
            return homepage;

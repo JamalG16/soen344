@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux'
-import { FormGroup, FormControl, ControlLabel, Button, Alert } from "react-bootstrap";
-import { fetchAPI } from '../utility'
+import { fetchAPI } from '../../utility'
 import './update_availability.css'
 
 class UpdateAvailability extends Component {
@@ -23,7 +22,8 @@ class UpdateAvailability extends Component {
    }
 
    async updateAvailability(){
-    var date =  "-" + ((this.state.month < 10)? "0"+this.state.month : this.state.month) + "-" + ((this.state.day < 10)? "0"+this.state.day : this.state.day)
+    var month = parseInt(this.state.month) + 1
+    var date =  "-" + ((month < 10)? "0"+month : month) + "-" + ((this.state.day < 10)? "0"+this.state.day : this.state.day)
     var now = new Date()
     var year = now.getFullYear()
     if (now.getMonth() > this.state.month) {
@@ -53,7 +53,15 @@ class UpdateAvailability extends Component {
     if (this.state.day == -1 || this.state.month == -1) {
         return
     }
-    var date =  "-" + ((this.state.month < 10)? "0"+this.state.month : this.state.month) + "-" + ((this.state.day < 10)? "0"+this.state.day : this.state.day)
+
+    const list = this.state.buttons.map(item => { return (false)
+                                         });
+      this.setState({
+            buttons: list
+      }, () => {});
+
+    var month = parseInt(this.state.month) + 1
+    var date =  "-" + ((month < 10)? "0"+month : month) + "-" + ((this.state.day < 10)? "0"+this.state.day : this.state.day)
     var now = new Date()
     var year = now.getFullYear()
     if (now.getMonth() > this.state.month) {
@@ -239,46 +247,49 @@ class UpdateAvailability extends Component {
     }
 
     render() {
-
-        if (this.state.month == -1) {
-        return (
-                <div>
-                    {this.getMonths()}
-                </div>
-        );
-        } else if (this.state.day == -1) {
-        return (
-                <div>
-                    {this.getMonths()}
-                    {this.getDays()}
-                </div>
-        );
-        } else {
-        return (
-            <div>
-                <div>
+        if (!(Object.keys(this.props.user).length === 0 && this.props.user.constructor === Object) && typeof(this.props.user.permit_number) !== 'undefined'){
+            if (this.state.month == -1) {
+            return (
+                    <div>
+                        {this.getMonths()}
+                    </div>
+            );
+            } else if (this.state.day == -1) {
+            return (
                     <div>
                         {this.getMonths()}
                         {this.getDays()}
-                        <button onClick={this.updateAvailability}>update</button>
                     </div>
+            );
+            } else {
+            return (
+                <div>
                     <div>
-                        {this.state.update_success}
-                    </div>
-                    <div>
-                        <table id="example" className="display">
-                            <thead>
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Available</th>
-                                </tr>
-                            </thead>
-                            {this.getTableRows()}
-                        </table>
+                        <div>
+                            {this.getMonths()}
+                            {this.getDays()}
+                            <button onClick={this.updateAvailability}>update</button>
+                        </div>
+                        <div>
+                            {this.state.update_success}
+                        </div>
+                        <div>
+                            <table id="example" className="display">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Available</th>
+                                    </tr>
+                                </thead>
+                                {this.getTableRows()}
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
-            );
+                );
+            }
+        } else {
+            return(<a href="/Homepage">Are you lost? go back to homepage</a>);
         }
     }
 }

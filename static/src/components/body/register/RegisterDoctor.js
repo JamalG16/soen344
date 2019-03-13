@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { FormGroup, FormControl, ControlLabel, Button, Alert } from "react-bootstrap";
-import { fetchAPI } from '../utility'
+import { fetchAPI } from '../../utility'
 import './register.css'
 
 class RegisterDoctor extends Component {
