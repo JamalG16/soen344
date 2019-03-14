@@ -79,3 +79,32 @@ def userAuthenticate():
 	response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
 	return response
 
+@patient.route('/api/patient/find/', methods=httpMethods)
+def userFind():
+
+	# convert request data to dictionary
+	data = toDict(request.data)
+
+	success = False  
+	message = "" 
+	status = ""  # OK, DENIED, WARNING
+	response = {}  
+
+	# check if user exists
+	
+	# check if health card number exists
+	success = PatientService.patientExists(data['hcnumber'])
+	
+	# if health card number exists & authenticated, then get the patient
+	if success:
+		message = "Patient found."
+		status = "OK"
+		response = json.dumps({'success': success, 'status': status, 'message': message})
+	# else the user is not authenticated, request is denied
+	else:
+		message = "Patient not found."
+		status = "DENIED"
+
+	response = json.dumps({'success': success, 'status': status, 'message': message})
+	return response
+

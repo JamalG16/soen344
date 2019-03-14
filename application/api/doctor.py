@@ -147,3 +147,30 @@ def getAvailability():
 
     response = json.dumps({'success': success, 'status': status, 'message': message, 'schedule': schedule})
     return response
+
+@doctor.route('/api/doctor/find/', methods=['POST'])
+def userFind():
+
+    # convert request data to dictionary
+    data = toDict(request.data)
+
+    success = False
+    message = ""
+    status = ""  # OK, DENIED, WARNING
+    response = {}
+
+    # check if permit number exists
+    success = DoctorService.doctorExists(data['permit_number'])
+
+    # if permit number exists & authenticated, then get the patient
+    if success:
+        message = "Doctor found."
+        status = "OK"
+        response = json.dumps({'success': success, 'status': status, 'message': message})
+    # else the user is not authenticated, request is denied
+    else:
+        message = "Doctor not found."
+        status = "DENIED"
+
+    response = json.dumps({'success': success, 'status': status, 'message': message})
+    return response

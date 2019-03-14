@@ -13,10 +13,6 @@ class PatientMenu extends Component {
             <Link to="/UpdateAvailability">
                         Update Availability
                     </Link>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-             <Link to="/CalendarDoctor">
-                Schedule
-            </Link>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <Link to="/" onClick={logOut}>
                 Logout
