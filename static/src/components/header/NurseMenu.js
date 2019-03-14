@@ -10,10 +10,6 @@ class PatientMenu extends Component {
             Welcome {this.props.user.fname}!
             &nbsp;&nbsp;&nbsp;&nbsp;
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-             <Link to="/CalendarNurse">
-                Appointments
-            </Link>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <Link to="/" onClick={logOut}>
                 Logout
             </Link>

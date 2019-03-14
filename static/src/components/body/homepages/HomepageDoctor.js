@@ -44,7 +44,6 @@ class HomepageDoctor extends Component {
              <div>
                  <Card
                     title={appointment.date}
-                    extra={<a href="#">edit</a>}
                     style={{ width: 800 }}>
                      <p>{appointment.length} minute appointment with patient: {appointment.patient_hcnumber}</p>
                      <p>Room: {appointment.room}</p>
