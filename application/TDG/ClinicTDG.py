@@ -1,0 +1,20 @@
+from application.models.Clinic import Clinic
+from index import db
+
+# Returns clinic if found
+def find(id):
+	return Clinic.query.filter_by(id=id).first()
+
+def findByData(name, address):
+    return Clinic.query.filter_by(name=name, address=address).first()
+
+# returns all clinics
+def findAll():
+    return Clinic.query.all()
+
+def create(id, name, address):
+    newClinic = Clinic(id=id, name=name, address=address)
+    # Add it to the database
+    db.session.add(newClinic)
+	# Commit it
+    db.session.commit()
