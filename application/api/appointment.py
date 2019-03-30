@@ -63,7 +63,8 @@ def newAppointmentByDoctor():
     date = data['date']
     time = data['time']
     appointment_type = data['appointment_type']
-    if appointment_type is 'annual':
+    patientExists = True
+    if appointment_type is 'Annual':
         length = 60
     else:
         length = 20
@@ -77,13 +78,14 @@ def newAppointmentByDoctor():
         return response, status_code
     if not PatientService.patientExists(patient_health_card_number):
         message = "Patient " + doctor_permit_number + " doesn't exist."
+        patientExists = False
         success = False
         status_code = 404
-        response = json.dumps({"success": success, "message": message})
+        response = json.dumps({"success": success, "message": message, "patientExists": patientExists})
         return response, status_code
 
     #finding out if the doctor is available
-    if appointment_type is 'annual':
+    if appointment_type is 'Annual':
         doctor_is_available = DoctorScheduleService.isDoctorAvailableForAnnual(permit_number=doctor_permit_number,
                                                                                date=date, time=time)
     else:
@@ -97,13 +99,13 @@ def newAppointmentByDoctor():
         message="Appointment has been booked successfully"
         success=True
         status_code=200
-        response = json.dumps({"success": success, "message": message})
+        response = json.dumps({"success": success, "message": message, "patientExists": patientExists})
         return response, status_code
     else:
         message = "Doctor is not available at this time"
         success = False
         status_code = 200
-        response = json.dumps({"success": success, "message": message})
+        response = json.dumps({"success": success, "message": message, "patientExists": patientExists})
         return response, status_code
 
 

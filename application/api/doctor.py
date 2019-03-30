@@ -162,7 +162,7 @@ def userFind():
     # check if permit number exists
     success = DoctorService.doctorExists(data['permit_number'])
 
-    # if permit number exists & authenticated, then get the patient
+    # if permit number exists & authenticated, then get the doctor
     if success:
         message = "Doctor found."
         status = "OK"
@@ -174,9 +174,3 @@ def userFind():
 
     response = json.dumps({'success': success, 'status': status, 'message': message})
     return response
-
-@doctor.route('/api/doctor/book/',methods=['POST'])
-def appointmentBook():
-    data = toDict(request.data)
-    doctor_permit_number = data['permit_number']
-    patient_health_card_number = data['hcnumber']
