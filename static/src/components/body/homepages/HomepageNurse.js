@@ -2,9 +2,9 @@ import {Component} from "react";
 import React from "react";
 import {Tab, Tabs, Button, FormControl, FormGroup, ControlLabel, Alert} from "react-bootstrap";
 import {fetchAPI} from '../../utility'
-import HomePagePatient from './HomepagePatient'
 import HomepageDoctor from "./HomepageDoctor";
 import BookPatient from "./../nurse views/BookPatient"
+import AppointmentsPatient from "../nurse views/AppointmentsPatient";
 
 class HomepageNurse extends Component {
     constructor(props){
@@ -18,7 +18,12 @@ class HomepageNurse extends Component {
             user: {permit_number: '', hcnumber: ''},
             update: false
         }
-        this.updatePatientInformation = this.updatePatientInformation.bind(this)
+        this.handleUpdate = this.handleUpdate.bind(this)
+    }
+
+    handleUpdate() {
+        this.setState({update: true})
+        this.setState({update: false})
     }
 
     handleChange = event => {
@@ -92,8 +97,8 @@ class HomepageNurse extends Component {
 
         if (this.state.foundPatient){
             successPatient = <div className="flash animated" id="welcome"><Alert bsStyle="success">Patient has been found.</Alert></div>
-            patientHomePage = <HomePagePatient user={this.state.user}></HomePagePatient>
-            patientBooking = <BookPatient user={this.state.user}></BookPatient>
+            patientHomePage = <AppointmentsPatient user={this.state.user} update={this.state.update} handleUpdate={this.handleUpdate}></AppointmentsPatient>
+            patientBooking = <BookPatient user={this.state.user} update={this.state.update} handleUpdate={this.handleUpdate}></BookPatient>
         }
         else{
             successPatient = null

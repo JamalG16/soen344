@@ -35,6 +35,12 @@ class BookPatient extends Component {
         this.getTimeSlots(moment())
     }
 
+    componentWillReceiveProps(nextProps) {
+        if(this.props !== nextProps){
+          this.getTimeSlots(this.state.selectedValue)
+        }
+    }
+
     onSelect = (value) => {
         this.setState({
         value,
@@ -64,6 +70,7 @@ class BookPatient extends Component {
                     console.log('it is a success mate')
                     message.info('Booked a(n) ' + appointment[0] + ' appointment on ' + appointment[1] + ' at ' + appointment[2] + ' for ' + this.props.user.hcnumber + '.')
                     this.getTimeSlots(this.state.selectedValue)
+                    this.props.handleUpdate()
                 }
                 else {
                   console.log('it is a fail mate' + response.message + response.info);
