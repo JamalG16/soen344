@@ -92,6 +92,21 @@ class infodump extends Component {
           } catch(e){console.error("Error", e)}
         }
       ).catch((e)=>console.error("Error:", e))
+      
+      room = {roomNumber:'5'}
+      fetchAPI("PUT", "/api/room/", room).then(
+        response => {
+          try{
+            if (response.success){
+              console.log('it is a success mate')
+              this.setState({sendDataAns: response.message})
+            }
+            else {
+              console.log('it is a fail mate');
+            }
+          } catch(e){console.error("Error", e)}
+        }
+      ).catch((e)=>console.error("Error:", e))
   }
   async addDoctor(){
     let doctor= {
