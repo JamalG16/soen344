@@ -174,3 +174,9 @@ def userFind():
 
     response = json.dumps({'success': success, 'status': status, 'message': message})
     return response
+
+@doctor.route('/api/doctor/book/',methods=['POST'])
+def appointmentBook():
+    data = toDict(request.data)
+    doctor_permit_number = data['permit_number']
+    patient_health_card_number = data['hcnumber']

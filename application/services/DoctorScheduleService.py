@@ -38,6 +38,14 @@ def isDoctorAvailable(permit_number, date, time):
     else:
         return None
 
+def isDoctorAvailableForAnnual(permit_number,date,time):
+    count=0
+    while isDoctorAvailable(permit_number,date,time) & count<3 :
+        time = getNextTimeSlot(permit_number,date,time)
+        count+=1
+    # 3 subesequent slots are available from the initial time
+    return count==3
+
 # check if there is an available doctor at a specific time. If so, return the first doctor found to be available.
 # Else, return None.
 def findDoctorAtTime(date, time):
@@ -92,7 +100,6 @@ def getNextTimeSlot(permit_number, date, time):
         else:
             index = timeSlots.index(time + ':false')
             return timeSlots[index+1][:-6] #increment the index to get next time slot
-
 
 # makes a specific timeslot available
 def makeTimeSlotAvailable(permit_number, date, time):
