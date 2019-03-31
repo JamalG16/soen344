@@ -64,7 +64,7 @@ def newAppointmentByDoctor():
     time = data['time']
     appointment_type = data['appointment_type']
     patientExists = True
-    if appointment_type is 'Annual':
+    if appointment_type == 'Annual':
         length = 60
     else:
         length = 20
@@ -85,7 +85,7 @@ def newAppointmentByDoctor():
         return response, status_code
 
     #finding out if the doctor is available
-    if appointment_type is 'Annual':
+    if appointment_type == 'Annual':
         doctor_is_available = DoctorScheduleService.isDoctorAvailableForAnnual(permit_number=doctor_permit_number,
                                                                                date=date, time=time)
     else:

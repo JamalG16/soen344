@@ -39,14 +39,14 @@ def bookAppointment(patient_hcnumber, length, time, date):
 
 
 def bookAppointmentWithASpecificDoctor(patient_hcnumber, doctor_permit_number, length, time, date):
-    if length == '20':  # checkup
+    if length == 20:  # checkup
         available_doctor = doctor_permit_number
         available_room = RoomScheduleService.findRoomAtTime(time=time, date=date)
         if available_room is None:
             return False
         return bookRegular(patient_hcnumber=patient_hcnumber, doctor_permit_number=available_doctor,
                            room_number=available_room, length=length, time=time,date=date)
-    elif length == '60':  # annual
+    elif length == 60:  # annual
         if not canBookAnnual(patient_hcnumber):
             return False
         available_doctor = doctor_permit_number
