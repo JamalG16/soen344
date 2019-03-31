@@ -21,7 +21,7 @@ def bookAppointment(patient_hcnumber, length, time, date):
     if length == '20':  # checkup
         available_doctor = DoctorScheduleService.findDoctorAtTime(date, time)
         available_room = RoomScheduleService.findRoomAtTime(time=time, date=date)
-        if available_doctor is None | available_room is None:
+        if available_doctor is None or available_room is None:
             return False
         return bookRegular(patient_hcnumber=patient_hcnumber, doctor_permit_number=available_doctor,
                            room_number=available_room, length=length, time=time,date=date)
@@ -214,7 +214,7 @@ def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList):
     available_time_slots = [False] * 36
     # preferential filtering by doctors, since they are the ones to most likely have fewer availabilities
     for permit_number in doctorPermitNumberList:
-        doctor_time_slots = DoctorScheduleService.getTimeSlotsByDateAndDoctor(permit_number, date)
+        doctor_time_slots = DoctorScheduleService.getTimeSlotsByDateAndDoctor(permit_number, date).toString().split(',')
         # for all available rooms
         # concatenate existing availabilities with the crossavailabilities of each room and the doc schedule
         for roomNumber in roomList:
