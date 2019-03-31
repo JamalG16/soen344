@@ -111,25 +111,32 @@ class HomepagePatient extends Component {
     }
 
     async generateCardList() {
-     let appointmentsAsCards = this.state.appointments.map((appointment) => {
-         return (
-             <div>
-                 <Card
-                    title={appointment.date}
-                    extra={<div>
-                            <a onClick={() => this.handleOpenModal(appointment)}>Update Appointment</a>
-                            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-                            <a onClick={() => this.cancel(appointment.id)}>Cancel Appointment</a>
-                        </div>}
-                    style={{ width: 800 }}>
-                     <p>{appointment.length} minute appointment with doctor id: {appointment.doctor_permit_number}</p>
-                     <p>Room: {appointment.room}</p>
-                     <p>Time: {appointment.time}</p>
-                </Card>
-                <br/>
-            </div>
-         )
-     });
+     let appointmentsAsCards = null;
+     if(this.state.appointments.length !== 0){
+         appointmentsAsCards = this.state.appointments.map((appointment) => {
+                     return (
+                     <div>
+                         <Card
+                             title={appointment.date}
+                             extra={<div>
+                                 <a onClick={() => this.handleOpenModal(appointment)}>Update Appointment</a>
+                                 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                                 <a onClick={() => this.cancel(appointment.id)}>Cancel Appointment</a>
+                             </div>}
+                             style={{width: 800}}>
+                             <p>{appointment.length} minute appointment with doctor
+                                 id: {appointment.doctor_permit_number}</p>
+                             <p>Room: {appointment.room}</p>
+                             <p>Time: {appointment.time}</p>
+                         </Card>
+                         <br/>
+                     </div>
+                     )
+         });
+     }
+     else{
+         appointmentsAsCards = <div>No appointments scheduled. </div>
+     }
      this.setState({cardList: appointmentsAsCards, isLoading: false})
     }
 
