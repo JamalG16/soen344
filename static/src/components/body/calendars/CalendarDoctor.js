@@ -134,6 +134,7 @@ class CalendarDoctor extends Component {
                             this.setState({inexistentPatient: false, modal: false, fail: false})
                             message.info(this.state.appointment[0] + " with " + this.state.hcnumber + " at " + 
                                 this.state.appointment[2] + " on " + this.state.appointment[1] + " has been booked.")
+                            this.getTimeSlots(this.state.selectedValue)
                         }
                         else {
                             console.log('it is a fail mate ' + response.message);
