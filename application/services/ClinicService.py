@@ -18,6 +18,12 @@ def clinicExists(name, address):
         return True
     return False
 
+def clinicExists(id):
+    clinic = ClinicTDG.find(id)
+    if clinic is not None:
+        return True
+    return False
+
 # create new clinic
 def createClinic(name, address):
     reponse = False
@@ -27,3 +33,20 @@ def createClinic(name, address):
         ClinicTDG.create(name, address)
         response = True
     return response
+
+# delete a clinic
+def deleteClinic(id):
+    reponse = False
+    if (getClinic(id) is None):
+        response = False
+    else:
+        ClinicTDG.delete(id)
+        response = True
+    return response
+
+def updateClinic(id, name, address):
+    ClinicTDG.update(id, name, address)
+    updatedClinic = ClinicTDG.getClinic(id)
+    if ((updatedClinic.name == name) & (updatedClinic.address == address)):
+        return True
+    return False
