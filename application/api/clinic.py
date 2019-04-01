@@ -85,3 +85,23 @@ def updateClinic():
     response = json.dumps(
         {"success": success, "message": message, "clinic": clinic})
     return response
+
+@clinic.route('/api/clinic/check', methods=['GET'])
+def checkClinics():
+	success = False
+	message=""
+	clinics = []
+
+	clinics = ClinicService.getAllClinics()
+	if clinics is not None:
+		success = True
+	else:
+		success = False
+
+	if success:
+		message = "Clinic(s) retrieved."
+	else:
+		message = "No clinic(s) retrieved."
+
+	response = json.dumps({"success":success, "message":message, "clinics":clinics})
+	return response
