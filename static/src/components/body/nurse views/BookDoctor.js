@@ -94,6 +94,8 @@ class BookDoctor extends Component {
     async getTimeSlots(date) {
         let data = {date: date.format('YYYY-MM-DD') }
         fetchAPI("GET", "/api/nurse/doctorAvailability?permit_number=" + this.props.user.permit_number +
+            "&access_ID=" + this.props.access_ID + 
+            "&password_hash=" + this.props.password_hash +
             "&date=" + data.date).then(
                 response => {
                     try{
@@ -139,6 +141,7 @@ class BookDoctor extends Component {
                             message.info(this.state.appointment[0] + " with " + this.state.hcnumber + " at " + 
                                 this.state.appointment[2] + " on " + this.state.appointment[1] + " has been booked.")
                             this.getTimeSlots(this.state.selectedValue)
+                            this.props.handleUpdate()
                         }
                         else {
                             console.log('it is a fail mate ' + response.message);

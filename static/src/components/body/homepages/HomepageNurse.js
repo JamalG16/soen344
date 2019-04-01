@@ -2,10 +2,10 @@ import {Component} from "react";
 import React from "react";
 import {Tab, Tabs, Button, FormControl, FormGroup, ControlLabel, Alert} from "react-bootstrap";
 import {fetchAPI} from '../../utility'
-import HomepageDoctor from "./HomepageDoctor";
 import BookPatient from "./../nurse views/BookPatient"
 import AppointmentsPatient from "../nurse views/AppointmentsPatient";
 import BookDoctor from "./../nurse views/BookDoctor"
+import AppointmentsDoctor from "../nurse views/AppointmentsDoctor";
 
 class HomepageNurse extends Component {
     constructor(props){
@@ -107,8 +107,10 @@ class HomepageNurse extends Component {
 
         if (this.state.foundDoctor){
             successDoctor = <div className="flash animated" id="welcome"><Alert bsStyle="success">Doctor has been found.</Alert></div>
-            doctorHomePage = <HomepageDoctor user={this.state.user}></HomepageDoctor>
-            doctorBooking = <BookDoctor user={this.state.user} update={this.state.update} handleUpdate={this.handleUpdate}></BookDoctor>
+            doctorHomePage = <AppointmentsDoctor user={this.state.user} update={this.state.update} handleUpdate={this.handleUpdate}
+                access_ID={this.props.user.access_ID} password_hash={this.props.user.password_hash}></AppointmentsDoctor>
+            doctorBooking = <BookDoctor user={this.state.user} update={this.state.update} handleUpdate={this.handleUpdate}
+                access_ID={this.props.user.access_ID} password_hash={this.props.user.password_hash}></BookDoctor>
         }
         else{
             successDoctor = null

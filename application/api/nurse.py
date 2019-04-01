@@ -88,7 +88,8 @@ def getDoctorAvailability():
     schedule = {}
 
     # check if permit number exists
-    success = DoctorService.doctorExists(data['permit_number'])
+    success = DoctorService.doctorExists(data['permit_number']) and \
+                NurseService.verifyHash(data['access_ID'], data['password_hash'])
 
     # if permit number exists, get the doctor's timeslots
     if success:
