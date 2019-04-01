@@ -28,6 +28,7 @@ class CalendarPatient extends Component {
             availableTimeSlots: [],
             display1: [], //for checkups
             display2: [], //for annuals
+            clinic: []
         }
     }
     
@@ -109,6 +110,19 @@ class CalendarPatient extends Component {
 
         return (
             <table>
+                <tr>
+                    <td colSpan={2}>
+                        Select the clinic you want to visit.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <Radio.Group value={size} onChange={this.onChange} style={{ marginBottom: 16 }}>
+                            <Radio.Button value="Clinic_1">Clinic 1</Radio.Button>
+                            <Radio.Button value="Clinic_2">Clinic 2</Radio.Button>
+                        </Radio.Group>
+                    </td>
+                </tr>
                 <tr>
                     <td colSpan={2}>
                         Select the type of appointment you want to book.
