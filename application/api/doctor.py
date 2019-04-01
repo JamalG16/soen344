@@ -99,12 +99,11 @@ def setAvailability():
 
     # if permit number exists & authenticated, then get the patient
     if success:
-        success = DoctorScheduleService.setAvailability(data['permit_number'], data["date"], data["timeslots"])
-        if success:
-            message = "Availability Modified."
+        returned = DoctorScheduleService.setAvailability(data['permit_number'], data["date"], data["timeslots"])
+        message = returned['message']
+        if returned['success']:
             status = "OK"
         else:
-            message = "Availability Not Modified, conflict in schedule with 7 doctors or more."
             status = "DENIED"
 
         response = json.dumps({'success': success, 'status': status, 'message': message, 'user': user})
