@@ -1,5 +1,6 @@
 from application.TDG import DoctorScheduleTDG
 from application.services.DoctorService import getAllDoctors, getDoctor, getAllDoctorPermits
+from application.services.AppointmentService import getDoctorAppointments
 from application.util.Schedule import Schedule, Timeslot, ScheduleIterator
 
 # Create an with all possible timeslots and unavailable by default
@@ -137,10 +138,33 @@ def makeTimeSlotUnavailableAnnual(permit_number, date, time):
 # Given an array of timeslots, a date and a permit number, create schedules for time slots in the date.
 def setAvailability(permit_number, date, timeslots):
     schedule_timeslots = getTimeSlotsByDateAndDoctor(permit_number, date)
+    return_value = {}
     # should not happend
     if schedule_timeslots is None:
         createTimeSlots(permit_number, date)
         schedule_timeslots = getTimeSlotsByDateAndDoctor(permit_number, date)
+    else:  # verify that if a doctor wants to make himself available during an already made appointment he can't
+        doctor_appointment = getDoctorAppointments(permit_number)
+        new_schedule = createFromBooleanArray(timeslots)
+        for appointment in doctor_appointment:
+            if appointment['date'] == date:
+                for index in range(0, appointment['length'], 20):
+                    minutes = int(appointment['time'][len(appointment['time']) - 2:]) + index
+                    hours = int(appointment['time'][:len(appointment['time']) - 3])
+                    if minutes >= 60:
+                        hours += 1
+                        minutes -= 60
+
+                    if minutes == 0:
+                        minutes = '00'
+                    else:
+                        minutes = str(minutes)
+                    hours = str(hours)
+                    if new_schedule.getTimeslots()[new_schedule.indexForTime(hours + ':' + minutes)].isAvailable():
+                        return_value['success'] = False
+                        return_value['message'] = "Availability Not Modified, one or more timeslot to be made " \
+                                                  "available was in conflict with an existing appointment."
+                        return return_value
 
     doctors_schedule = DoctorScheduleTDG.getAllSchedulesByDateExceptDoctor(date, permit_number)
     timeslot_iterator = schedule_timeslots.getIterator()
@@ -158,7 +182,10 @@ def setAvailability(permit_number, date, timeslots):
                     number_of_doctor = number_of_doctor + 1
 
             if number_of_doctor >= 7:
-                return False
+                return_value['success'] = False
+                return_value['message'] = "Availability Not Modified, conflict in schedule with 7 doctors " \
+                                          "or more."
+                return return_value
 
             old_value.setAvailable(True)
         else:
@@ -166,7 +193,9 @@ def setAvailability(permit_number, date, timeslots):
         i = i+1
 
     DoctorScheduleTDG.update(permit_number, date, schedule_timeslots.toString())
-    return True
+    return_value['success'] = True
+    return_value['message'] = "Availability Modified."
+    return return_value
 
 
 # Given a date and a permit number, create schedules for time slots in the date.

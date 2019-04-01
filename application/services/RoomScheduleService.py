@@ -50,10 +50,10 @@ def findRoomForAnnual(date, time):
 		if isRoomAvailable(roomNumber=room.roomNumber, date=date, time=time):
 			roomNumbers.append(room.roomNumber)
 	for roomNumber in roomNumbers:
-		nextTimeSlot = getNextTimeSlot(roomNumber=roomNumber, date=date, time=time)
+		nextTimeSlot = getNextTimeSlot(roomNumber=roomNumber, date=date, time=time).getTime()
 		if nextTimeSlot is not None:
 			if isRoomAvailable(roomNumber=roomNumber, date=date, time=nextTimeSlot):
-				nextTimeSlot = getNextTimeSlot(roomNumber=roomNumber, date=date, time=nextTimeSlot)
+				nextTimeSlot = getNextTimeSlot(roomNumber=roomNumber, date=date, time=nextTimeSlot).getTime()
 				if nextTimeSlot is not None:
 					if isRoomAvailable(roomNumber=roomNumber, date=date, time=nextTimeSlot):
 						return roomNumber
