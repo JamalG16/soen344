@@ -162,7 +162,7 @@ def userFind():
     # check if permit number exists
     success = DoctorService.doctorExists(data['permit_number'])
 
-    # if permit number exists & authenticated, then get the patient
+    # if permit number exists & authenticated, then get the doctor
     if success:
         message = "Doctor found."
         status = "OK"

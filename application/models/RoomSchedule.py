@@ -1,6 +1,4 @@
 from index import db
-from datetime import datetime
-from datetime import time
 
 class RoomSchedule(db.Model):
     roomNumber = db.Column(db.String(), nullable=False, primary_key=True)
