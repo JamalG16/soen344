@@ -1,10 +1,10 @@
 from application.TDG import RoomTDG
 
-def roomExists(roomNumber):
-	return RoomTDG.find(roomNumber) is not None
+def roomExists(roomNumber, clinic):
+	return RoomTDG.find(roomNumber, clinic) is not None
 
-def getRoom(roomNumber):
-	return RoomTDG.find(roomNumber)
+def getRoom(roomNumber, clinic):
+	return RoomTDG.find(roomNumber, clinic)
 
 def getAllRooms():
 	return RoomTDG.findAll()
@@ -20,11 +20,11 @@ def getAllRoomNumbers():
 	return listOfRoomNumbers
 
 # creates room
-def createRoom(roomNumber):
+def createRoom(roomNumber, clinic):
 	reponse = False
-	if roomExists(roomNumber):
+	if roomExists(roomNumber, clinic):
 		reponse =  False
 	else:
-		RoomTDG.create(roomNumber)
+		RoomTDG.create(roomNumber, clinic)
 		reponse = True
 	return reponse

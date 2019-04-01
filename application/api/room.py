@@ -32,7 +32,7 @@ def newRoom():
 	print(data)
 	success = False
 
-	success = RoomService.createRoom(roomNumber=data['roomNumber'])
+	success = RoomService.createRoom(roomNumber=data['roomNumber'], clinic=data['clinic'])
 
 	if success:
 		message = "Room has been created"
@@ -54,11 +54,11 @@ def checkAvailability():
 	roomAvailability = None
 
 	# check if room number exists
-	success = RoomService.roomExists(data['roomNumber'])
+	success = RoomService.roomExists(data['roomNumber'], data['clinic'])
 
 	# if room exists, room availabilities
 	if success:
-		roomAvail = RoomScheduleService.getTimeSlotsByDateAndRoom(data['roomNumber'], data['date'])
+		roomAvail = RoomScheduleService.getTimeSlotsByDateAndRoom(data['roomNumber'], data['clinic'], data['date'])
 		message = "Room availabilities retrieved."
 		status = "OK"
 		response = json.dumps({'success': success, 'status': status, 'message': message, 'roomAvail': roomAvailability})
