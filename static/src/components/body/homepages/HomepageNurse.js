@@ -5,6 +5,7 @@ import {fetchAPI} from '../../utility'
 import HomepageDoctor from "./HomepageDoctor";
 import BookPatient from "./../nurse views/BookPatient"
 import AppointmentsPatient from "../nurse views/AppointmentsPatient";
+import BookDoctor from "./../nurse views/BookDoctor"
 
 class HomepageNurse extends Component {
     constructor(props){
@@ -79,7 +80,7 @@ class HomepageNurse extends Component {
     }
 
     render(){
-        let alertDoctor, alertPatient, successPatient, successDoctor, doctorHomePage, patientHomePage, patientBooking;
+        let alertDoctor, alertPatient, successPatient, successDoctor, doctorHomePage, patientHomePage, patientBooking, doctorBooking;
 
         if (this.state.alertPatient){
             alertPatient = <div className="flash animated" id="welcome"><Alert bsStyle="warning">Patient has not been found.</Alert></div>
@@ -107,6 +108,7 @@ class HomepageNurse extends Component {
         if (this.state.foundDoctor){
             successDoctor = <div className="flash animated" id="welcome"><Alert bsStyle="success">Doctor has been found.</Alert></div>
             doctorHomePage = <HomepageDoctor user={this.state.user}></HomepageDoctor>
+            doctorBooking = <BookDoctor user={this.state.user} update={this.state.update} handleUpdate={this.handleUpdate}></BookDoctor>
         }
         else{
             successDoctor = null
@@ -170,6 +172,9 @@ class HomepageNurse extends Component {
                         <Tabs defaultActiveLey="appointments">
                             <Tab eventKey="appointments" title="Appointments">
                                 {doctorHomePage}
+                            </Tab>
+                            <Tab eventKey="book" title="Book">
+                                {doctorBooking}
                             </Tab>
                         </Tabs>
                     </Tab>

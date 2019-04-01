@@ -89,7 +89,7 @@ def getNextTimeSlot(roomNumber, date, time):
         if iterator.hasNext() is not None:
             return iterator.next()
         else:
-			return None
+            return None
 
 # makes a timeslot available
 def makeTimeSlotAvailable(roomNumber, date, time):
