@@ -1,8 +1,14 @@
 from application.TDG import ClinicTDG
 
 # Returns clinic if found
-def getClinic(id):
+def getClinicById(id):
     clinic = ClinicTDG.find(id)
+    if clinic is not None:
+        return clinic
+    return False
+
+def getClinicByData(name, address):
+    clinic = ClinicTDG.findByData(name, address)
     if clinic is not None:
         return clinic
     return False
@@ -12,14 +18,14 @@ def getAllClinics():
     return ClinicTDG.findAll()
 
 # check if clinic exists (only for creating data -- check if name and address exist in table already)
-def clinicExists(name, address):
-    clinic = ClinicTDG.findByData(name, address)
+def clinicExistsById(id):
+    clinic = ClinicTDG.find(id)
     if clinic is not None:
         return True
     return False
 
-def clinicExists(id):
-    clinic = ClinicTDG.find(id)
+def clinicExistsByData(name, address):
+    clinic = ClinicTDG.findByData(name, address)
     if clinic is not None:
         return True
     return False
@@ -27,7 +33,7 @@ def clinicExists(id):
 # create new clinic
 def createClinic(name, address):
     reponse = False
-    if (clinicExists(name, address)):
+    if (clinicExistsByData(name, address)):
         response = False
     else:
         ClinicTDG.create(name, address)
@@ -37,7 +43,7 @@ def createClinic(name, address):
 # delete a clinic
 def deleteClinic(id):
     reponse = False
-    if (getClinic(id) is None):
+    if (getClinicById(id) is None):
         response = False
     else:
         ClinicTDG.delete(id)
