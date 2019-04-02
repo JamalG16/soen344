@@ -24,13 +24,13 @@ def bookAppointment(patient_hcnumber, length, time, date):
         if available_doctor is None or available_room is None:
             return False
         return bookRegular(patient_hcnumber=patient_hcnumber, doctor_permit_number=available_doctor,
-                           room_number=available_room, length=length, time=time,date=date)
+                           room_number=available_room, length=length, time=time, date=date)
     elif length == '60':  # annual
         if not canBookAnnual(patient_hcnumber):
             return False
         available_doctor = DoctorScheduleService.findDoctorForAnnual(date, time)
         available_room = RoomScheduleService.findRoomForAnnual(date, time)
-        if available_doctor is None | available_room is None :
+        if available_doctor is None | available_room is None:
             return False
         return bookAnnual(patient_hcnumber=patient_hcnumber, doctor_permit_number=available_doctor,
                           room_number=available_room, length=length, time=time, date=date)
@@ -45,27 +45,28 @@ def bookAppointmentWithASpecificDoctor(patient_hcnumber, doctor_permit_number, l
         if available_room is None:
             return False
         return bookRegular(patient_hcnumber=patient_hcnumber, doctor_permit_number=available_doctor,
-                           room_number=available_room, length=length, time=time,date=date)
+                           room_number=available_room, length=length, time=time, date=date)
     elif length == 60:  # annual
         if not canBookAnnual(patient_hcnumber):
             return False
         available_doctor = doctor_permit_number
         available_room = RoomScheduleService.findRoomForAnnual(date, time)
-        if available_room is None :
+        if available_room is None:
             return False
         return bookAnnual(patient_hcnumber=patient_hcnumber, doctor_permit_number=available_doctor,
                           room_number=available_room, length=length, time=time, date=date)
     else:
         return False
 
-def bookRegular(patient_hcnumber, doctor_permit_number,room_number, length, time, date):
+
+def bookRegular(patient_hcnumber, doctor_permit_number, room_number, length, time, date):
     DoctorScheduleService.makeTimeSlotUnavailable(doctor_permit_number, date, time)
     RoomScheduleService.makeTimeSlotUnavailable(room_number, date, time)
     createAppointment(room_number, doctor_permit_number, patient_hcnumber, length, time, date)
     return True
 
 
-def bookAnnual(patient_hcnumber, doctor_permit_number,room_number, length, time, date):
+def bookAnnual(patient_hcnumber, doctor_permit_number, room_number, length, time, date):
     DoctorScheduleService.makeTimeSlotUnavailableAnnual(doctor_permit_number, date, time)
     RoomScheduleService.makeTimeSlotUnavailableAnnual(room_number, date, time)
     if createAppointment(room_number, doctor_permit_number, patient_hcnumber, length, time, date):
@@ -135,79 +136,27 @@ def updateDB(id, room, doctor_permit_number, length, time, date):
 
 # gets the currently made appointment and tries to change it to the new appointment parameters.
 # 4 cases: 20mins --> 20mins, 20mins-->60mins, 60mins-->20mins, 60mins-->60mins
-def updateAppointment(id, patient_hcnumber, length, time, date):
-    appointment = getAppointment(id)
-    if appointment is None:
-        return False
-    elif appointment['time'] == time and appointment['length'] == int(
-            length):  # trying to book at same time for same length
-        return False
-    else:
-        if appointment['length'] == 20 and length == '20':
-            available_doctor = DoctorScheduleService.findDoctorAtTime(date, time)
-            if available_doctor is None:
-                return False
-            available_room = RoomScheduleService.findRoomAtTime(time=time, date=date)
-            if available_room is None:
-                return False
-            DoctorScheduleService.makeTimeSlotAvailable(appointment['doctor_permit_number'], appointment['date'],
-                                                        appointment['time'])
-            RoomScheduleService.makeTimeSlotAvailable(appointment['room'], appointment['date'], appointment['time'])
-            DoctorScheduleService.makeTimeSlotUnavailable(available_doctor, date, time)
-            RoomScheduleService.makeTimeSlotUnavailable(available_room, date, time)
-            # updates
-            updateDB(appointment['id'], available_room, available_doctor, length, time, date)
-        elif appointment['length'] == 20 and length == '60':
-            available_doctor = DoctorScheduleService.findDoctorForAnnual(time=time, date=date)
-            if available_doctor is None:
-                return False
-            available_room = RoomScheduleService.findRoomForAnnual(date, time)
-            if available_room is None:
-                return False
-            if not canBookAnnual(patient_hcnumber):
-                return False
-            DoctorScheduleService.makeTimeSlotAvailable(appointment['doctor_permit_number'], appointment['date'],
-                                                        appointment['time'])
-            RoomScheduleService.makeTimeSlotAvailable(appointment['room'], appointment['date'], appointment['time'])
-            DoctorScheduleService.makeTimeSlotUnavailableAnnual(available_doctor, date, time)
-            RoomScheduleService.makeTimeSlotUnavailableAnnual(available_room, date, time)
-            updateAnnual(appointment['patient_hcnumber'], date)
-            # updates
-            updateDB(appointment['id'], available_room, available_doctor, length, time, date)
+def updateAppointment(appointment_id, doctor_permit_number, length, new_time, new_date):
+    old_appointment = getAppointment(appointment_id)
+    old_appointment_is_annual = old_appointment['length'] == 60
+    new_appointment_is_annual = length == 60
+    appointment_updated = False
+    if new_appointment_is_annual and not old_appointment_is_annual \
+            and canBookAnnual(old_appointment['patient_hcnumber']):
+        return "Patient already has an annual appointment which is not the one being moved", appointment_updated
 
-        elif appointment['length'] == 60 and length == '20':
-            available_doctor = DoctorScheduleService.findDoctorAtTime(time=time, date=date)
-            if available_doctor is None:
-                return False
-            available_room = RoomScheduleService.findRoomAtTime(time=time, date=date)
-            if available_room is None:
-                return False
-            DoctorScheduleService.makeTimeSlotAvailableAnnual(appointment['doctor_permit_number'], appointment['date'],
-                                                              appointment['time'])
-            RoomScheduleService.makeTimeSlotAvailableAnnual(appointment['room'], appointment['date'],
-                                                            appointment['time'])
-            DoctorScheduleService.makeTimeSlotUnavailable(available_doctor, date, time)
-            RoomScheduleService.makeTimeSlotUnavailable(available_room, date, time)
-            updateAnnual(appointment['patient_hcnumber'], None)
-            # updates
-            updateDB(appointment['id'], available_room, available_doctor, length, time, date)
-        elif appointment['length'] == 60 and length == '60':
-            available_doctor = DoctorScheduleService.findDoctorForAnnual(time=time, date=date)
-            if available_doctor is None:
-                return False
-            available_room = RoomScheduleService.findRoomForAnnual(time=time, date=date)
-            if available_room is None:
-                return False
-            DoctorScheduleService.makeTimeSlotAvailableAnnual(appointment['doctor_permit_number'], appointment['date'],
-                                                              appointment['time'])
-            RoomScheduleService.makeTimeSlotAvailableAnnual(appointment['room'], appointment['date'],
-                                                            appointment['time'])
-            DoctorScheduleService.makeTimeSlotUnavailableAnnual(available_doctor, date, time)
-            RoomScheduleService.makeTimeSlotUnavailableAnnual(available_room, date, time)
-            updateAnnual(appointment['patient_hcnumber'], date)
-            # updates
-            updateDB(appointment['id'], available_room, available_doctor, length, time, date)
-        return True
+    if doctor_permit_number is None:
+        appointment_updated = bookAppointment(patient_hcnumber=old_appointment['patient_hcnumber'],
+                                              length=length, time=new_time, date=new_date)
+    else:
+        appointment_updated = bookAppointmentWithASpecificDoctor(patient_hcnumber=old_appointment['patient_hcnumber'],
+                                                                 doctor_permit_number=doctor_permit_number,
+                                                                 length=length, time=new_time, date=new_date)
+    cancelAppointment(appointment_id)
+
+    message = "Appointment has been updated" if appointment_updated else "Appointment was not updated"
+    
+    return message, appointment_updated
 
 
 def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList):

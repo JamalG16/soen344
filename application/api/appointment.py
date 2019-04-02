@@ -176,6 +176,22 @@ def cancelAppointment():
     response = json.dumps({"success": success, "message": message, "cancelled": cancelled})
     return response
 
+@appointment.route('/api/appointment/update/doctor', methods=['PUT'])
+def updateAppointmentForDoctor():
+    data = request.data
+    data = data.decode('utf8').replace("'", '"')
+    data = json.loads(data)
+    print(data)
+
+    if AppointmentService.getAppointment(data['id']) is not None:
+        message, success = AppointmentService.updateAppointment(appointment_id=data['id'],
+                                                                doctor_permit_number=data['permit_number'],
+                                                                length=data['length'], new_time=data['time'],
+                                                                new_date=data['date'])
+    response = json.dumps(
+        {"success": success, "message": message})
+    return response
+
 
 @appointment.route('/api/appointment/update', methods=['PUT'])
 def updateAppointment():
@@ -183,24 +199,13 @@ def updateAppointment():
     data = data.decode('utf8').replace("'", '"')
     data = json.loads(data)
     print(data)
-    success = False
-    appointment = None
-    bookableAnnual = None
-
-    if (data['length'] is '60'):
-        bookableAnnual = PatientService.canBookAnnual(data['hcnumber'])
 
     if AppointmentService.getAppointment(data['id']) is not None:
-        success = AppointmentService.updateAppointment(data['id'], data['hcnumber'], data['length'], data['time'],
-                                                       data['date'])
-    if success:
-        message = 'Appointment has been updated.'
-        appointment = AppointmentService.getAppointment(data['id'])
-    else:
-        message = 'Appointment has not been updated.'
-
+        message, success = AppointmentService.updateAppointment(appointment_id=data['id'],
+                                                                length=data['length'], new_time=data['time'],
+                                                                new_date=data['date'])
     response = json.dumps(
-        {"success": success, "message": message, "appointment": appointment, "bookableAnnual": bookableAnnual})
+        {"success": success, "message": message})
     return response
 
 
