@@ -1,7 +1,7 @@
 from application.TDG import DoctorScheduleTDG
 from application.services.DoctorService import getAllDoctors, getDoctor, getAllDoctorPermits
 from application.services.AppointmentService import getDoctorAppointments
-from application.util.Schedule import Schedule, Timeslot, ScheduleIterator
+from application.util.Schedule import Schedule
 
 # Create an with all possible timeslots and unavailable by default
 SLOTS = '8:00:false,8:20:false,8:40:false,9:00:false,9:20:false,9:40:false,10:00:false,10:20:false,10:40:false,' \
@@ -10,8 +10,8 @@ SLOTS = '8:00:false,8:20:false,8:40:false,9:00:false,9:20:false,9:40:false,10:00
         '17:00:false,17:20:false,17:40:false,18:00:false,18:20:false,18:40:false,19:00:false,19:20:false,19:40:false'
 
 
-def createTimeSlots(permit_number, date):
-    DoctorScheduleTDG.create(permit_number=permit_number, timeSlots=SLOTS, date=date)
+def createTimeSlots(permit_number, date, clinic_id):
+    DoctorScheduleTDG.create(permit_number=permit_number, timeSlots=SLOTS, date=date, clinic_id=clinic_id)
     return True
 
 
@@ -22,12 +22,28 @@ def getTimeSlotsByDateAndDoctor(permit_number, date):
     else:
         return None
 
+def getTimeSlotsByDateDoctorAndClinic(permit_number, date, clinic_id):
+    doctorSchedule = DoctorScheduleTDG.find(permit_number=permit_number, date=date, clinic_id=clinic_id)
+    if doctorSchedule is not None:
+        return Schedule(doctorSchedule.timeSlots)
+    else:
+        return None
+
 
 def getAllAvailableDoctorPermitsByDate(date):
     all_doctors_permit_numbers = getAllDoctorPermits()
     available_doctors_permit_numbers = []
     for permit in all_doctors_permit_numbers:
-        doctor_availability = DoctorScheduleTDG.find(permit_number=permit,date=date)
+        doctor_availability = DoctorScheduleTDG.find(permit_number=permit, date=date)
+        if doctor_availability is not None:
+            available_doctors_permit_numbers.append(doctor_availability.permit_number)
+    return available_doctors_permit_numbers
+
+def getAllAvailableDoctorPermitsByDateAndClinic(date, clinic_id):
+    all_doctors_permit_numbers = getAllDoctorPermits()
+    available_doctors_permit_numbers = []
+    for permit in all_doctors_permit_numbers:
+        doctor_availability = DoctorScheduleTDG.find(permit_number=permit, date=date, clinic_id=clinic_id)
         if doctor_availability is not None:
             available_doctors_permit_numbers.append(doctor_availability.permit_number)
     return available_doctors_permit_numbers
@@ -41,27 +57,44 @@ def isDoctorAvailable(permit_number, date, time):
     else:
         return None
 
+def isDoctorAtClinic(permit_number, date, clinic_id):
+    schedule = DoctorScheduleTDG.find(permit_number=permit_number, date=date, clinic_id=clinic_id)
+    return schedule is not None
+
 
 # check if there is an available doctor at a specific time. If so, return the first doctor found to be available.
 # Else, return None.
-def findDoctorAtTime(date, time):
+def findDoctorAtTime(date, time, clinic_id=None):
     permit_number = None
-    for doctor in getAllDoctors():
-        if isDoctorAvailable(doctor.permit_number, date, time):
-            permit_number = doctor.permit_number
-            break
+    if clinic_id is None:
+        for doctor in getAllDoctors():
+            if isDoctorAvailable(doctor.permit_number, date, time):
+                permit_number = doctor.permit_number
+                break
+    else:
+        for doctor in getAllDoctors():
+            if isDoctorAtClinic(doctor.permit_number, date, clinic_id) and isDoctorAvailable(doctor.permit_number, date, time):
+                permit_number = doctor.permit_number
+                break
     return permit_number
 
 
 # Given a time, get a list that has all doctors available at the specified time.
 # Then, check these doctors to find if a doctor is available for 3 consecutive time slots.
 # Return a doctor, else return None.
-def findDoctorForAnnual(date, time):
+def findDoctorForAnnual(date, time, clinic_id=None):
     permit_numbers = []
     nextTimeSlot = None
-    for doctor in getAllDoctors():
-        if isDoctorAvailable(doctor.permit_number, date, time):
-            permit_numbers.append(doctor.permit_number)
+    if clinic_id is None:
+        for doctor in getAllDoctors():
+            if isDoctorAvailable(doctor.permit_number, date, time):
+                permit_numbers.append(doctor.permit_number)
+    else:
+        for doctor in getAllDoctors():
+            if isDoctorAtClinic(doctor.permit_number, date, clinic_id) and \
+                    isDoctorAvailable(doctor.permit_number, date, time):
+                permit_numbers.append(doctor.permit_number)
+
     for permit_number in permit_numbers:
         nextTimeSlot = getNextTimeSlot(permit_number, date, time)
         if nextTimeSlot is not None:
@@ -136,15 +169,24 @@ def makeTimeSlotUnavailableAnnual(permit_number, date, time):
 
 
 # Given an array of timeslots, a date and a permit number, create schedules for time slots in the date.
-def setAvailability(permit_number, date, timeslots):
+def setAvailability(permit_number, date, timeslots, clinic_id):
     schedule_timeslots = getTimeSlotsByDateAndDoctor(permit_number, date)
     return_value = {}
-    # should not happend
+
     if schedule_timeslots is None:
-        createTimeSlots(permit_number, date)
+        createTimeSlots(permit_number, date, clinic_id)
         schedule_timeslots = getTimeSlotsByDateAndDoctor(permit_number, date)
-    else:  # verify that if a doctor wants to make himself available during an already made appointment he can't
+    else:
         doctor_appointment = getDoctorAppointments(permit_number)
+        # verify that if the doctor wants to change clinic for that day he doesn't have appointment already scheduled
+        day_schedule = DoctorScheduleTDG.find(permit_number, date)
+        if day_schedule.clinic_id != clinic_id and len(doctor_appointment) != 0:
+            return_value['success'] = False
+            return_value['message'] = "Availability Not Modified, you already have appointments in another clinic " \
+                                      "that day and cannot modify your clinic."
+            return return_value
+
+        # verify that if a doctor wants to make himself available during an already made appointment he can't
         new_schedule = createFromBooleanArray(timeslots)
         for appointment in doctor_appointment:
             if appointment['date'] == date:
@@ -192,7 +234,7 @@ def setAvailability(permit_number, date, timeslots):
             old_value.setAvailable(False)
         i = i+1
 
-    DoctorScheduleTDG.update(permit_number, date, schedule_timeslots.toString())
+    DoctorScheduleTDG.update(permit_number, date, schedule_timeslots.toString(), clinic_id)
     return_value['success'] = True
     return_value['message'] = "Availability Modified."
     return return_value
@@ -200,12 +242,27 @@ def setAvailability(permit_number, date, timeslots):
 
 # Given a date and a permit number, create schedules for time slots in the date.
 def getAvailability(permit_number, date):
-    schedule_timeslots = getTimeSlotsByDateAndDoctor(permit_number, date)
-    if schedule_timeslots is None:
-        createTimeSlots(permit_number, date)
-        schedule_timeslots = getTimeSlotsByDateAndDoctor(permit_number, date)
+    from application.services.ClinicService import getAllClinics
 
-    return schedule_timeslots.toString().split(',')
+    schedule_timeslots = getTimeSlotsByDateAndDoctor(permit_number, date)
+    clinics = getAllClinics()
+
+    if schedule_timeslots is None:
+        schedule_timeslots = Schedule(SLOTS)
+        clinic_array = []
+        for clinic in clinics:
+            clinic_array.append(str(clinic.id) + ";" + str(clinic.name))
+    else:
+        day_schedule = DoctorScheduleTDG.find(permit_number, date)
+        clinic_array = []
+        for clinic in clinics:
+            if clinic.id == day_schedule.clinic_id:
+                clinic_array.insert(0, str(clinic.id) + ";" + str(clinic.name))
+            else:
+                clinic_array.append(str(clinic.id) + ";" + str(clinic.name))
+
+    return_dict = {'timeslot': schedule_timeslots.toString().split(','), 'clinics': clinic_array}
+    return return_dict
 
 def createFromBooleanArray(array):
     schedule = Schedule(SLOTS)

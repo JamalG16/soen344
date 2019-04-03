@@ -16,6 +16,7 @@ class UpdateAvailability extends Component {
                  false, false, false, false, false, false,
                  false, false, false, false, false, false],
        update_success: ""
+       clinics:
      }
 
      this.updateAvailability = this.updateAvailability.bind(this);
@@ -31,7 +32,7 @@ class UpdateAvailability extends Component {
     }
     date = year + date
     let availability = {timeslots: this.state.buttons, date: date, permit_number: this.props.user.permit_number,
-                        password_hash: this.props.user.password_hash}
+                        password_hash: this.props.user.password_hash, clinic_id: '0'}
     console.log(availability)
     fetchAPI("POST", "/api/doctor/availability/", availability).then(
       response => {
@@ -77,6 +78,7 @@ class UpdateAvailability extends Component {
           if (response.success){
             console.log('it is a success mate')
             this.parseSchedule(response.schedule)
+            this.parseClinics(response.clinics)
           }
           else {
             console.log('it is a fail mate');
@@ -92,6 +94,16 @@ class UpdateAvailability extends Component {
                                          if (index == -1) {
                                             index = string.indexOf('f')
                                          }
+                                         return (string.substring(index, string.length-1) == 'true')
+                                         });
+      this.setState({
+            buttons: list
+      }, () => {});
+    }
+
+    parseClinics(clinics) {
+      const list = clinics.map(item => {var string = JSON.stringify(item)
+                                         var middleIndex = string.indexOf(';')
                                          return (string.substring(index, string.length-1) == 'true')
                                          });
       this.setState({

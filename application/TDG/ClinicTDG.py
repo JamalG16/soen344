@@ -12,8 +12,8 @@ def findByData(name, address):
 def findAll():
     return Clinic.query.all()
 
-def create(id, name, address):
-    newClinic = Clinic(id=id, name=name, address=address)
+def create(name, address):
+    newClinic = Clinic(name=name, address=address)
     # Add it to the database
     db.session.add(newClinic)
 	# Commit it
