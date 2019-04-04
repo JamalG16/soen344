@@ -15,8 +15,9 @@ class UpdateAvailability extends Component {
                  false, false, false, false, false, false,
                  false, false, false, false, false, false,
                  false, false, false, false, false, false],
-       update_success: ""
-       clinics:
+       update_success: "",
+       clinics: [],
+       clinic: -1
      }
 
      this.updateAvailability = this.updateAvailability.bind(this);
@@ -32,7 +33,7 @@ class UpdateAvailability extends Component {
     }
     date = year + date
     let availability = {timeslots: this.state.buttons, date: date, permit_number: this.props.user.permit_number,
-                        password_hash: this.props.user.password_hash, clinic_id: '0'}
+                        password_hash: this.props.user.password_hash, clinic_id: this.state.clinic}
     console.log(availability)
     fetchAPI("POST", "/api/doctor/availability/", availability).then(
       response => {
@@ -104,11 +105,13 @@ class UpdateAvailability extends Component {
     parseClinics(clinics) {
       const list = clinics.map(item => {var string = JSON.stringify(item)
                                          var middleIndex = string.indexOf(';')
-                                         return (string.substring(index, string.length-1) == 'true')
+                                         return ({name: string.substring(middleIndex+1, string.length-1),
+                                                  id: parseInt(string.substring(1, middleIndex), 10)})
                                          });
       this.setState({
-            buttons: list
-      }, () => {});
+            clinics: list,
+            clinic: list[0].id
+      }, () => {console.log(this.state.clinics[0].name + "     " + this.state.clinic)});
     }
 
     getNbDayForMonth(month) {
@@ -252,9 +255,25 @@ class UpdateAvailability extends Component {
                             )
             }
         }
-
         let table = []
         table.push(<tbody>{slots}</tbody>)
+        return table
+    }
+
+    getClinics() {
+        let slots = []
+        for (var i = 0; i < this.state.clinics.length; i++) {
+            slots.push(<option key={this.state.clinics[i].id} value={this.state.clinics[i].id}>
+                       {this.state.clinics[i].name}</option>)
+        }
+
+        let table = []
+        table.push(<select id="clinic_select" onChange={(e) => {  if (e.target.value != this.state.clinic) {
+                                                                    this.setState({
+                                                                        clinic: e.target.value
+                                                                        }, () => {console.log(this.state.clinic)});
+                                                               }}}
+                    value={this.state.clinic}>{slots}</select>)
         return table
     }
 
@@ -286,7 +305,10 @@ class UpdateAvailability extends Component {
                             {this.state.update_success}
                         </div>
                         <div>
-                            <table id="example" className="display">
+                            {this.getClinics()}
+                        </div>
+                        <div>
+                            <table id="schedule" className="display">
                                 <thead>
                                     <tr>
                                         <th>Time</th>
