@@ -13,9 +13,13 @@ def findAll(patient_hcnumber):
 def findForDoctor(doctor_permit_number):
     return Appointment.query.filter_by(doctor_permit_number=doctor_permit_number).all()
 
+#returns all appointment for clinics
+def findAppointment(clinic_id):
+    return Appointment.query.filter_by(clinic_id=clinic_id).first()
+
 # create appointment
-def create(room, doctor_permit_number, patient_hcnumber, length, time, date):
-    newAppointment = Appointment(room=room, doctor_permit_number=doctor_permit_number, patient_hcnumber=patient_hcnumber, length=length, time=time, date=date)
+def create(room, clinic_id, doctor_permit_number, patient_hcnumber, length, time, date):
+    newAppointment = Appointment(room=room, clinic_id=clinic_id, doctor_permit_number=doctor_permit_number, patient_hcnumber=patient_hcnumber, length=length, time=time, date=date)
     # Add it to the database
     db.session.add(newAppointment)
 	# Commit it
@@ -28,9 +32,10 @@ def delete(id):
     db.session.commit()
 
 # updates an appointment in DB
-def update(id, room, doctor_permit_number, length, time, date):
+def update(id, room, clinic_id, doctor_permit_number, length, time, date):
     Appointment.query.filter_by(id=id).first().doctor_permit_number = doctor_permit_number
     Appointment.query.filter_by(id=id).first().room = room
+    Appointment.query.filter_by(id=id).first().clinic_id = clinic_id
     Appointment.query.filter_by(id=id).first().length = length
     Appointment.query.filter_by(id=id).first().time = time
     Appointment.query.filter_by(id=id).first().date = date
