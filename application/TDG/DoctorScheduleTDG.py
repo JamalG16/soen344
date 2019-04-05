@@ -23,7 +23,10 @@ def update(permit_number, date, timeSlots, clinic_id):
     db.session.commit()
 
 # get schedules for all doctors except for one
-def getAllSchedulesByDateExceptDoctor(date, permit_number):
-    return DoctorSchedule.query.filter(DoctorSchedule.permit_number != permit_number)\
+def getAllSchedulesByDateExceptDoctor(date, permit_number, clinic_id=None):
+    if clinic_id is None:
+        return DoctorSchedule.query.filter(DoctorSchedule.permit_number != permit_number)\
                                .filter(DoctorSchedule.date == date).all()
-
+    else:
+        return DoctorSchedule.query.filter(DoctorSchedule.permit_number != permit_number) \
+            .filter(DoctorSchedule.date == date).filter(DoctorSchedule.clinic_id == clinic_id).all()
