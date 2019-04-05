@@ -5,16 +5,16 @@ from application.util import BooleanArrayOperations
 import datetime
 
 
-def createAppointment(room, doctor_permit_number, patient_hcnumber, length, time, date):
+def createAppointment(room, clinic_id, doctor_permit_number, patient_hcnumber, length, time, date):
 	dateSplit = date.split("-")
 	date = datetime.datetime.strptime(dateSplit[0] + dateSplit[1] + dateSplit[2], '%Y%m%d').date()
-	AppointmentTDG.create(room=room, doctor_permit_number=doctor_permit_number, patient_hcnumber=patient_hcnumber, length=length, time=time, date=date)
+	AppointmentTDG.create(room=room, clinic_id=clinic_id, doctor_permit_number=doctor_permit_number, patient_hcnumber=patient_hcnumber, length=length, time=time, date=date)
 	return True
 
 # find if a room is available and if a doctor is available to book an appointment.
 # If so, book, the room and doctor at the specified time, with the specified patient, for a type of appointment.
 # If the type is to be annual, the patient's last annual must be checked to validate the new annual (at least 1 year difference).
-# Also, if the type is annual, check that the next two timeslots can be booked in the same room with the same doctor.
+# Also, if the type is annual, check that the next two time slots can be booked in the same room with the same doctor.
 def bookAppointment(patient_hcnumber, length, time, date):
 	if length == '20': #checkup
 		available_doctor = DoctorScheduleService.findDoctorAtTime(date, time)
@@ -95,14 +95,14 @@ def cancelAppointment(id):
 			return False
 
 #updates the information of an appointment
-def updateDB(id, room, doctor_permit_number, length, time, date):
+def updateDB(id, clinic_id, room, doctor_permit_number, length, time, date):
 	dateSplit = date.split("-")
 	date = datetime.datetime.strptime(dateSplit[0] + dateSplit[1] + dateSplit[2], '%Y%m%d').date()
-	AppointmentTDG.update(id=id, room=room, doctor_permit_number=doctor_permit_number, length=length, time=time, date=date)
+	AppointmentTDG.update(id=id, clinic_id=clinic_id, room=room, doctor_permit_number=doctor_permit_number, length=length, time=time, date=date)
 
 #gets the currently made appointment and tries to change it to the new appointment parameters.
 # 4 cases: 20mins --> 20mins, 20mins-->60mins, 60mins-->20mins, 60mins-->60mins
-def updateAppointment(id, patient_hcnumber, length, time, date):
+def updateAppointment(id, clinic_id, patient_hcnumber, length, time, date):
 	appointment = getAppointment(id)
 	if appointment is None:
 		return False
@@ -110,7 +110,7 @@ def updateAppointment(id, patient_hcnumber, length, time, date):
 		return False
 	else:
 		if appointment['length'] == 20 and length =='20':
-			available_doctor = DoctorScheduleService.findDoctorAtTime(date,time)
+			available_doctor = DoctorScheduleService.findDoctorAtTime(date, time)
 			if available_doctor is None:
 				return False
 			available_room = RoomScheduleService.findRoomAtTime(time=time, date=date)
@@ -166,7 +166,7 @@ def updateAppointment(id, patient_hcnumber, length, time, date):
 			RoomScheduleService.makeTimeSlotUnavailableAnnual(available_room, date, time)
 			updateAnnual(appointment['patient_hcnumber'], date)
 			#updates
-			updateDB(appointment['id'], available_room, available_doctor,length, time, date)
+			updateDB(appointment['id'], available_room, available_doctor, length, time, date)
 		return True
 
 
@@ -176,7 +176,7 @@ def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList):
 	for permit_number in doctorPermitNumberList:
 		doctor_time_slots = DoctorScheduleService.getTimeSlotsByDateAndDoctor(permit_number, date).toString().split(',')
 		# for all available rooms
-		# concatenate existing availabilities with the crossavailabilities of each room and the doc schedule
+		# concatenate existing availabilities with the cross availabilities of each room and the doc schedule
 		for roomNumber in roomList:
 			room_slots = RoomScheduleService.getTimeSlotsByDateAndRoom(date, roomNumber).toString().split(',')
 			common_time_slots = BooleanArrayOperations.getCommonTimeslots(doctor_time_slots, room_slots)

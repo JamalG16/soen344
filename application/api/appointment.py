@@ -39,13 +39,13 @@ def newAppointment():
 	if (data['length'] is '60'):
 		bookableAnnual = PatientService.canBookAnnual(data['hcnumber'])
 	
-	success = AppointmentService.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
+	success = AppointmentService.bookAppointment(data['hcnumber'], data['clinic_id'], data['length'], data['time'], data['date'])
 	if success:
 		message = "Appointment has been created"
 	else:
 		message = "Appointment already exists or there are no doctors/rooms available, or annual cannot be booked."
 
-	response = json.dumps({"success":success, "message":message, "bookableAnnual":bookableAnnual})
+	response = json.dumps({"success": success, "message": message, "bookableAnnual": bookableAnnual})
 	return response
 
 # Returns an array of appointments consisting of the patient specified
@@ -67,7 +67,7 @@ def checkAppointments():
 	else:
 		message = "No appointment(s) retrieved."
 
-	response = json.dumps({"success":success, "message":message, "appointments":appointments})
+	response = json.dumps({"success": success, "message": message, "appointments": appointments})
 	return response
 
 # Returns an array of appointments for doctor specified
@@ -89,14 +89,14 @@ def checkAppointmentsDoctor():
 	else:
 		message = "No appointment(s) retrieved."
 
-	response = json.dumps({"success":success, "message":message, "appointments":appointments})
+	response = json.dumps({"success": success, "message": message, "appointments": appointments})
 	return response
 
 
 @appointment.route('/api/appointment/cancel', methods=['DELETE'])
 def cancelAppointment():
 	data = request.data
-	data  = data.decode('utf8').replace("'",'"')
+	data = data.decode('utf8').replace("'",'"')
 	data = json.loads(data)
 	print(data)
 	success = False
@@ -124,18 +124,18 @@ def updateAppointment():
 	appointment = None
 	bookableAnnual=None
 
-	if (data['length'] is '60'):
+	if data['length'] is '60':
 		bookableAnnual = PatientService.canBookAnnual(data['hcnumber'])
 	
 	if AppointmentService.getAppointment(data['id']) is not None:
-		success = AppointmentService.updateAppointment(data['id'], data['hcnumber'], data['length'], data['time'], data['date'])
+		success = AppointmentService.updateAppointment(data['id'], data['hcnumber'], data['clinic_id'], data['length'], data['time'], data['date'])
 	if success:
 		message = 'Appointment has been updated.'
 		appointment = AppointmentService.getAppointment(data['id'])
 	else:
 		message = 'Appointment has not been updated.'
 
-	response = json.dumps({"success": success, "message":message, "appointment":appointment, "bookableAnnual":bookableAnnual})
+	response = json.dumps({"success": success, "message": message, "appointment": appointment, "bookableAnnual": bookableAnnual})
 	return response
 
 
@@ -143,7 +143,7 @@ def updateAppointment():
 @appointment.route('/api/appointment/find', methods=['POST'])
 def findAppointments():
 	data = request.data
-	data  = data.decode('utf8').replace("'",'"')
+	data = data.decode('utf8').replace("'",'"')
 	data = json.loads(data)
 	date = data['date']
 	message = "hi"
@@ -160,10 +160,10 @@ def findAppointments():
 	if(availableRoomNumbers is None):
 		message = "Unfortunately there are no rooms available for this date at the moment. Please try later."
 		return message, 200
-	listOfAvailableAppointments = AppointmentService.crossCheckDoctorAndRoomList(date,availableDoctorPermitNumbers,availableRoomNumbers)
+	listOfAvailableAppointments = AppointmentService.crossCheckDoctorAndRoomList(date, availableDoctorPermitNumbers, availableRoomNumbers)
 	if listOfAvailableAppointments is None:
 		return 204
 	else:
 		success = True
-		response = json.dumps({"success":success, "listOfAvailableAppointments": listOfAvailableAppointments, "date":date, "message":message})
-		return response,200
+		response = json.dumps({"success": success, "listOfAvailableAppointments": listOfAvailableAppointments, "date": date, "message": message})
+		return response, 200
