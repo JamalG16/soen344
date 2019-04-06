@@ -208,7 +208,7 @@ def setAvailability(permit_number, date, timeslots, clinic_id):
                                                   "available was in conflict with an existing appointment."
                         return return_value
 
-    doctors_schedule = DoctorScheduleTDG.getAllSchedulesByDateExceptDoctor(date, permit_number)
+    doctors_schedule = DoctorScheduleTDG.getAllSchedulesByDateExceptDoctor(date, permit_number, clinic_id)
     timeslot_iterator = schedule_timeslots.getIterator()
     new_timeslot_iterator = createFromBooleanArray(timeslots).getIterator()
     i = 0
@@ -219,7 +219,7 @@ def setAvailability(permit_number, date, timeslots, clinic_id):
             # if doctor wants to be available check that 7 doctors are not available at that time
             number_of_doctor = 0
             for schedule in doctors_schedule:
-                schedule = Schedule(schedule)
+                schedule = Schedule(schedule.timeSlots)
                 if schedule.getTimeslots()[i].isAvailable():
                     number_of_doctor = number_of_doctor + 1
 

@@ -2,9 +2,10 @@ from index import db
 
 
 class DoctorSchedule(db.Model):
-    permit_number = db.Column(db.String(), nullable=False, primary_key=True)
-    clinic_id = db.Column(db.Integer, db.ForeignKey('clinic.id'), nullable=False, primary_key=True)
-    date = db.Column(db.String(), nullable=False, primary_key=True)
+
+    permit_number = db.Column(db.String(), primary_key=True)
+    clinic_id = db.Column(db.Integer, db.ForeignKey('clinic.id'), primary_key=True)
+    date = db.Column(db.String(), primary_key=True)
     timeSlots = db.Column(db.String(), nullable=False)
 
     def __iter__(self):
