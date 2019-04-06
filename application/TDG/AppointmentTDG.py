@@ -13,9 +13,9 @@ def findAll(patient_hcnumber):
 def findForDoctor(doctor_permit_number):
     return Appointment.query.filter_by(doctor_permit_number=doctor_permit_number).all()
 
-#returns all appointment for clinics
-def findAppointment(clinic_id):
-    return Appointment.query.filter_by(clinic_id=clinic_id).first()
+#returns all appointments for clinics
+def findAppointments(clinic_id):
+    return Appointment.query.filter_by(clinic_id=clinic_id)
 
 # create appointment
 def create(room, clinic_id, doctor_permit_number, patient_hcnumber, length, time, date):
