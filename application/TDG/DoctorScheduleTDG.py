@@ -16,10 +16,11 @@ def create(permit_number,timeSlots, date, clinic_id):
     db.session.commit()
 
 # update a doctor's timeslots on a specific date
-def update(permit_number, date, timeSlots, clinic_id):
+def update(permit_number, date, timeSlots, clinic_id=None):
     schedule = DoctorSchedule.query.filter_by(permit_number=permit_number, date=date).first()
     schedule.timeSlots = timeSlots
-    schedule.clinic_id = clinic_id
+    if clinic_id is not None:
+        schedule.clinic_id = clinic_id
     db.session.commit()
 
 # get schedules for all doctors except for one
