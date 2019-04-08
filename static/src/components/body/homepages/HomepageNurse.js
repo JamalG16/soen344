@@ -2,21 +2,29 @@ import {Component} from "react";
 import React from "react";
 import {Tab, Tabs, Button, FormControl, FormGroup, ControlLabel, Alert} from "react-bootstrap";
 import {fetchAPI} from '../../utility'
-import HomePagePatient from './HomepagePatient'
-import HomepageDoctor from "./HomepageDoctor";
+import BookPatient from "./../nurse views/BookPatient"
+import AppointmentsPatient from "../nurse views/AppointmentsPatient";
+import BookDoctor from "./../nurse views/BookDoctor"
+import AppointmentsDoctor from "../nurse views/AppointmentsDoctor";
 
 class HomepageNurse extends Component {
     constructor(props){
         super(props)
         this.state = {
-            hcnumber: '',
             permit_number: '',
             hcnumber: '',
             permit_number: '',
             alertPatient: false,
             alertDoctor: false,
-            user: {permit_number: '', hcnumber: ''}
+            user: {permit_number: '', hcnumber: ''},
+            update: false
         }
+        this.handleUpdate = this.handleUpdate.bind(this)
+    }
+
+    handleUpdate() {
+        this.setState({update: true})
+        this.setState({update: false})
     }
 
     handleChange = event => {
@@ -72,7 +80,7 @@ class HomepageNurse extends Component {
     }
 
     render(){
-        let alertDoctor, alertPatient, successPatient, successDoctor, doctorHomePage, patientHomePage;
+        let alertDoctor, alertPatient, successPatient, successDoctor, doctorHomePage, patientHomePage, patientBooking, doctorBooking;
 
         if (this.state.alertPatient){
             alertPatient = <div className="flash animated" id="welcome"><Alert bsStyle="warning">Patient has not been found.</Alert></div>
@@ -90,7 +98,8 @@ class HomepageNurse extends Component {
 
         if (this.state.foundPatient){
             successPatient = <div className="flash animated" id="welcome"><Alert bsStyle="success">Patient has been found.</Alert></div>
-            patientHomePage = <HomePagePatient user={this.state.user}></HomePagePatient>
+            patientHomePage = <AppointmentsPatient user={this.state.user} update={this.state.update} handleUpdate={this.handleUpdate}></AppointmentsPatient>
+            patientBooking = <BookPatient user={this.state.user} update={this.state.update} handleUpdate={this.handleUpdate}></BookPatient>
         }
         else{
             successPatient = null
@@ -98,7 +107,10 @@ class HomepageNurse extends Component {
 
         if (this.state.foundDoctor){
             successDoctor = <div className="flash animated" id="welcome"><Alert bsStyle="success">Doctor has been found.</Alert></div>
-            doctorHomePage = <HomepageDoctor user={this.state.user}></HomepageDoctor>
+            doctorHomePage = <AppointmentsDoctor user={this.state.user} update={this.state.update} handleUpdate={this.handleUpdate}
+                access_ID={this.props.user.access_ID} password_hash={this.props.user.password_hash}></AppointmentsDoctor>
+            doctorBooking = <BookDoctor user={this.state.user} update={this.state.update} handleUpdate={this.handleUpdate}
+                access_ID={this.props.user.access_ID} password_hash={this.props.user.password_hash}></BookDoctor>
         }
         else{
             successDoctor = null
@@ -133,6 +145,9 @@ class HomepageNurse extends Component {
                             <Tab eventKey="appointments" title="Appointments">
                                {patientHomePage} 
                             </Tab>
+                            <Tab eventKey="book" title="Book">
+                                {patientBooking}
+                            </Tab>
                         </Tabs>
                     </Tab>
                     <Tab eventKey="doctor" title="Doctor">
@@ -159,6 +174,9 @@ class HomepageNurse extends Component {
                         <Tabs defaultActiveLey="appointments">
                             <Tab eventKey="appointments" title="Appointments">
                                 {doctorHomePage}
+                            </Tab>
+                            <Tab eventKey="book" title="Book">
+                                {doctorBooking}
                             </Tab>
                         </Tabs>
                     </Tab>

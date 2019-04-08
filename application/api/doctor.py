@@ -99,12 +99,12 @@ def setAvailability():
 
     # if permit number exists & authenticated, then get the patient
     if success:
-        success = DoctorScheduleService.setAvailability(data['permit_number'], data["date"], data["timeslots"])
-        if success:
-            message = "Availability Modified."
+        returned = DoctorScheduleService.setAvailability(data['permit_number'], data["date"], data["timeslots"],
+                                                         data["clinic_id"])
+        message = returned['message']
+        if returned['success']:
             status = "OK"
         else:
-            message = "Availability Not Modified, conflict in schedule with 7 doctors or more."
             status = "DENIED"
 
         response = json.dumps({'success': success, 'status': status, 'message': message, 'user': user})
@@ -127,15 +127,15 @@ def getAvailability():
     status = ""  # OK, DENIED, WARNING
     response = {}
     user = {}
-    schedule = {}
+    returned_values = {'timeslot': '', 'clinics': ''}
 
     # check if permit number exists
     success = DoctorService.doctorExists(data['permit_number']) and \
-                DoctorService.verifyHash(data['permit_number'], data['password_hash'])
+        DoctorService.verifyHash(data['permit_number'], data['password_hash'])
 
-    # if permit number exists & authenticated, then get the patient
+    # if permit number exists & authenticated, then get the timeslots
     if success:
-        schedule = DoctorScheduleService.getAvailability(data['permit_number'], data['date'])
+        returned_values = DoctorScheduleService.getAvailability(data['permit_number'], data['date'])
         # convert datetimes to strings
         message = "schedule found."
         status = "OK"
@@ -145,7 +145,8 @@ def getAvailability():
         message = "User not authenticated or does not exist."
         status = "DENIED"
 
-    response = json.dumps({'success': success, 'status': status, 'message': message, 'schedule': schedule})
+    response = json.dumps({'success': success, 'status': status, 'message': message,
+                           'schedule': returned_values['timeslot'], 'clinics': returned_values['clinics']})
     return response
 
 @doctor.route('/api/doctor/find/', methods=['POST'])

@@ -42,7 +42,9 @@ def newAppointment():
     if (data['length'] is '60'):
         bookableAnnual = PatientService.canBookAnnual(data['hcnumber'])
 
-    success = AppointmentService.bookAppointment(data['hcnumber'], data['length'], data['time'], data['date'])
+    success = AppointmentService.bookAppointment(patient_hcnumber=data['hcnumber'], clinic_id=data['clinic_id'],
+                                                 length=data['length'], time=data['time'],
+                                                 date=data['date'])
     if success:
         message = "Appointment has been created"
     else:
@@ -60,6 +62,7 @@ def newAppointmentByDoctor():
     data = toDict(request.data)
     doctor_permit_number = data['permit_number']
     patient_health_card_number = data['hcnumber']
+    clinic_id = data['clinic_id']
     date = data['date']
     time = data['time']
     appointment_type = data['appointment_type']
@@ -69,7 +72,7 @@ def newAppointmentByDoctor():
     else:
         length = 20
 
-    #preliminary checks
+    # preliminary checks
     if not DoctorService.doctorExists(doctor_permit_number):
         message = "Doctor " + doctor_permit_number + " doesn't exist."
         success = False
@@ -84,21 +87,21 @@ def newAppointmentByDoctor():
         response = json.dumps({"success": success, "message": message, "patientExists": patientExists})
         return response, status_code
 
-    #finding out if the doctor is available
+    # finding out if the doctor is available
     if appointment_type == 'Annual':
         doctor_is_available = DoctorScheduleService.isDoctorAvailableForAnnual(permit_number=doctor_permit_number,
                                                                                date=date, time=time)
     else:
         doctor_is_available = DoctorScheduleService.isDoctorAvailable(permit_number=doctor_permit_number, date=date,
                                                                       time=time)
-    #booking attempt
+    # booking attempt
     if doctor_is_available:
         AppointmentService.bookAppointmentWithASpecificDoctor(patient_hcnumber=patient_health_card_number,
                                                               doctor_permit_number=doctor_permit_number, length=length,
-                                                              time=time, date=date)
-        message="Appointment has been booked successfully"
-        success=True
-        status_code=200
+                                                              time=time, date=date, clinic_id=clinic_id)
+        message = "Appointment has been booked successfully"
+        success = True
+        status_code = 200
         response = json.dumps({"success": success, "message": message, "patientExists": patientExists})
         return response, status_code
     else:
@@ -107,7 +110,6 @@ def newAppointmentByDoctor():
         status_code = 200
         response = json.dumps({"success": success, "message": message, "patientExists": patientExists})
         return response, status_code
-
 
 
 # Returns an array of appointments consisting of the patient specified
@@ -177,31 +179,44 @@ def cancelAppointment():
     return response
 
 
+@appointment.route('/api/appointment/update/doctor', methods=['PUT'])
+def updateAppointmentForDoctor():
+    data = request.data
+    data = data.decode('utf8').replace("'", '"')
+    data = json.loads(data)
+    print(data)
+
+    if AppointmentService.getAppointment(data['id']) is not None:
+        message, success = AppointmentService.updateAppointment(appointment_id=data['id'],
+                                                                doctor_permit_number=data['permit_number'],
+                                                                length=data['length'], new_time=data['time'],
+                                                                new_date=data['date'])
+    response = json.dumps(
+        {"success": success, "message": message})
+    return response
+
+
 @appointment.route('/api/appointment/update', methods=['PUT'])
 def updateAppointment():
     data = request.data
     data = data.decode('utf8').replace("'", '"')
     data = json.loads(data)
     print(data)
-    success = False
-    appointment = None
-    bookableAnnual = None
 
-    if (data['length'] is '60'):
+    if data['length'] is '60':
         bookableAnnual = PatientService.canBookAnnual(data['hcnumber'])
+        if AppointmentService.getAppointment(data['id']) is not None:
+            success = AppointmentService.updateAppointment(appointment_id=data['id'], length=data['length'],
+                                                           new_time=data['time'], new_date=data['date'])
+        if success:
+            message = 'Appointment has been updated.'
+            appointment = AppointmentService.getAppointment(data['id'])
+        else:
+            message = 'Appointment has not been updated.'
 
-    if AppointmentService.getAppointment(data['id']) is not None:
-        success = AppointmentService.updateAppointment(data['id'], data['hcnumber'], data['length'], data['time'],
-                                                       data['date'])
-    if success:
-        message = 'Appointment has been updated.'
-        appointment = AppointmentService.getAppointment(data['id'])
-    else:
-        message = 'Appointment has not been updated.'
-
-    response = json.dumps(
-        {"success": success, "message": message, "appointment": appointment, "bookableAnnual": bookableAnnual})
-    return response
+        response = json.dumps(
+            {"success": success, "message": message, "appointment": appointment, "bookableAnnual": bookableAnnual})
+        return response
 
 
 # /api/appointment/find?date=<insert_date_here>
