@@ -226,6 +226,7 @@ def findAppointments():
     data = data.decode('utf8').replace("'", '"')
     data = json.loads(data)
     date = data['date']
+    clinic_id = data['clinic_id']
     message = "hi"
     success = False
     if (date is None):
@@ -240,8 +241,8 @@ def findAppointments():
     if (availableRoomNumbers is None):
         message = "Unfortunately there are no rooms available for this date at the moment. Please try later."
         return message, 200
-    listOfAvailableAppointments = AppointmentService.crossCheckDoctorAndRoomList(date, availableDoctorPermitNumbers,
-                                                                                 availableRoomNumbers)
+    listOfAvailableAppointments = AppointmentService.crossCheckDoctorAndRoomList(date=date, doctorPermitNumberList=availableDoctorPermitNumbers,
+                                                                                 roomList=availableRoomNumbers,clinic_id=clinic_id)
     if listOfAvailableAppointments is None:
         return 204
     else:

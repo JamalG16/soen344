@@ -165,15 +165,15 @@ def updateAppointment(appointment_id, doctor_permit_number, length, new_time, ne
     return message, appointment_updated
 
 
-def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList):
+def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, clinic_id):
     available_time_slots = [False] * 36
     # preferential filtering by doctors, since they are the ones to most likely have fewer availabilities
     for permit_number in doctorPermitNumberList:
-        doctor_time_slots = DoctorScheduleService.getTimeSlotsByDateAndDoctor(permit_number, date).toString().split(',')
+        doctor_time_slots = DoctorScheduleService.getTimeSlotsByDateAndDoctor(permit_number=permit_number, date=date).toString().split(',')
         # for all available rooms
         # concatenate existing availabilities with the cross availabilities of each room and the doc schedule
         for roomNumber in roomList:
-            room_slots = RoomScheduleService.getTimeSlotsByDateAndRoom(date, roomNumber).toString().split(',')
+            room_slots = RoomScheduleService.getTimeSlotsByDateAndRoom(date=date, roomNumber=roomNumber, clinic_id=clinic_id).toString().split(',')
             common_time_slots = BooleanArrayOperations.getCommonTimeslots(doctor_time_slots, room_slots)
             available_time_slots = BooleanArrayOperations.concatenateBooleanLists(available_time_slots,
                                                                                   common_time_slots)
