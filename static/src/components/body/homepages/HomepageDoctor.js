@@ -70,7 +70,7 @@ class HomepageDoctor extends Component {
                     title={appointment.date}
                     style={{ width: 800 }}>
                         <p>{appointment.length} minute appointment with patient: {appointment.patient_hcnumber}</p>
-                        <p>Clinic id: {appointment.clinicId}</p>
+                        <p>Clinic id: {appointment.clinic_id}</p>
                         <p>Room: {appointment.room}</p>
                         <p>Time: {appointment.time}</p>
                 </Card>
