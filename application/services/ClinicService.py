@@ -33,7 +33,7 @@ def clinicExistsByData(name, address):
 # create new clinic
 def createClinic(name, address):
     response = False
-    if (clinicExists(name, address)):
+    if (clinicExistsByData(name, address)):
         response = False
     else:
         ClinicTDG.create(name, address)
@@ -43,7 +43,7 @@ def createClinic(name, address):
 # delete a clinic
 def deleteClinic(id):
     response = False
-    if (getClinic(id) is None):
+    if (getClinicById(id) is None):
         response = False
     else:
         ClinicTDG.delete(id)
