@@ -7,6 +7,7 @@ class Clinic(db.Model):
 
     def __iter__(self):
         yield 'id', self.id
+        yield 'clinic_id', self.clinic_id
         yield 'name', self.name
         yield 'address', self.address
 
