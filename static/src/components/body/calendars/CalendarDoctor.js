@@ -35,6 +35,7 @@ class CalendarDoctor extends Component {
             modal: false,
             hcnumber: '',
             inexistentPatient: false,
+            noRoom: false,
             fail: false
         }
     }
@@ -132,7 +133,7 @@ class CalendarDoctor extends Component {
                     try{
                         if (response.success){
                             console.log('it is a success mate')
-                            this.setState({inexistentPatient: false, modal: false, fail: false})
+                            this.setState({inexistentPatient: false, noRoom: false, modal: false, fail: false})
                             message.info(this.state.appointment[0] + " with " + this.state.hcnumber + " at " + 
                                 this.state.appointment[2] + " on " + this.state.appointment[1] + " at " +  
                                 this.state.clinic.split(';')[1] + " has been booked.")
@@ -142,6 +143,8 @@ class CalendarDoctor extends Component {
                             console.log('it is a fail mate ' + response.message);
                             if (!response.patientExists)
                                 this.setState({inexistentPatient: true})
+                            else if (!response.room_is_available)
+                                this.setState({noRoom: true})
                             else
                                 this.setState({fail: true})
                         }
@@ -152,7 +155,7 @@ class CalendarDoctor extends Component {
 
     render() {
         const { current, value, selectedValue, size } = this.state;
-        let message, success, patientAlert, alert;
+        let message, success, patientAlert, alert, roomAlert;
 
         if (selectedValue < current) {
             message = "You cannot select a previous date to book an appointment";
@@ -173,6 +176,11 @@ class CalendarDoctor extends Component {
                 &nbsp; Check that your timeslot is still available.</ReactAlert></div>
         else
             alert = null
+        
+        if (this.state.noRoom)
+            roomAlert = <div className="flash animated" id="welcome"><ReactAlert bsStyle="warning">No room available at that time.</ReactAlert></div>
+        else
+            roomAlert = null
 
         return (
             <div>
@@ -195,6 +203,7 @@ class CalendarDoctor extends Component {
                                 </FormGroup>
                             </form>
                             {patientAlert}
+                            {roomAlert}
                             {alert}
                         </Modal.Body>
                         <Modal.Footer>

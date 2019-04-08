@@ -67,6 +67,7 @@ def newAppointmentByDoctor():
     time = data['time']
     appointment_type = data['appointment_type']
     patientExists = True
+    room_is_available = True
     if appointment_type == 'Annual':
         length = 60
     else:
@@ -84,7 +85,8 @@ def newAppointmentByDoctor():
         patientExists = False
         success = False
         status_code = 404
-        response = json.dumps({"success": success, "message": message, "patientExists": patientExists})
+        response = json.dumps({"success": success, "message": message, "patientExists": patientExists, \
+            "room_is_available": room_is_available})
         return response, status_code
 
     # finding out if the doctor is available
@@ -94,21 +96,29 @@ def newAppointmentByDoctor():
     else:
         doctor_is_available = DoctorScheduleService.isDoctorAvailable(permit_number=doctor_permit_number, date=date,
                                                                       time=time)
+    # finding out if a room is avail
+    if appointment_type == 'Annual':
+        room_is_available = RoomScheduleService.findRoomForAnnual(clinic_id, date, time)
+    else:
+        room_is_available = RoomScheduleService.findRoomAtTime(clinic_id, date, time)
+    
     # booking attempt
-    if doctor_is_available:
+    if doctor_is_available and room_is_available:
         AppointmentService.bookAppointmentWithASpecificDoctor(patient_hcnumber=patient_health_card_number,
                                                               doctor_permit_number=doctor_permit_number, length=length,
                                                               time=time, date=date, clinic_id=clinic_id)
         message = "Appointment has been booked successfully"
         success = True
         status_code = 200
-        response = json.dumps({"success": success, "message": message, "patientExists": patientExists})
+        response = json.dumps({"success": success, "message": message, "patientExists": patientExists, \
+            "room_is_available": room_is_available})
         return response, status_code
     else:
         message = "Doctor is not available at this time"
         success = False
         status_code = 200
-        response = json.dumps({"success": success, "message": message, "patientExists": patientExists})
+        response = json.dumps({"success": success, "message": message, "patientExists": patientExists, \
+            "room_is_available": room_is_available})
         return response, status_code
 
 
