@@ -29,7 +29,7 @@ def bookAppointment(patient_hcnumber, length, time, date, clinic_id):
         if not canBookAnnual(patient_hcnumber):
             return False
         available_doctor = DoctorScheduleService.findDoctorForAnnual(date, time)
-        available_room = RoomScheduleService.findRoomForAnnual(date, time)
+        available_room = RoomScheduleService.findRoomForAnnual(clinic_id, date, time)
         if available_doctor is None | available_room is None:
             return False
         return bookAnnual(patient_hcnumber=patient_hcnumber, doctor_permit_number=available_doctor,
@@ -50,7 +50,7 @@ def bookAppointmentWithASpecificDoctor(patient_hcnumber, doctor_permit_number, l
         if not canBookAnnual(patient_hcnumber):
             return False
         available_doctor = doctor_permit_number
-        available_room = RoomScheduleService.findRoomForAnnual(date, time)
+        available_room = RoomScheduleService.findRoomForAnnual(clinic_id, date, time)
         if available_room is None:
             return False
         return bookAnnual(patient_hcnumber=patient_hcnumber, doctor_permit_number=available_doctor,
@@ -61,7 +61,7 @@ def bookAppointmentWithASpecificDoctor(patient_hcnumber, doctor_permit_number, l
 
 def bookRegular(patient_hcnumber, doctor_permit_number, room_number, clinic_id, length, time, date):
     DoctorScheduleService.makeTimeSlotUnavailable(doctor_permit_number, date, time)
-    RoomScheduleService.makeTimeSlotUnavailableAnnual(roomNumber=room_number, date=date, time=time, clinic_id=clinic_id)
+    RoomScheduleService.makeTimeSlotUnavailable(roomNumber=room_number, date=date, time=time, clinic_id=clinic_id)
     createAppointment(room=room_number, doctor_permit_number=doctor_permit_number, patient_hcnumber=patient_hcnumber,
                       length=length, time=time, date=date, clinic_id=clinic_id)
     return True
