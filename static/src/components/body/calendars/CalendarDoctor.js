@@ -126,7 +126,7 @@ class CalendarDoctor extends Component {
     async bookAppointment() {
         let appointment = {hcnumber: this.state.hcnumber, permit_number: this.props.user.permit_number, 
             date: this.state.appointment[1], time: this.state.appointment[2], appointment_type: this.state.appointment[0],
-            clinic_id: this.state.clinic.split(';')[1] }
+            clinic_id: this.state.clinic.split(';')[0] }
         fetchAPI("POST", "/api/appointment/book/doctor", appointment).then(
                 response => {
                     try{

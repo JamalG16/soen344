@@ -88,8 +88,8 @@ def updateClinic():
         {"success": success, "message": message, "clinic": clinic})
     return response
 
-@clinic.route('/api/clinic/check', methods=['GET'])
-def checkClinics():
+@clinic.route('/api/clinic/findAll', methods=['GET'])
+def findAll():
     success = False
     message=""
     clinics = []
@@ -106,4 +106,29 @@ def checkClinics():
         message = "No clinic(s) retrieved."
 
     response = json.dumps({"success":success, "message":message, "clinics":clinics})
+    return response
+
+
+@clinic.route('/api/clinic/find', methods=['POST'])
+def findClinic():
+    data = request.data
+    data = data.decode('utf8').replace("'", '"')
+    data = json.loads(data)
+    print(data)
+    success = False
+    clinic = None
+    message = ""
+    
+    clinic = ClinicService.getClinicById(data['clinic_id'])
+    if clinic is not None:
+        success = True
+    else:
+        success = False
+
+    if success:
+        message = "Clinic found."
+    else:
+        message = "No clinic found."
+
+    response = json.dumps({"success":success, "message":message, "clinic":clinic})
     return response

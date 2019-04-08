@@ -4,18 +4,23 @@ from application.TDG import ClinicTDG
 def getClinicById(id):
     clinic = ClinicTDG.find(id)
     if clinic is not None:
-        return clinic
-    return False
+        return dict(clinic)
+    else:
+        return None
 
 def getClinicByData(name, address):
     clinic = ClinicTDG.findByData(name, address)
     if clinic is not None:
-        return clinic
+        return dict(clinic)
     return False
 
 # Return all clinics
 def getAllClinics():
-    return ClinicTDG.findAll()
+    listOfClinics = []
+    clinics = ClinicTDG.findAll()
+    for clinic in clinics:
+        listOfClinics.append(dict(clinic))
+    return listOfClinics
 
 # check if clinic exists (only for creating data -- check if name and address exist in table already)
 def clinicExistsById(id):
