@@ -65,9 +65,9 @@ def toggleRoomTimeSlot(roomNumber, clinic_id, date, time):
 	room = RoomService.getRoom(roomNumber, clinic_id)
 	if room is not None:
 		if isRoomAvailable(roomNumber, clinic_id, date, time):
-			makeTimeSlotUnavailable(roomNumber=roomNumber, date=date, time=time)
+			makeTimeSlotUnavailable(roomNumber=roomNumber, clinic_id=clinic_id, date=date, time=time)
 		else:
-			makeTimeSlotAvailable(roomNumber=roomNumber, date=date, time=time)
+			makeTimeSlotAvailable(roomNumber=roomNumber, clinic_id=clinic_id, date=date, time=time)
 		response = True
 	return response
 
