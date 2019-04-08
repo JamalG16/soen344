@@ -81,7 +81,7 @@ def is_patient_already_booked(patient_hcnumber, time, date, length, clinic_id):
         if appointment['time'] == time \
                 and appointment['date'] == date \
                 and appointment['length'] == length \
-                and appointment['clinic_id'] == clinic_id:
+                and appointment['clinic_id'] == int(clinic_id):
             return True
     return False
 
