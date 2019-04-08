@@ -20,6 +20,8 @@ class infodump extends Component {
     this.addRoom()
     this.addDoctor()
     this.addNurse()
+    this.addClinic()
+    this.addAnotherClinic()
   }
 
   /* 
@@ -145,6 +147,46 @@ class infodump extends Component {
       password: "lol",
     }
     fetchAPI("PUT", "/api/nurse/", nurse).then(
+        response => {
+          try{
+            if (response.success){
+              console.log('it is a success mate')
+              this.setState({sendDataAns: response.message})
+            }
+            else {
+              console.log('it is a fail mate');
+            }
+          } catch(e){console.error("Error", e)}
+        }
+      ).catch((e)=>console.error("Error:", e))
+  }
+
+  async addClinic(){
+    let clinic= { 
+      name:'Montreal Santé',
+      address: '123 st-catherine, Montreal, QC'
+    }
+    fetchAPI("PUT", "/api/clinic/", clinic).then(
+        response => {
+          try{
+            if (response.success){
+              console.log('it is a success mate')
+              this.setState({sendDataAns: response.message})
+            }
+            else {
+              console.log('it is a fail mate');
+            }
+          } catch(e){console.error("Error", e)}
+        }
+      ).catch((e)=>console.error("Error:", e))
+  }
+
+  async addAnotherClinic(){
+    let clinic= { 
+      name:'Montreal Santé 2',
+      address: '123 crescent, Montreal, QC'
+    }
+    fetchAPI("PUT", "/api/clinic/", clinic).then(
         response => {
           try{
             if (response.success){
