@@ -28,29 +28,39 @@ class BookPatient extends Component {
             availableTimeSlots: [],
             display1: [], //for checkups
             display2: [], //for annuals
+            allClinics: [],
+            selectedClinic: []
         }
     }
     
     componentDidMount(){
-        this.getTimeSlots(moment())
+        this.getClinics()
+        this.getTimeSlots(moment(), 1)
     }
 
     componentWillReceiveProps(nextProps) {
         if(this.props !== nextProps){
-          this.getTimeSlots(this.state.selectedValue)
+          this.getTimeSlots(this.state.selectedValue, 1)
         }
     }
 
     onSelect = (value) => {
         this.setState({
-        value,
-        selectedValue: value,
+            value,
+            selectedValue: value,
         });
-        this.getTimeSlots(value)
+        this.getTimeSlots(value, this.state.clinic.id)
+    }
+
+    onSelectClinic = (e) => {
+        this.setState({
+            clinic: e.target.value
+        })
+        this.getTimeSlots(this.state.selectedValue, e.target.value.id)
     }
 
     onChange = (e) => {
-    this.setState({ size: e.target.value });
+        this.setState({ size: e.target.value });
     }
 
     onPanelChange = (value) => {
@@ -60,23 +70,26 @@ class BookPatient extends Component {
     async book(appointment){
         let booking;
         if (appointment[0] == 'Checkup')
-            booking = {hcnumber: this.props.user.hcnumber, length: '20', time: appointment[2] , date: appointment[1] }
+            booking = {hcnumber: this.props.user.hcnumber, length: '20', time: appointment[2] , date: appointment[1],
+                        clinic_id: this.state.clinic.id}
         else 
-            booking = {hcnumber: this.props.user.hcnumber, length: '60', time: appointment[2] , date: appointment[1] }
+            booking = {hcnumber: this.props.user.hcnumber, length: '60', time: appointment[2] , date: appointment[1],
+                        clinic_id: this.state.clinic.id }
         fetchAPI("PUT", "/api/appointment/book", booking).then(
             response => {
               try{
                 if (response.success){
                     console.log('it is a success mate')
-                    message.info('Booked a(n) ' + appointment[0] + ' appointment on ' + appointment[1] + ' at ' + appointment[2] + ' for ' + this.props.user.hcnumber + '.')
-                    this.getTimeSlots(this.state.selectedValue)
+                    message.info('Booked a(n) ' + appointment[0] + ' appointment on ' + appointment[1] + ' at ' + appointment[2] + 
+                        ' at ' + this.state.clinic.name + ' for ' + this.props.user.hcnumber + '.')
+                    this.getTimeSlots(this.state.selectedValue, this.state.clinic.id)
                     this.props.handleUpdate()
                 }
                 else {
                   console.log('it is a fail mate' + response.message + response.info);
                   if (response.bookableAnnual){
                     message.info('Appointment time no longer exists.')
-                    this.getTimeSlots(this.state.selectedValue)
+                    this.getTimeSlots(this.state.selectedValue, this.state.clinic.id)
                   }
                   else {
                     message.info('Could not book a(n) ' + appointment[0] + ' appointment on ' + appointment[1] + ' at ' + appointment[2] + ' for ' + this.props.user.hcnumber + '.' + 
@@ -88,8 +101,8 @@ class BookPatient extends Component {
           ).catch((e)=>console.error("Error:", e))
     }
     
-    async getTimeSlots(date){
-        let data = {date: date.format('YYYY-MM-DD') }
+    async getTimeSlots(date, clinic_id){
+        let data = {date: date.format('YYYY-MM-DD'), clinic_id: clinic_id }
         fetchAPI("POST", "/api/appointment/find", data).then(
             response => {
               try{
@@ -123,6 +136,22 @@ class BookPatient extends Component {
           ).catch((e)=>console.error("Error:", e))
     }
 
+    async getClinics(){
+        fetchAPI("GET", '/api/clinic/findAll').then(
+            response => {
+              try{
+                if (response.success){
+                    console.log('it is a success mate')
+                    this.setState({allClinics: response.clinics, clinic: response.clinics[0]})
+                }
+                else {
+                  console.log('it is a fail mate' + response.message);
+                }
+              } catch(e){console.error("Error", e)}
+            }
+          ).catch((e)=>console.error("Error:", e))
+    }
+
     render() {
         const { current, value, selectedValue, size } = this.state;
         let message, success;
@@ -145,6 +174,21 @@ class BookPatient extends Component {
         return (
             <table>
                 <tr>
+                    <td colSpan={2}>
+                            Select the clinic you want to visit.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <Radio.Group value={this.state.clinic} onChange={this.onSelectClinic} style={{ marginBottom: 16 }}>
+                                {this.state.allClinics.map((clinic) => 
+                                    <Radio.Button value={clinic}>
+                                        {clinic.name}
+                                    </Radio.Button>)}
+                            </Radio.Group>
+                        </td>
+                    </tr>
+                    <tr>
                     <td colSpan={2}>
                         Select the type of appointment you want to book.
                     </td>
