@@ -174,46 +174,11 @@ def updateAppointment(appointment_id, doctor_permit_number, length, new_time, ne
 
     return message, appointment_updated
 
-
 def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, clinic_id):
     available_time_slots = [False] * 36
     # preferential filtering by doctors, since they are the ones to most likely have fewer availabilities
     for permit_number in doctorPermitNumberList:
-        doctor_time_slots = DoctorScheduleService.getTimeSlotsByDateAndDoctor(permit_number=permit_number,
-                                                                              date=date).toString().split(',')
-        # for all available rooms
-        # concatenate existing availabilities with the cross availabilities of each room and the doc schedule
-        for roomNumber in roomList:
-            room_slots = RoomScheduleService.getTimeSlotsByDateAndRoom(date=date, roomNumber=roomNumber,
-                                                                       clinic_id=clinic_id).toString().split(',')
-            common_time_slots = BooleanArrayOperations.getCommonTimeslots(doctor_time_slots, room_slots)
-            available_time_slots = BooleanArrayOperations.concatenateBooleanLists(available_time_slots,
-                                                                                  common_time_slots)
-    return available_time_slots
-
-            #updates
-            updateDB(appointment['id'], clinic_id, available_room, available_doctor, length, time, date)
-        elif appointment['length'] == 60 and length == '60':
-            available_doctor = DoctorScheduleService.findDoctorForAnnual(time=time, date=date)
-            if available_doctor is None:
-                return False
-            available_room = RoomScheduleService.findRoomForAnnual(clinic_id=clinic_id, time=time, date=date)
-            if available_room is None:
-                return False
-            DoctorScheduleService.makeTimeSlotAvailableAnnual(appointment['doctor_permit_number'], appointment['date'], appointment['time'])
-            RoomScheduleService.makeTimeSlotAvailableAnnual(appointment['room'], appointment['clinic_id'], appointment['date'], appointment['time'])
-            DoctorScheduleService.makeTimeSlotUnavailableAnnual(available_doctor, date, time)
-            RoomScheduleService.makeTimeSlotUnavailableAnnual(available_room, clinic_id, date, time)
-            updateAnnual(appointment['patient_hcnumber'], date)
-            #updates
-            updateDB(appointment['id'], clinic_id, available_room, available_doctor, length, time, date)
-        return True
-
-def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, clinic_id):
-    available_time_slots = [False] * 36
-    # preferential filtering by doctors, since they are the ones to most likely have fewer availabilities
-    for permit_number in doctorPermitNumberList:
-        doctor_time_slots = DoctorScheduleService.getTimeSlotsByDateDoctorAndClinic(permit_number=permit_number,
+        doctor_time_slots = DoctorSchedudleService.getTimeSlotsByDateDoctorAndClinic(permit_number=permit_number,
                                                                               date=date,
                                                                               clinic_id=clinic_id)
         if doctor_time_slots is None:

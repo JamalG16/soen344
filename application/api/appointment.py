@@ -39,7 +39,7 @@ def newAppointment():
     bookableAnnual = None
     message = ""
 
-    patient_health_card_number = data['hcnumber']
+    patient_hcnumber = data['hcnumber']
     time = data['time']
     date = data['date']
     length = data['length']
@@ -47,14 +47,14 @@ def newAppointment():
 
     # to avoid potential double bookings
     patient_is_already_booked = AppointmentService.is_patient_already_booked(
-        patient_hcnumber=patient_health_card_number,
+        patient_hcnumber=patient_hcnumber,
         time=time, length=length, clinic_id=clinic_id, date=date)
 
     if (length is '60'):
-        bookableAnnual = PatientService.canBookAnnual(patient_health_card_number)
+        bookableAnnual = PatientService.canBookAnnual(patient_hcnumber)
 
     if not patient_is_already_booked:
-        success = AppointmentService.bookAppointment(patient_hcnumber=patient_health_card_number, clinic_id=clinic_id,
+        success = AppointmentService.bookAppointment(patient_hcnumber=patient_hcnumber, clinic_id=clinic_id,
                                                      length=length, time=time,
                                                      date=date)
     if success:
