@@ -214,14 +214,21 @@ def updateAppointmentForDoctor():
     data = data.decode('utf8').replace("'", '"')
     data = json.loads(data)
     print(data)
+    success = False
+    message = ""
 
     if AppointmentService.getAppointment(data['id']) is not None:
         message, success = AppointmentService.updateAppointment(appointment_id=data['id'],
                                                                 doctor_permit_number=data['permit_number'],
                                                                 length=data['length'], new_time=data['time'],
                                                                 new_date=data['date'])
-    response = json.dumps(
-        {"success": success, "message": message})
+    if data['length'] is '60':
+        bookableAnnual = PatientService.canBookAnnual(data['hcnumber'])
+        response = json.dumps(
+            {"success": success, "message": message, "bookableAnnual": bookableAnnual})
+    else:
+        response = json.dumps(
+            {"success": success, "message": message})
     return response
 
 
@@ -231,21 +238,27 @@ def updateAppointment():
     data = data.decode('utf8').replace("'", '"')
     data = json.loads(data)
     print(data)
+    success = False
 
     if data['length'] is '60':
         bookableAnnual = PatientService.canBookAnnual(data['hcnumber'])
-        if AppointmentService.getAppointment(data['id']) is not None:
-            success = AppointmentService.updateAppointment(appointment_id=data['id'], length=data['length'],
-                                                           new_time=data['time'], new_date=data['date'])
-        if success:
-            message = 'Appointment has been updated.'
-            appointment = AppointmentService.getAppointment(data['id'])
-        else:
-            message = 'Appointment has not been updated.'
 
+    if AppointmentService.getAppointment(data['id']) is not None:
+        success = AppointmentService.updateAppointment(appointment_id=data['id'], length=data['length'],
+                                                        new_time=data['time'], new_date=data['date'])
+    if success:
+        message = 'Appointment has been updated.'
+        appointment = AppointmentService.getAppointment(data['id'])
+    else:
+        message = 'Appointment has not been updated.'
+
+    if data['length'] is '60':
         response = json.dumps(
             {"success": success, "message": message, "appointment": appointment, "bookableAnnual": bookableAnnual})
-        return response
+    else:
+        response = json.dumps(
+            {"success": success, "message": message, "appointment": appointment})
+    return response
 
 # /api/appointment/find?date=<insert_date_here>
 @appointment.route('/api/appointment/find', methods=['POST'])

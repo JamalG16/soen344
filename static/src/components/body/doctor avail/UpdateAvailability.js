@@ -264,7 +264,7 @@ class UpdateAvailability extends Component {
         let slots = []
         for (var i = 0; i < this.state.clinics.length; i++) {
             slots.push(<option key={this.state.clinics[i].id} value={this.state.clinics[i].id}>
-                       {this.state.clinics[i].name}</option>)
+                {this.state.clinics[i].name} - id: {this.state.clinics[i].id}</option>)
         }
 
         let table = []

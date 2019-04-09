@@ -183,7 +183,7 @@ class BookPatient extends Component {
                             <Radio.Group value={this.state.clinic} onChange={this.onSelectClinic} style={{ marginBottom: 16 }}>
                                 {this.state.allClinics.map((clinic) => 
                                     <Radio.Button value={clinic}>
-                                        {clinic.name}
+                                        {clinic.name} (id: {clinic.id})
                                     </Radio.Button>)}
                             </Radio.Group>
                         </td>

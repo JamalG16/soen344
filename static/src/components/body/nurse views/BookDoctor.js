@@ -199,7 +199,8 @@ class BookDoctor extends Component {
                 <Modal show={this.state.modal}>
                         <Modal.Header>
                             <Modal.Title>Book {this.state.appointment[0]} appointment at {this.state.appointment[2]} on
-                                &nbsp;{this.state.appointment[1]} at {this.state.clinic.split(';')[1]}.
+                                &nbsp;{this.state.appointment[1]} at {this.state.clinic.split(';')[1]}
+                                &nbsp; (clinic id: {this.state.clinic.split(';')[0]}).
                             </Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
@@ -267,7 +268,8 @@ function AppointmentTable(props) {
     else if (props.size == 'checkin') {
         return (
             <div>
-                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}, at {props.clinic.split(';')[1]}</h2>
+                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}, at {props.clinic.split(';')[1]}
+                &nbsp; (clinic id: {props.clinic.split(';')[0]})</h2>
                 <Table columns={columns} dataSource={props.display1} pagination={false}/>
             </div>
         );
@@ -275,7 +277,8 @@ function AppointmentTable(props) {
     else if (props.size == 'annual') {
         return (
             <div>
-                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}, at {props.clinic.split(';')[1]}</h2>
+                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}, at {props.clinic.split(';')[1]}
+                &nbsp; (clinic id: {props.clinic.split(';')[0]})</h2>
                 <Table columns={columns} dataSource={props.display2} pagination={false}/>
             </div>
         );

@@ -39,14 +39,14 @@ def bookAppointment(patient_hcnumber, length, time, date, clinic_id):
 
 
 def bookAppointmentWithASpecificDoctor(patient_hcnumber, doctor_permit_number, length, time, date, clinic_id):
-    if length == 20:  # checkup
+    if length == '20':  # checkup
         available_doctor = doctor_permit_number
         available_room = RoomScheduleService.findRoomAtTime(time=time, date=date, clinic_id=clinic_id)
         if available_room is None:
             return False
         return bookRegular(patient_hcnumber=patient_hcnumber, doctor_permit_number=available_doctor,
                            room_number=available_room, length=length, time=time, date=date, clinic_id=clinic_id)
-    elif length == 60:  # annual
+    elif length == '60':  # annual
         if not canBookAnnual(patient_hcnumber):
             return False
         available_doctor = doctor_permit_number
@@ -150,13 +150,13 @@ def updateDB(id, clinic_id, room, doctor_permit_number, length, time, date):
 
 # gets the currently made appointment and tries to change it to the new appointment parameters.
 # 4 cases: 20mins --> 20mins, 20mins-->60mins, 60mins-->20mins, 60mins-->60mins
-def updateAppointment(appointment_id, doctor_permit_number, length, new_time, new_date):
+def updateAppointment(appointment_id, length, new_time, new_date, doctor_permit_number=None):
     old_appointment = getAppointment(appointment_id)
     old_appointment_is_annual = old_appointment['length'] == 60
-    new_appointment_is_annual = length == 60
+    new_appointment_is_annual = length == 60 or length is '60'
     appointment_updated = False
     if new_appointment_is_annual and not old_appointment_is_annual \
-            and canBookAnnual(old_appointment['patient_hcnumber']):
+            and not canBookAnnual(old_appointment['patient_hcnumber']):
         return "Patient already has an annual appointment which is not the one being moved", appointment_updated
 
     if doctor_permit_number is None:
@@ -168,7 +168,8 @@ def updateAppointment(appointment_id, doctor_permit_number, length, new_time, ne
                                                                  doctor_permit_number=doctor_permit_number,
                                                                  length=length, time=new_time, date=new_date,
                                                                  clinic_id=old_appointment['clinic_id'])
-    cancelAppointment(appointment_id)
+    if appointment_updated:
+        cancelAppointment(appointment_id)
 
     message = "Appointment has been updated" if appointment_updated else "Appointment was not updated"
 

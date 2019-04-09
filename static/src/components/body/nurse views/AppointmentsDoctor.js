@@ -19,7 +19,7 @@ class AppointmentsDoctor extends Component {
             appointment: {},
             newAppointment: [],
             annualAlert: false,
-            alert: false
+            alert: false,
         };
         this.handleAppointmentsDoctor();
         this.cancel = this.cancel.bind(this)
@@ -48,24 +48,28 @@ class AppointmentsDoctor extends Component {
     }
 
     async updateAppointment(){
-        /* NEEDS A NEW UPDATE APPOINTMENT FUNCTION
         let data;
         if (this.state.newAppointment[0] == 'Checkup')
-            data = {id: this.state.appointment.id, hcnumber: this.state.appointment.patient_hcnumber, length:'20', time: this.state.newAppointment[2], date: this.state.newAppointment[1]}
+            data = {id: this.state.appointment.id, length:'20', permit_number: this.props.user.permit_number,
+                time: this.state.newAppointment[2], date: this.state.newAppointment[1], 
+                clinic_id: this.state.newAppointment[3].split(';')[0]}
         else
-            data = {id: this.state.appointment.id, hcnumber: this.props.user.hcnumber, length:'60', time: this.state.newAppointment[2], date: this.state.newAppointment[1]}
-        fetchAPI("PUT", '/api/appointment/update', data).then(
+            data = {id: this.state.appointment.id, length:'60', permit_number: this.props.user.permit_number,
+                time: this.state.newAppointment[2], date: this.state.newAppointment[1], 
+                clinic_id: this.state.newAppointment[3].split(';')[0]}
+        fetchAPI("PUT", '/api/appointment/update/doctor', data).then(
             response => {
                 try{
                     if(response.success){
                         this.setState({
                             newAppointment: [], appointment:{}, modal: false, alert: false, annualAlert: false
                         });
-                        console.log("Patient " + this.props.user.hcnumber + " successfully updated appointment")
+                        console.log("Doctor successfully updated appointment with " + this.state.appointment.patient_hcnumber)
                         this.props.handleUpdate()
                     }
                     else {
-                        console.log("Patient " + this.props.user.hcnumber + " failed to update appointment")
+                        console.log("Doctor unsuccessfully updated appointment with " + this.state.appointment.patient_hcnumber)
+                        console.log(response.message)
                         if (response.bookableAnnual)
                             this.setState({alert: false, annualAlert: false})
                         else
@@ -74,7 +78,7 @@ class AppointmentsDoctor extends Component {
                     this.handleAppointmentsPatient();
                 } catch(e) {console.error("Error getting appointments for patient:", e)}
             }
-        ).catch((e)=>console.error("Error getting appointments for patient:", e))*/
+        ).catch((e)=>console.error("Error getting appointments for patient:", e))
     }
 
     async handleAppointmentsDoctor(){
