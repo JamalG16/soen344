@@ -36,7 +36,8 @@ class CalendarDoctor extends Component {
             hcnumber: '',
             inexistentPatient: false,
             noRoom: false,
-            fail: false
+            fail: false,
+            patientAlreadyBooked: false
         }
     }
     
@@ -133,7 +134,8 @@ class CalendarDoctor extends Component {
                     try{
                         if (response.success){
                             console.log('it is a success mate')
-                            this.setState({inexistentPatient: false, noRoom: false, modal: false, fail: false})
+                            this.setState({inexistentPatient: false, noRoom: false, patientAlreadyBooked: false,
+                                 modal: false, fail: false})
                             message.info(this.state.appointment[0] + " with " + this.state.hcnumber + " at " + 
                                 this.state.appointment[2] + " on " + this.state.appointment[1] + " at " +  
                                 this.state.clinic.split(';')[1] + " has been booked.")
@@ -145,6 +147,8 @@ class CalendarDoctor extends Component {
                                 this.setState({inexistentPatient: true})
                             else if (!response.room_is_available)
                                 this.setState({noRoom: true})
+                            else if (response.patientIsAlreadyBooked)
+                                this.setState({patientAlreadyBooked: true})
                             else
                                 this.setState({fail: true})
                         }
@@ -155,7 +159,7 @@ class CalendarDoctor extends Component {
 
     render() {
         const { current, value, selectedValue, size } = this.state;
-        let message, success, patientAlert, alert, roomAlert;
+        let message, success, patientAlert, alert, roomAlert, patientAlreadyBookedAlert;
 
         if (selectedValue < current) {
             message = "You cannot select a previous date to book an appointment";
@@ -181,6 +185,11 @@ class CalendarDoctor extends Component {
             roomAlert = <div className="flash animated" id="welcome"><ReactAlert bsStyle="warning">No room available at that time.</ReactAlert></div>
         else
             roomAlert = null
+        
+        if (this.state.patientAlreadyBooked)
+            patientAlreadyBookedAlert = <div className="flash animated" id="welcome"><ReactAlert bsStyle="warning">Patient already booked at this time and date.</ReactAlert></div>
+        else
+        patientAlreadyBookedAlert = null
 
         return (
             <div>
@@ -205,6 +214,7 @@ class CalendarDoctor extends Component {
                             {patientAlert}
                             {roomAlert}
                             {alert}
+                            {patientAlreadyBookedAlert}
                         </Modal.Body>
                         <Modal.Footer>
                             <Button variant="secondary" onClick={this.handleCloseModal}>Cancel</Button>
