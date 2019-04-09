@@ -116,54 +116,62 @@ def cancelAppointment():
 
 @appointment.route('/api/appointment/update', methods=['PUT'])
 def updateAppointment():
-	data = request.data
-	data  = data.decode('utf8').replace("'",'"')
-	data = json.loads(data)
-	print(data)
-	success = False
-	appointment = None
-	bookableAnnual=None
+    data = request.data
+    data  = data.decode('utf8').replace("'",'"')
+    data = json.loads(data)
+    print(data)
+    success = False
+    appointment = None
+    bookableAnnual=None
 
-	if data['length'] is '60':
-		bookableAnnual = PatientService.canBookAnnual(data['hcnumber'])
-	
-	if AppointmentService.getAppointment(data['id']) is not None:
-		success = AppointmentService.updateAppointment(data['id'], data['hcnumber'], data['clinic_id'], data['length'], data['time'], data['date'])
-	if success:
-		message = 'Appointment has been updated.'
-		appointment = AppointmentService.getAppointment(data['id'])
-	else:
-		message = 'Appointment has not been updated.'
+    if data['length'] is '60':
+        bookableAnnual = PatientService.canBookAnnual(data['hcnumber'])
+        
+    if AppointmentService.getAppointment(data['id']) is not None:
+        success = AppointmentService.updateAppointment(appointment_id=data['id'], length=data['length'],
+                                                        new_time=data['time'], new_date=data['date'])
+    if success:
+        message = 'Appointment has been updated.'
+        appointment = AppointmentService.getAppointment(data['id'])
+    else:
+        message = 'Appointment has not been updated.'
 
-	response = json.dumps({"success": success, "message": message, "appointment": appointment, "bookableAnnual": bookableAnnual})
-	return response
-
+    response = json.dumps(
+        {"success": success, "message": message, "appointment": appointment, "bookableAnnual": bookableAnnual})
+    return response
+    
 
 # /api/appointment/find?date=<insert_date_here>
 @appointment.route('/api/appointment/find', methods=['POST'])
 def findAppointments():
-	data = request.data
-	data = data.decode('utf8').replace("'",'"')
-	data = json.loads(data)
-	date = data['date']
-	message = "hi"
-	success = False
-	if(date is None):
-		message = 'Enter a date to find the appointments for'
-		return message, 404
+    data = request.data
+    data = data.decode('utf8').replace("'", '"')
+    data = json.loads(data)
+    date = data['date']
+    clinic_id = data['clinic_id']
+    message = ""
+    success = False
+    if (date is None):
+        message = 'Enter a date to find the appointments for'
+        return message, 404
 
-	availableDoctorPermitNumbers = DoctorScheduleService.getAllAvailableDoctorPermitsByDate(date)
-	availableRoomNumbers = RoomService.getAllRoomNumbers()
-	if(availableDoctorPermitNumbers is None):
-		message = "Unfortunately there are no doctors available for this date at the moment. Please try later."
-		return message, 200
-	if(availableRoomNumbers is None):
-		message = "Unfortunately there are no rooms available for this date at the moment. Please try later."
-		return message, 200
-	listOfAvailableAppointments = AppointmentService.crossCheckDoctorAndRoomList(date, availableDoctorPermitNumbers, availableRoomNumbers)
-	if listOfAvailableAppointments is None:
-		return 204
-	else:
-		success = True
-		response = json.dumps({"success": success, "listOfAvailableAppointments": listOfAvailableAppointments, "date": date, "message": message})
-		return response, 200
+    availableDoctorPermitNumbers = DoctorScheduleService.getAllAvailableDoctorPermitsByDate(date)
+    availableRoomNumbers = RoomService.getAllRoomNumbersByClinic(clinic_id=clinic_id)
+    if (availableDoctorPermitNumbers is None):
+        message = "Unfortunately there are no doctors available for this date at the moment. Please try later."
+        return message, 200
+    if (availableRoomNumbers is None):
+        message = "Unfortunately there are no rooms available for this date at the moment. Please try later."
+        return message, 200
+    listOfAvailableAppointments = AppointmentService.crossCheckDoctorAndRoomList(date=date,
+                                                                                 doctorPermitNumberList=availableDoctorPermitNumbers,
+                                                                                 roomList=availableRoomNumbers,
+                                                                                 clinic_id=clinic_id)
+    if listOfAvailableAppointments is None:
+        return 204
+    else:
+        success = True
+        response = json.dumps(
+            {"success": success, "listOfAvailableAppointments": listOfAvailableAppointments, "date": date,
+             "message": message})
+        return response, 200
