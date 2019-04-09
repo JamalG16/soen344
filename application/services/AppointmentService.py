@@ -178,7 +178,7 @@ def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, clinic_i
     available_time_slots = [False] * 36
     # preferential filtering by doctors, since they are the ones to most likely have fewer availabilities
     for permit_number in doctorPermitNumberList:
-        doctor_time_slots = DoctorSchedudleService.getTimeSlotsByDateDoctorAndClinic(permit_number=permit_number,
+        doctor_time_slots = DoctorScheduleService.getTimeSlotsByDateDoctorAndClinic(permit_number=permit_number,
                                                                               date=date,
                                                                               clinic_id=clinic_id)
         if doctor_time_slots is None:
