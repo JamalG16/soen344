@@ -126,12 +126,12 @@ def cancelAppointment(id):
         clinic_id = appointment['clinic_id']
         if appointment['length'] == 20:
             DoctorScheduleService.makeTimeSlotAvailable(doctor, date, time)
-            RoomScheduleService.makeTimeSlotAvailable(roomNumber=room, date=date, time=time, clinic_id=clinic_id)
+            RoomScheduleService.makeTimeSlotAvailable(room, clinic_id, date, time)
             AppointmentTDG.delete(appointment['id'])
             return True
         elif appointment['length'] == 60:
             DoctorScheduleService.makeTimeSlotAvailableAnnual(doctor, date, time)
-            RoomScheduleService.makeTimeSlotAvailable(roomNumber=room, date=date, time=time, clinic_id=clinic_id)
+            RoomScheduleService.makeTimeSlotAvailableAnnual(room, clinic_id, date, time)
             updateAnnual(appointment['patient_hcnumber'], None)
             AppointmentTDG.delete(appointment['id'])
             return True
@@ -174,13 +174,17 @@ def updateAppointment(appointment_id, doctor_permit_number, length, new_time, ne
 
     return message, appointment_updated
 
-
 def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, clinic_id):
     available_time_slots = [False] * 36
     # preferential filtering by doctors, since they are the ones to most likely have fewer availabilities
     for permit_number in doctorPermitNumberList:
-        doctor_time_slots = DoctorScheduleService.getTimeSlotsByDateAndDoctor(permit_number=permit_number,
-                                                                              date=date).toString().split(',')
+        doctor_time_slots = DoctorScheduleService.getTimeSlotsByDateDoctorAndClinic(permit_number=permit_number,
+                                                                              date=date,
+                                                                              clinic_id=clinic_id)
+        if doctor_time_slots is None:
+            continue
+        else:
+            doctor_time_slots = doctor_time_slots.toString().split(',')
         # for all available rooms
         # concatenate existing availabilities with the cross availabilities of each room and the doc schedule
         for roomNumber in roomList:
@@ -190,3 +194,4 @@ def crossCheckDoctorAndRoomList(date, doctorPermitNumberList, roomList, clinic_i
             available_time_slots = BooleanArrayOperations.concatenateBooleanLists(available_time_slots,
                                                                                   common_time_slots)
     return available_time_slots
+

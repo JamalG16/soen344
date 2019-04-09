@@ -9,6 +9,9 @@ def find(roomNumber, clinic_id):
 def findAll():
     return db.session.query(Room.roomNumber).all()
 
+def findAllAtClinic(clinic_id):
+    return Room.query.filter_by(clinic_id=clinic_id).all()
+
 def create(roomNumber, clinic_id):
     newRoom = Room(roomNumber=roomNumber, clinic_id=clinic_id)
     db.session.add(newRoom)
