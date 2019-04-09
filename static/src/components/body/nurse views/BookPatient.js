@@ -29,7 +29,7 @@ class BookPatient extends Component {
             display1: [], //for checkups
             display2: [], //for annuals
             allClinics: [],
-            selectedClinic: []
+            clinic: {}
         }
     }
     
