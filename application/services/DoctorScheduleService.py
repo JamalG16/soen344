@@ -57,6 +57,14 @@ def isDoctorAvailable(permit_number, date, time):
     else:
         return None
 
+def isDoctorAvailableForAnnual(permit_number,date,time):
+    count=0
+    while (isDoctorAvailable(permit_number,date,time) and count<3) :
+        time = getNextTimeSlot(permit_number,date,time)
+        count+=1
+    # 3 subesequent slots are available from the initial time
+    return count==3
+
 def isDoctorAtClinic(permit_number, date, clinic_id):
     schedule = DoctorScheduleTDG.find(permit_number=permit_number, date=date, clinic_id=clinic_id)
     return schedule is not None
@@ -131,7 +139,6 @@ def getNextTimeSlot(permit_number, date, time):
             return iterator.next()
         else:
             return None
-
 
 # makes a specific timeslot available
 def makeTimeSlotAvailable(permit_number, date, time):
@@ -251,15 +258,15 @@ def getAvailability(permit_number, date):
         schedule_timeslots = Schedule(SLOTS)
         clinic_array = []
         for clinic in clinics:
-            clinic_array.append(str(clinic.id) + ";" + str(clinic.name))
+            clinic_array.append(str(clinic['id']) + ";" + str(clinic['name']))
     else:
         day_schedule = DoctorScheduleTDG.find(permit_number, date)
         clinic_array = []
         for clinic in clinics:
-            if clinic.id == day_schedule.clinic_id:
-                clinic_array.insert(0, str(clinic.id) + ";" + str(clinic.name))
+            if clinic['id'] == day_schedule.clinic_id:
+                clinic_array.insert(0, str(clinic['id']) + ";" + str(clinic['name']))
             else:
-                clinic_array.append(str(clinic.id) + ";" + str(clinic.name))
+                clinic_array.append(str(clinic['id']) + ";" + str(clinic['name']))
 
     return_dict = {'timeslot': schedule_timeslots.toString().split(','), 'clinics': clinic_array}
     return return_dict

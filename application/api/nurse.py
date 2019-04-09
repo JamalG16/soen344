@@ -5,7 +5,7 @@ This file documents the api routes for nurse related events
 
 from flask import Flask, Blueprint, redirect, render_template, url_for, session, request, logging
 from index import app
-from application.services import NurseService
+from application.services import NurseService, DoctorService, DoctorScheduleService
 from application.util import *
 from passlib.hash import sha256_crypt
 from application.util import convertRequestDataToDict as toDict
@@ -25,7 +25,7 @@ def index():
 	return json.dumps({'success': True, 'status': 'OK', 'message': 'Success'})
 
 @nurse.route('/api/nurse/', methods=['PUT'])
-def newDoctor():
+def newNurse():
 	data = request.data
 	data  = data.decode('utf8').replace("'",'"')
 	data = json.loads(data)
@@ -75,3 +75,33 @@ def userAuthenticate():
 	response = json.dumps({'success': success, 'status': status, 'message': message,'user':user})
 	return response
 
+@nurse.route('/api/nurse/doctorAvailability/', methods=['GET'])
+def getDoctorAvailability():
+    # convert request data to dictionary
+    data = request.args
+
+    success = False
+    message = ""
+    status = ""  # OK, DENIED, WARNING
+    response = {}
+    user = {}
+    schedule = {}
+
+    # check if permit number exists
+    success = DoctorService.doctorExists(data['permit_number']) and \
+                NurseService.verifyHash(data['access_ID'], data['password_hash'])
+
+    # if permit number exists, get the doctor's timeslots
+    if success:
+        schedule = DoctorScheduleService.getAvailability(data['permit_number'], data['date'])
+        # convert datetimes to strings
+        message = "schedule found."
+        status = "OK"
+        response = json.dumps({'success': success, 'status': status, 'message': message, 'user': user})
+    # else the user is not authenticated, request is denied
+    else:
+        message = "User not authenticated or does not exist."
+        status = "DENIED"
+
+    response = json.dumps({'success': success, 'status': status, 'message': message, 'schedule': schedule})
+    return response

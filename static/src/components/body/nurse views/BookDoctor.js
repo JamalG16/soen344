@@ -17,7 +17,7 @@ import 'antd/es/radio/style/index.css';
 import 'antd/es/typography/style/index.css';
 import 'antd/es/message/style/index.css';
 
-class CalendarDoctor extends Component {
+class BookDoctor extends Component {
     constructor(props) {
         super(props);
         var update = require('react-addons-update');
@@ -28,22 +28,24 @@ class CalendarDoctor extends Component {
             selectedValue: moment(),
             timeSlots: ['8:00', '8:20', '8:40', '9:00', '9:20', '9:40', '10:00', '10:20', '10:40', '11:00', '11:20', '11:40','12:00', '12:20', '12:40','13:00', '13:20', '13:40','14:00', '14:20', '14:40','15:00', '15:20', '15:40','16:00', '16:20', '16:40','17:00', '17:20', '17:40','18:00', '18:20', '18:40','19:00', '19:20', '19:40', '20:00'],
             availableTimeSlots: [],
-            clinic: '',
             display1: [], //for checkups
             display2: [], //for annuals
             appointment: [], 
             modal: false,
             hcnumber: '',
             inexistentPatient: false,
-            noRoom: false,
-            fail: false,
-            patientAlreadyBooked: false
+            fail: false
         }
     }
     
     componentDidMount(){
-        if (!(Object.keys(this.props.user).length === 0 && this.props.user.constructor === Object) && typeof(this.props.user.permit_number) !== 'undefined')
-            this.getTimeSlots(moment())
+        this.getTimeSlots(moment())
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if(this.props !== nextProps){
+          this.getTimeSlots(this.state.selectedValue)
+        }
     }
 
     onSelect = (value) => {
@@ -91,8 +93,9 @@ class CalendarDoctor extends Component {
 
     async getTimeSlots(date) {
         let data = {date: date.format('YYYY-MM-DD') }
-        fetchAPI("GET", "/api/doctor/availability?permit_number=" + this.props.user.permit_number +
-            "&password_hash=" + this.props.user.password_hash +
+        fetchAPI("GET", "/api/nurse/doctorAvailability?permit_number=" + this.props.user.permit_number +
+            "&access_ID=" + this.props.access_ID + 
+            "&password_hash=" + this.props.password_hash +
             "&date=" + data.date).then(
                 response => {
                     try{
@@ -115,7 +118,8 @@ class CalendarDoctor extends Component {
                                             this.handleOpenModal(['Annual', data.date, this.state.timeSlots[i]])}>BOOK</Button>
                                     })
                             }
-                            this.setState({display1: data1, display2:data2, clinic:response.clinics[0], availableTimeSlots: []})
+                            this.setState({display1: data1, display2:data2})
+                            this.setState({availableTimeSlots: []})
                         }
                         else {
                         console.log('it is a fail mate' + response.message);
@@ -127,28 +131,22 @@ class CalendarDoctor extends Component {
 
     async bookAppointment() {
         let appointment = {hcnumber: this.state.hcnumber, permit_number: this.props.user.permit_number, 
-            date: this.state.appointment[1], time: this.state.appointment[2], appointment_type: this.state.appointment[0],
-            clinic_id: this.state.clinic.split(';')[0] }
+            date: this.state.appointment[1], time: this.state.appointment[2], appointment_type: this.state.appointment[0] }
         fetchAPI("POST", "/api/appointment/book/doctor", appointment).then(
                 response => {
                     try{
                         if (response.success){
                             console.log('it is a success mate')
-                            this.setState({inexistentPatient: false, noRoom: false, patientAlreadyBooked: false,
-                                 modal: false, fail: false})
+                            this.setState({inexistentPatient: false, modal: false, fail: false})
                             message.info(this.state.appointment[0] + " with " + this.state.hcnumber + " at " + 
-                                this.state.appointment[2] + " on " + this.state.appointment[1] + " at " +  
-                                this.state.clinic.split(';')[1] + " has been booked.")
+                                this.state.appointment[2] + " on " + this.state.appointment[1] + " has been booked.")
                             this.getTimeSlots(this.state.selectedValue)
+                            this.props.handleUpdate()
                         }
                         else {
                             console.log('it is a fail mate ' + response.message);
                             if (!response.patientExists)
                                 this.setState({inexistentPatient: true})
-                            else if (!response.room_is_available)
-                                this.setState({noRoom: true})
-                            else if (response.patientIsAlreadyBooked)
-                                this.setState({patientAlreadyBooked: true})
                             else
                                 this.setState({fail: true})
                         }
@@ -159,7 +157,7 @@ class CalendarDoctor extends Component {
 
     render() {
         const { current, value, selectedValue, size } = this.state;
-        let message, success, patientAlert, alert, roomAlert, patientAlreadyBookedAlert;
+        let message, success, patientAlert, alert;
 
         if (selectedValue < current) {
             message = "You cannot select a previous date to book an appointment";
@@ -180,23 +178,13 @@ class CalendarDoctor extends Component {
                 &nbsp; Check that your timeslot is still available.</ReactAlert></div>
         else
             alert = null
-        
-        if (this.state.noRoom)
-            roomAlert = <div className="flash animated" id="welcome"><ReactAlert bsStyle="warning">No room available at that time.</ReactAlert></div>
-        else
-            roomAlert = null
-        
-        if (this.state.patientAlreadyBooked)
-            patientAlreadyBookedAlert = <div className="flash animated" id="welcome"><ReactAlert bsStyle="warning">Patient already booked at this time and date.</ReactAlert></div>
-        else
-        patientAlreadyBookedAlert = null
 
         return (
             <div>
                 <Modal show={this.state.modal}>
                         <Modal.Header>
                             <Modal.Title>Book {this.state.appointment[0]} appointment at {this.state.appointment[2]} on
-                                &nbsp;{this.state.appointment[1]} at {this.state.clinic.split(';')[1]}.
+                                &nbsp;{this.state.appointment[1]}.
                             </Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
@@ -212,9 +200,7 @@ class CalendarDoctor extends Component {
                                 </FormGroup>
                             </form>
                             {patientAlert}
-                            {roomAlert}
                             {alert}
-                            {patientAlreadyBookedAlert}
                         </Modal.Body>
                         <Modal.Footer>
                             <Button variant="secondary" onClick={this.handleCloseModal}>Cancel</Button>
@@ -239,8 +225,7 @@ class CalendarDoctor extends Component {
                     <tr>
                         <td><div><Calendar style={{width:300, height:200}} value={value} fullscreen={false}  onSelect={this.onSelect} onPanelChange={this.onPanelChange}/></div></td>
                         <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                        <td style={{width:'100%'}}><AppointmentTable success={success} value={selectedValue} size={size} display1={this.state.display1} display2={this.state.display2}
-                        clinic={this.state.clinic}/></td>
+                        <td style={{width:'100%'}}><AppointmentTable success={success} value={selectedValue} size={size} display1={this.state.display1} display2={this.state.display2}/></td>
                     </tr>
                 </table>
             </div>
@@ -264,7 +249,7 @@ function AppointmentTable(props) {
     else if (props.size == 'checkin') {
         return (
             <div>
-                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}, at {props.clinic.split(';')[1]}</h2>
+                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}</h2>
                 <Table columns={columns} dataSource={props.display1} pagination={false}/>
             </div>
         );
@@ -272,11 +257,11 @@ function AppointmentTable(props) {
     else if (props.size == 'annual') {
         return (
             <div>
-                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}, at {props.clinic.split(';')[1]}</h2>
+                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}</h2>
                 <Table columns={columns} dataSource={props.display2} pagination={false}/>
             </div>
         );
     }
 }
 
-export default CalendarDoctor;
+export default BookDoctor;
