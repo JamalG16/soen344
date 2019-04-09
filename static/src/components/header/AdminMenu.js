@@ -10,7 +10,7 @@ class AdminMenu extends Component {
                     Welcome {this.props.user.username}!
                     &nbsp;&nbsp;&nbsp;
                     <Link to="/Register">
-                        Register an Account
+                        Registration
                     </Link>
                     &nbsp;&nbsp;&nbsp;
                     <Link to="/" onClick={logOut}>
