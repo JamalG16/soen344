@@ -132,6 +132,7 @@ class AppointmentsDoctor extends Component {
                         </div>}
                     style={{ width: 800 }}>
                      <p>{appointment.length} minute appointment with doctor id: {appointment.doctor_permit_number}</p>
+                     <p>Clinic id: {appointment.clinic_id}</p>
                      <p>Room: {appointment.room}</p>
                      <p>Time: {appointment.time}</p>
                 </Card>
