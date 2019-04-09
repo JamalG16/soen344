@@ -4,7 +4,7 @@ import Login from './login//Login'
 import Register from './register/Register'
 import CalendarPatient from './calendars/CalendarPatient'
 import { connect } from 'react-redux'
-import { Route } from 'react-router-dom'
+import { Route, Redirect } from 'react-router-dom'
 import CalendarDoctor from "./calendars/CalendarDoctor";
 import CalendarNurse from "./calendars/CalendarNurse";
 import AppointmentCart from "./AppointmentCart";
@@ -65,10 +65,11 @@ class Body extends Component {
                 <Route path='/Register' component={Register}/>
                 <Route path='/UpdateAvailability' component={UpdateAvailability}/>
                 <Route path='/CalendarPatient' render={(props) => <CalendarPatient {...props} addToCart={this.addToCart} cart={this.state.cart}/>}/>
-                <Route path='/CalendarDoctor' component={CalendarDoctor} />
+                <Route path='/CalendarDoctor' render={(props) => <CalendarDoctor {...props} user={this.props.user}/>}/>
                 <Route path='/CalendarNurse' component={CalendarNurse} />
                 <Route path='/AppointmentCart' render={(props) => <AppointmentCart {...props} removeFromCart={this.removeFromCart} cart={this.state.cart} user={this.props.user}/>}/>
                 <Route path='/Homepage' component={Homepage} />
+                <Redirect from='/' to='/Homepage'></Redirect>
           </Row>
         </Grid>
       </div>

@@ -13,6 +13,7 @@
     "moment": "^2.20.1",
     "navbar": "^2.1.0",
     "react": "^16.2.0",
+    "react-addons-update": "^15.6.2",
     "react-bootstrap": "^0.32.1",
     "react-dom": "^16.2.0",
     "react-modal": "^3.8.1",

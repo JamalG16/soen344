@@ -15,13 +15,13 @@ class infodump extends Component {
    * If you want to know more about it, read the React Docs
    */
   componentDidMount() {
+    this.addClinic()
+    this.addAnotherClinic()
     this.registerPatient()
     this.registerAdmin()
     this.addRoom()
     this.addDoctor()
     this.addNurse()
-    this.addClinic()
-    this.addAnotherClinic()
   }
 
   /* 
@@ -79,7 +79,8 @@ class infodump extends Component {
 
   async addRoom(){
     let room= {
-      roomNumber: '10'
+      roomNumber: '10',
+      clinic_id: '1'
     }
     fetchAPI("PUT", "/api/room/", room).then(
         response => {
@@ -94,7 +95,53 @@ class infodump extends Component {
           } catch(e){console.error("Error", e)}
         }
       ).catch((e)=>console.error("Error:", e))
+      
+      room = {roomNumber:'5',  clinic_id: '1'}
+      fetchAPI("PUT", "/api/room/", room).then(
+        response => {
+          try{
+            if (response.success){
+              console.log('it is a success mate')
+              this.setState({sendDataAns: response.message})
+            }
+            else {
+              console.log('it is a fail mate');
+            }
+          } catch(e){console.error("Error", e)}
+        }
+      ).catch((e)=>console.error("Error:", e))
+
+      room = {roomNumber:'1',  clinic_id: '2'}
+      fetchAPI("PUT", "/api/room/", room).then(
+        response => {
+          try{
+            if (response.success){
+              console.log('it is a success mate')
+              this.setState({sendDataAns: response.message})
+            }
+            else {
+              console.log('it is a fail mate');
+            }
+          } catch(e){console.error("Error", e)}
+        }
+      ).catch((e)=>console.error("Error:", e))
+
+      room = {roomNumber:'2',  clinic_id: '2'}
+      fetchAPI("PUT", "/api/room/", room).then(
+        response => {
+          try{
+            if (response.success){
+              console.log('it is a success mate')
+              this.setState({sendDataAns: response.message})
+            }
+            else {
+              console.log('it is a fail mate');
+            }
+          } catch(e){console.error("Error", e)}
+        }
+      ).catch((e)=>console.error("Error:", e))
   }
+  
   async addDoctor(){
     let doctor= {
       permit_number: '7777777',

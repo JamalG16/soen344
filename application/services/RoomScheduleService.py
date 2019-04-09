@@ -33,7 +33,7 @@ def getAllRoomNumbersByDate(date):
 # check if there is an available room at a specific time. If so, return the first room found to be available.
 # Else, return None.
 def findRoomAtTime(clinic_id, date, time):
-	roomNumber = 'None'
+	roomNumber = None
 	for room in RoomService.getAllRooms():
 		if isRoomAvailable(roomNumber=room.roomNumber, clinic_id=clinic_id, date=date, time=time):
 			roomNumber = room.roomNumber

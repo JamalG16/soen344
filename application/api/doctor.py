@@ -133,7 +133,7 @@ def getAvailability():
     success = DoctorService.doctorExists(data['permit_number']) and \
         DoctorService.verifyHash(data['permit_number'], data['password_hash'])
 
-    # if permit number exists & authenticated, then get the patient
+    # if permit number exists & authenticated, then get the timeslots
     if success:
         returned_values = DoctorScheduleService.getAvailability(data['permit_number'], data['date'])
         # convert datetimes to strings
@@ -163,7 +163,7 @@ def userFind():
     # check if permit number exists
     success = DoctorService.doctorExists(data['permit_number'])
 
-    # if permit number exists & authenticated, then get the patient
+    # if permit number exists & authenticated, then get the doctor
     if success:
         message = "Doctor found."
         status = "OK"

@@ -33,3 +33,11 @@ def createNurse(access_ID, fname, lname, password):
         NurseTDG.create(access_ID=access_ID, fname=fname, lname=lname, password_hash=password_hash)
         reponse = True
     return reponse
+
+def verifyHash(access_ID, password_hash):
+	verified = False
+	user = getNurse(access_ID)
+	if user is not None:
+		verified = (password_hash == user['password_hash'])
+
+	return verified

@@ -1,5 +1,6 @@
 from index import db
 
+
 class Room(db.Model):
 	roomNumber = db.Column(db.Integer, primary_key=True)
 	clinic_id = db.Column(db.Integer, db.ForeignKey('clinic.id'), primary_key=True)
