@@ -59,8 +59,8 @@ def isDoctorAvailable(permit_number, date, time):
 
 def isDoctorAvailableForAnnual(permit_number,date,time):
     count=0
-    while (isDoctorAvailable(permit_number,date,time) and count<3) :
-        time = getNextTimeSlot(permit_number,date,time)
+    while (isDoctorAvailable(permit_number,date,time) and count<3):
+        time = getNextTimeSlot(permit_number,date,time).getTime()
         count+=1
     # 3 subesequent slots are available from the initial time
     return count==3

@@ -37,7 +37,8 @@ class BookDoctor extends Component {
             inexistentPatient: false,
             fail: false,
             noRoom: false,
-            patientAlreadyBooked: false
+            patientAlreadyBooked: false,
+            cantBookAnnual: false
         }
     }
     
@@ -76,7 +77,8 @@ class BookDoctor extends Component {
     }
 
     handleCloseModal = (e) => {
-        this.setState({appointment: '', modal: false})
+        this.setState({appointment: '', modal: false, inexistentPatient: false, noRoom: false, patientAlreadyBooked: false,
+        modal: false, fail: false, cantBookAnnual: false, hcnumber: ''})
     }
 
     handleChange = event => {
@@ -141,7 +143,8 @@ class BookDoctor extends Component {
                     try{
                         if (response.success){
                             console.log('it is a success mate')
-                            this.setState({inexistentPatient: false, modal: false, fail: false})
+                            this.setState({inexistentPatient: false, noRoom: false, patientAlreadyBooked: false,
+                                modal: false, fail: false, cantBookAnnual: false, hcnumber: ''})
                             message.info(this.state.appointment[0] + " with " + this.state.hcnumber + " at " + 
                                 this.state.appointment[2] + " on " + this.state.appointment[1] + " at " +  
                                 this.state.clinic.split(';')[1] + " has been booked.")
@@ -152,6 +155,12 @@ class BookDoctor extends Component {
                             console.log('it is a fail mate ' + response.message);
                             if (!response.patientExists)
                                 this.setState({inexistentPatient: true})
+                            else if (!response.room_is_available)
+                                this.setState({noRoom: true})
+                            else if (response.patientIsAlreadyBooked)
+                                this.setState({patientAlreadyBooked: true})
+                            else if (!response.bookable)
+                                this.setState({cantBookAnnual: true})
                             else
                                 this.setState({fail: true})
                         }
@@ -162,7 +171,7 @@ class BookDoctor extends Component {
 
     render() {
         const { current, value, selectedValue, size } = this.state;
-        let message, success, patientAlert, alert, roomAlert, patientAlreadyBookedAlert;
+        let message, success, patientAlert, alert, roomAlert, patientAlreadyBookedAlert, annualAlert;
 
         if (selectedValue < current) {
             message = "You cannot select a previous date to book an appointment";
@@ -180,7 +189,7 @@ class BookDoctor extends Component {
 
         if (this.state.fail)
             alert = <div className="flash animated" id="welcome"><ReactAlert bsStyle="warning">Cannot book appointment.
-                &nbsp; Check that your timeslot is still available.</ReactAlert></div>
+            &nbsp;Check that your timeslot is still available.</ReactAlert></div>
         else
             alert = null
 
@@ -192,7 +201,13 @@ class BookDoctor extends Component {
         if (this.state.patientAlreadyBooked)
             patientAlreadyBookedAlert = <div className="flash animated" id="welcome"><ReactAlert bsStyle="warning">Patient already booked at this time and date.</ReactAlert></div>
         else
-        patientAlreadyBookedAlert = null
+            patientAlreadyBookedAlert = null
+
+        if (this.state.cantBookAnnual)
+            annualAlert = <div className="flash animated" id="welcome"><ReactAlert bsStyle="warning">Hasn't been a year since patient's last annual or 
+            patient already has an upcoming annual.</ReactAlert></div>
+        else
+            annualAlert = null
 
         return (
             <div>
@@ -219,6 +234,7 @@ class BookDoctor extends Component {
                             {alert}
                             {roomAlert}
                             {patientAlreadyBookedAlert}
+                            {annualAlert}
                         </Modal.Body>
                         <Modal.Footer>
                             <Button variant="secondary" onClick={this.handleCloseModal}>Cancel</Button>

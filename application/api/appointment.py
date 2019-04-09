@@ -81,6 +81,7 @@ def newAppointmentByDoctor():
     appointment_type = data['appointment_type']
     patientExists = True
     room_is_available = True
+    bookable = True
     if appointment_type == 'Annual':
         length = 60
     else:
@@ -119,8 +120,13 @@ def newAppointmentByDoctor():
     patient_is_already_booked = AppointmentService.is_patient_already_booked(
         patient_hcnumber=patient_health_card_number,
         time=time, length=length, clinic_id=clinic_id, date=date)
+    
+    # check if annual, if so, check if bookable
+    if appointment_type == 'Annual':
+        bookable = PatientService.canBookAnnual(patient_health_card_number)
+
     # booking attempt
-    if doctor_is_available and room_is_available and not patient_is_already_booked:
+    if doctor_is_available and room_is_available and not patient_is_already_booked and bookable:
         AppointmentService.bookAppointmentWithASpecificDoctor(patient_hcnumber=patient_health_card_number,
                                                               doctor_permit_number=doctor_permit_number, length=length,
                                                               time=time, date=date, clinic_id=clinic_id)
@@ -132,12 +138,12 @@ def newAppointmentByDoctor():
                                "patientIsAlreadyBooked": patient_is_already_booked})
         return response, status_code
     else:
-        message = "Doctor is not available at this time"
+        message = "Cannot book."
         success = False
         status_code = 200
         response = json.dumps({"success": success, "message": message, "patientExists": patientExists,
-                               "room_is_available": room_is_available,
-                               "patientIsAlreadyBooked": patient_is_already_booked})
+                               "room_is_available": room_is_available, "doctor_is_available": doctor_is_available,
+                               "patientIsAlreadyBooked": patient_is_already_booked, "bookable": bookable})
         return response, status_code
 
 
