@@ -30,7 +30,7 @@ def bookAppointment(patient_hcnumber, length, time, date, clinic_id):
             return False
         available_doctor = DoctorScheduleService.findDoctorForAnnual(date, time)
         available_room = RoomScheduleService.findRoomForAnnual(clinic_id, date, time)
-        if available_doctor is None | available_room is None:
+        if (available_doctor is None) | (available_room is None):
             return False
         return bookAnnual(patient_hcnumber=patient_hcnumber, doctor_permit_number=available_doctor,
                           room_number=available_room, length=length, time=time, date=date, clinic_id=clinic_id)
