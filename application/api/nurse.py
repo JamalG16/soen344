@@ -77,31 +77,32 @@ def userAuthenticate():
 
 @nurse.route('/api/nurse/doctorAvailability/', methods=['GET'])
 def getDoctorAvailability():
-    # convert request data to dictionary
-    data = request.args
+	# convert request data to dictionary
+	data = request.args
 
-    success = False
-    message = ""
-    status = ""  # OK, DENIED, WARNING
-    response = {}
-    user = {}
-    schedule = {}
+	success = False
+	message = ""
+	status = ""  # OK, DENIED, WARNING
+	response = {}
+	user = {}
+	returned_values = {'timeslot': '', 'clinics': ''}
 
-    # check if permit number exists
-    success = DoctorService.doctorExists(data['permit_number']) and \
-                NurseService.verifyHash(data['access_ID'], data['password_hash'])
+	# check if permit number exists
+	success = DoctorService.doctorExists(data['permit_number']) and \
+				NurseService.verifyHash(data['access_ID'], data['password_hash'])
 
-    # if permit number exists, get the doctor's timeslots
-    if success:
-        schedule = DoctorScheduleService.getAvailability(data['permit_number'], data['date'])
-        # convert datetimes to strings
-        message = "schedule found."
-        status = "OK"
-        response = json.dumps({'success': success, 'status': status, 'message': message, 'user': user})
-    # else the user is not authenticated, request is denied
-    else:
-        message = "User not authenticated or does not exist."
-        status = "DENIED"
+	# if permit number exists, get the doctor's timeslots
+	if success:
+		returned_values = DoctorScheduleService.getAvailability(data['permit_number'], data['date'])
+		# convert datetimes to strings
+		message = "schedule found."
+		status = "OK"
+		response = json.dumps({'success': success, 'status': status, 'message': message, 'user': user})
+	# else the user is not authenticated, request is denied
+	else:
+		message = "User not authenticated or does not exist."
+		status = "DENIED"
 
-    response = json.dumps({'success': success, 'status': status, 'message': message, 'schedule': schedule})
-    return response
+	response = json.dumps({'success': success, 'status': status, 'message': message,\
+		'schedule': returned_values['timeslot'], 'clinics': returned_values['clinics']})
+	return response

@@ -51,11 +51,13 @@ class HomepageNurse extends Component {
               try{
                 if (response.success){
                   console.log('it is a success mate')
-                  this.setState({foundPatient: true, alertPatient: false, user: {hcnumber: this.state.hcnumber}})
+                  this.setState({foundPatient: true, alertPatient: false, user: {hcnumber: this.state.hcnumber,
+                    permit_number: this.state.permit_number}})
                 }
                 else {
                   console.log('it is a fail mate');
-                  this.setState({foundPatient: false, alertPatient: true, user: {hcnumber: ''}})
+                  this.setState({foundPatient: false, alertPatient: true, user: {hcnumber: '', 
+                    permit_number: this.state.permit_number}})
                 }
               } catch(e){console.error("Error", e)}
             }
@@ -68,11 +70,13 @@ class HomepageNurse extends Component {
               try{
                 if (response.success){
                   console.log('it is a success mate')
-                  this.setState({foundDoctor: true, alertDoctor: false, user: {permit_number: this.state.permit_number}})
+                  this.setState({foundDoctor: true, alertDoctor: false, user: {permit_number: this.state.permit_number,
+                    hcnumber: this.state.hcnumber}})
                 }
                 else {
                   console.log('it is a fail mate');
-                  this.setState({foundDoctor: false, alertDoctor: true, user: {permit_number:''}})
+                  this.setState({foundDoctor: false, alertDoctor: true, user: {permit_number:'',
+                    hcnumber: this.state.hcnumber}})
                 }
               } catch(e){console.error("Error", e)}
             }

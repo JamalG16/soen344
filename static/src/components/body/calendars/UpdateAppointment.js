@@ -28,12 +28,15 @@ class UpdateAppointment extends Component {
             availableTimeSlots: [],
             display1: [], //for checkups
             display2: [], //for annuals
-            newAppointment: []
+            newAppointment: [],
+            allClinics: [],
+            clinic: {}
         }
     }
     
     componentDidMount(){
-        this.getTimeSlots(moment())
+        this.getClinics()
+        this.getTimeSlots(moment(), 1)
     }
 
     onSelect = (value) => {
@@ -41,7 +44,14 @@ class UpdateAppointment extends Component {
         value,
         selectedValue: value,
         });
-        this.getTimeSlots(value)
+        this.getTimeSlots(value, this.state.clinic.id)
+    }
+
+    onSelectClinic = (e) => {
+        this.setState({
+            clinic: e.target.value
+        })
+        this.getTimeSlots(this.state.selectedValue, e.target.value.id)
     }
 
     onChange = (e) => {
@@ -57,8 +67,8 @@ class UpdateAppointment extends Component {
         this.props.handleSelect(newApp)
     }
     
-    async getTimeSlots(date){
-        let data = {date: date.format('YYYY-MM-DD') }
+    async getTimeSlots(date, clinic_id){
+        let data = {date: date.format('YYYY-MM-DD'), clinic_id: clinic_id }
         fetchAPI("POST", "/api/appointment/find", data).then(
             response => {
               try{
@@ -92,14 +102,31 @@ class UpdateAppointment extends Component {
           ).catch((e)=>console.error("Error:", e))
     }
 
+    async getClinics(){
+        fetchAPI("GET", '/api/clinic/findAll').then(
+            response => {
+              try{
+                if (response.success){
+                    console.log('it is a success mate')
+                    this.setState({allClinics: response.clinics, clinic: response.clinics[0]})
+                }
+                else {
+                  console.log('it is a fail mate' + response.message);
+                }
+              } catch(e){console.error("Error", e)}
+            }
+          ).catch((e)=>console.error("Error:", e))
+    }
+
     render() {
         const { current, value, selectedValue, size } = this.state;
         let message, success, newAppInfo;
         
         if (!this.state.newAppointment.length>0 )
-            newAppInfo = ""
+            newAppInfo = "No new appointment selected."
         else
-            newAppInfo = " Updated Appointment: " + this.state.newAppointment[1] + " at " + this.state.newAppointment[2] ;
+            newAppInfo = " Updated Appointment: " + this.state.newAppointment[1] + " at " + this.state.newAppointment[2] +
+                ' at ' + this.state.clinic.name + ' (clinid id: ' + this.state.clinic.id + ').' ;
 
         if (selectedValue < current) {
             message = "You cannot select a previous date to book an appointment";
@@ -107,13 +134,28 @@ class UpdateAppointment extends Component {
         } else
         {
             message = "Current Appointment: " + this.props.currentAppointment.date + " at " + this.props.currentAppointment.time +
-            newAppInfo
+                ' at clinic id: ' + this.props.currentAppointment.clinic_id + '.';
             success = true;
         }
 
         return (
             <table>
                 <tr>
+                    <td colSpan={2}>
+                            Select the clinic you want to visit.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <Radio.Group value={this.state.clinic} onChange={this.onSelectClinic} style={{ marginBottom: 16 }}>
+                                {this.state.allClinics.map((clinic) => 
+                                    <Radio.Button value={clinic}>
+                                        {clinic.name} (id: {clinic.id})
+                                    </Radio.Button>)}
+                            </Radio.Group>
+                        </td>
+                    </tr>
+                    <tr>
                     <td colSpan={2}>
                         Select the type of appointment you want to book.
                     </td>
@@ -126,7 +168,7 @@ class UpdateAppointment extends Component {
                         </Radio.Group>
                     </td>
                 </tr>
-                <tr><td><Alert message={message}/></td></tr>
+                <tr><td><Alert message={message}/><Alert message={newAppInfo}/></td></tr>
                 <tr>
                     <td><div><Calendar style={{width:300, height:200}} value={value} fullscreen={false}  onSelect={this.onSelect} onPanelChange={this.onPanelChange}/></div></td>
                     <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>

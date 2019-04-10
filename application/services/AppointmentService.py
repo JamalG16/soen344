@@ -4,6 +4,8 @@ from application.TDG import AppointmentTDG
 from application.util import BooleanArrayOperations
 import datetime
 
+CHECKUP_LENGTH = 20
+ANNUAL_LENGTH = 60
 
 def createAppointment(room, clinic_id, doctor_permit_number, patient_hcnumber, length, time, date):
     dateSplit = date.split("-")
@@ -18,19 +20,19 @@ def createAppointment(room, clinic_id, doctor_permit_number, patient_hcnumber, l
 # If the type is to be annual, the patient's last annual must be checked to validate the new annual (at least 1 year difference).
 # Also, if the type is annual, check that the next two time slots can be booked in the same room with the same doctor.
 def bookAppointment(patient_hcnumber, length, time, date, clinic_id):
-    if length == '20':  # checkup
+    if int(length) == CHECKUP_LENGTH:  # checkup
         available_doctor = DoctorScheduleService.findDoctorAtTime(date, time, clinic_id=clinic_id)
         available_room = RoomScheduleService.findRoomAtTime(time=time, date=date, clinic_id=clinic_id)
         if available_doctor is None or available_room is None:
             return False
         return bookRegular(patient_hcnumber=patient_hcnumber, doctor_permit_number=available_doctor,
                            room_number=available_room, length=length, time=time, date=date, clinic_id=clinic_id)
-    elif length == '60':  # annual
+    elif int(length) == ANNUAL_LENGTH:  # annual
         if not canBookAnnual(patient_hcnumber):
             return False
         available_doctor = DoctorScheduleService.findDoctorForAnnual(date, time)
         available_room = RoomScheduleService.findRoomForAnnual(clinic_id, date, time)
-        if available_doctor is None | available_room is None:
+        if (available_doctor is None) | (available_room is None):
             return False
         return bookAnnual(patient_hcnumber=patient_hcnumber, doctor_permit_number=available_doctor,
                           room_number=available_room, length=length, time=time, date=date, clinic_id=clinic_id)
@@ -39,14 +41,14 @@ def bookAppointment(patient_hcnumber, length, time, date, clinic_id):
 
 
 def bookAppointmentWithASpecificDoctor(patient_hcnumber, doctor_permit_number, length, time, date, clinic_id):
-    if length == 20:  # checkup
+    if int(length) == CHECKUP_LENGTH:  # checkup
         available_doctor = doctor_permit_number
         available_room = RoomScheduleService.findRoomAtTime(time=time, date=date, clinic_id=clinic_id)
         if available_room is None:
             return False
         return bookRegular(patient_hcnumber=patient_hcnumber, doctor_permit_number=available_doctor,
                            room_number=available_room, length=length, time=time, date=date, clinic_id=clinic_id)
-    elif length == 60:  # annual
+    elif int(length) == ANNUAL_LENGTH:  # annual
         if not canBookAnnual(patient_hcnumber):
             return False
         available_doctor = doctor_permit_number
@@ -124,12 +126,12 @@ def cancelAppointment(id):
         date = appointment['date']
         time = appointment['time']
         clinic_id = appointment['clinic_id']
-        if appointment['length'] == 20:
+        if appointment['length'] == CHECKUP_LENGTH:
             DoctorScheduleService.makeTimeSlotAvailable(doctor, date, time)
             RoomScheduleService.makeTimeSlotAvailable(room, clinic_id, date, time)
             AppointmentTDG.delete(appointment['id'])
             return True
-        elif appointment['length'] == 60:
+        elif appointment['length'] == ANNUAL_LENGTH:
             DoctorScheduleService.makeTimeSlotAvailableAnnual(doctor, date, time)
             RoomScheduleService.makeTimeSlotAvailableAnnual(room, clinic_id, date, time)
             updateAnnual(appointment['patient_hcnumber'], None)
@@ -150,13 +152,13 @@ def updateDB(id, clinic_id, room, doctor_permit_number, length, time, date):
 
 # gets the currently made appointment and tries to change it to the new appointment parameters.
 # 4 cases: 20mins --> 20mins, 20mins-->60mins, 60mins-->20mins, 60mins-->60mins
-def updateAppointment(appointment_id, doctor_permit_number, length, new_time, new_date):
+def updateAppointment(appointment_id, length, new_time, new_date, doctor_permit_number=None):
     old_appointment = getAppointment(appointment_id)
-    old_appointment_is_annual = old_appointment['length'] == 60
-    new_appointment_is_annual = length == 60
+    old_appointment_is_annual = int(old_appointment['length']) == ANNUAL_LENGTH
+    new_appointment_is_annual = int(length) == ANNUAL_LENGTH
     appointment_updated = False
     if new_appointment_is_annual and not old_appointment_is_annual \
-            and canBookAnnual(old_appointment['patient_hcnumber']):
+            and not canBookAnnual(old_appointment['patient_hcnumber']):
         return "Patient already has an annual appointment which is not the one being moved", appointment_updated
 
     if doctor_permit_number is None:
@@ -168,7 +170,8 @@ def updateAppointment(appointment_id, doctor_permit_number, length, new_time, ne
                                                                  doctor_permit_number=doctor_permit_number,
                                                                  length=length, time=new_time, date=new_date,
                                                                  clinic_id=old_appointment['clinic_id'])
-    cancelAppointment(appointment_id)
+    if appointment_updated:
+        cancelAppointment(appointment_id)
 
     message = "Appointment has been updated" if appointment_updated else "Appointment was not updated"
 

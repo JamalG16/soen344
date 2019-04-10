@@ -28,7 +28,8 @@ class DoctorUpdateAppointment extends Component {
             availableTimeSlots: [],
             display1: [], //for checkups
             display2: [], //for annuals
-            newAppointment: []
+            newAppointment: [],
+            clinic: ''
         }
     }
     
@@ -84,17 +85,19 @@ class DoctorUpdateAppointment extends Component {
                                     data1.push({
                                         time: this.state.timeSlots[i] + " - " + this.state.timeSlots[i+1],
                                         button: <Button type="primary" icon="plus" size="large" onClick={() => 
-                                            this.onSelectNew(['Checkup', data.date, this.state.timeSlots[i]])}>Select</Button>
+                                            this.onSelectNew(['Checkup', data.date, this.state.timeSlots[i], 
+                                            response.clinics[0]])}>Select</Button>
                                     })
                                 if (this.state.availableTimeSlots[i] && this.state.availableTimeSlots[i+1] && this.state.availableTimeSlots[i+2] && i<=33)
                                     data2.push({
                                         time: this.state.timeSlots[i] + " - " + this.state.timeSlots[i+3],
                                         button: <Button type="primary" icon="plus" size="large" onClick={() => 
-                                            this.onSelectNew(['Annual', data.date, this.state.timeSlots[i]])}>Select</Button>
+                                            this.onSelectNew(['Annual', data.date, this.state.timeSlots[i],
+                                        response.clinics[0]])}>Select</Button>
                                     })
                             }
-                            this.setState({display1: data1, display2:data2})
-                            this.setState({availableTimeSlots: []})
+                            this.setState({display1: data1, display2:data2,
+                                clinic: response.clinics[0], availableTimeSlots: []})
                         }
                         else {
                         console.log('it is a fail mate' + response.message);
@@ -109,17 +112,18 @@ class DoctorUpdateAppointment extends Component {
         let message, success, newAppInfo;
         
         if (!this.state.newAppointment.length>0 )
-            newAppInfo = ""
+            newAppInfo = "No new appointment selected."
         else
-            newAppInfo = " Updated Appointment: " + this.state.newAppointment[1] + " at " + this.state.newAppointment[2] ;
+            newAppInfo = "Updated Appointment: " + this.state.newAppointment[1] + " at " + this.state.newAppointment[2] +
+                " at " + this.state.clinic.split(';')[1] + " ( clinic id: " + this.state.clinic.split(';')[0] + ")" ;
 
         if (selectedValue < current) {
             message = "You cannot select a previous date to book an appointment";
             success = false;
         } else
         {
-            message = "Current Appointment: " + this.props.currentAppointment.date + " at " + this.props.currentAppointment.time +
-            newAppInfo
+            message = "Current Appointment: " + this.props.currentAppointment.date + " at " + 
+                this.props.currentAppointment.time + " at clinic id: " + this.props.currentAppointment.clinic_id + ". "
             success = true;
         }
 
@@ -138,11 +142,12 @@ class DoctorUpdateAppointment extends Component {
                         </Radio.Group>
                     </td>
                 </tr>
-                <tr><td><Alert message={message}/></td></tr>
+                <tr><td><Alert message={message}/><Alert message={newAppInfo}/></td></tr>
                 <tr>
                     <td><div><Calendar style={{width:300, height:200}} value={value} fullscreen={false}  onSelect={this.onSelect} onPanelChange={this.onPanelChange}/></div></td>
                     <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                    <td style={{width:'100%'}}><AppointmentTable success={success} value={selectedValue} size={size} display1={this.state.display1} display2={this.state.display2}/></td>
+                    <td style={{width:'100%'}}><AppointmentTable success={success} value={selectedValue} size={size} 
+                    display1={this.state.display1} display2={this.state.display2} clinic={this.state.clinic}/></td>
                 </tr>
             </table>
         );
@@ -165,7 +170,8 @@ function AppointmentTable(props) {
     else if (props.size == 'checkin') {
         return (
             <div>
-                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}</h2>
+                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}, at {props.clinic.split(';')[1]}
+                &nbsp; (clinic id: {props.clinic.split(';')[0]})</h2>
                 <Table columns={columns} dataSource={props.display1} pagination={false}/>
             </div>
         );
@@ -173,7 +179,8 @@ function AppointmentTable(props) {
     else if (props.size == 'annual') {
         return (
             <div>
-                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}</h2>
+                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}, at {props.clinic.split(';')[1]}
+                &nbsp; (clinic id: {props.clinic.split(';')[0]})</h2>
                 <Table columns={columns} dataSource={props.display2} pagination={false}/>
             </div>
         );

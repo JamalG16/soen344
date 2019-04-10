@@ -37,7 +37,8 @@ class CalendarDoctor extends Component {
             inexistentPatient: false,
             noRoom: false,
             fail: false,
-            patientAlreadyBooked: false
+            patientAlreadyBooked: false,
+            cantBookAnnual: false
         }
     }
     
@@ -71,7 +72,8 @@ class CalendarDoctor extends Component {
     }
 
     handleCloseModal = (e) => {
-        this.setState({appointment: '', modal: false})
+        this.setState({appointment: '', modal: false, inexistentPatient: false, noRoom: false, patientAlreadyBooked: false,
+        modal: false, fail: false, cantBookAnnual: false, hcnumber: ''})
     }
 
     handleChange = event => {
@@ -135,7 +137,7 @@ class CalendarDoctor extends Component {
                         if (response.success){
                             console.log('it is a success mate')
                             this.setState({inexistentPatient: false, noRoom: false, patientAlreadyBooked: false,
-                                 modal: false, fail: false})
+                                 modal: false, fail: false, cantBookAnnual: false, hcnumber: ''})
                             message.info(this.state.appointment[0] + " with " + this.state.hcnumber + " at " + 
                                 this.state.appointment[2] + " on " + this.state.appointment[1] + " at " +  
                                 this.state.clinic.split(';')[1] + " has been booked.")
@@ -149,6 +151,8 @@ class CalendarDoctor extends Component {
                                 this.setState({noRoom: true})
                             else if (response.patientIsAlreadyBooked)
                                 this.setState({patientAlreadyBooked: true})
+                            else if (!response.bookable)
+                                this.setState({cantBookAnnual: true})
                             else
                                 this.setState({fail: true})
                         }
@@ -159,7 +163,7 @@ class CalendarDoctor extends Component {
 
     render() {
         const { current, value, selectedValue, size } = this.state;
-        let message, success, patientAlert, alert, roomAlert, patientAlreadyBookedAlert;
+        let message, success, patientAlert, alert, roomAlert, patientAlreadyBookedAlert, annualAlert;
 
         if (selectedValue < current) {
             message = "You cannot select a previous date to book an appointment";
@@ -177,7 +181,7 @@ class CalendarDoctor extends Component {
 
         if (this.state.fail)
             alert = <div className="flash animated" id="welcome"><ReactAlert bsStyle="warning">Cannot book appointment.
-                &nbsp; Check that your timeslot is still available.</ReactAlert></div>
+            &nbsp;Check that your timeslot is still available.</ReactAlert></div>
         else
             alert = null
         
@@ -189,14 +193,21 @@ class CalendarDoctor extends Component {
         if (this.state.patientAlreadyBooked)
             patientAlreadyBookedAlert = <div className="flash animated" id="welcome"><ReactAlert bsStyle="warning">Patient already booked at this time and date.</ReactAlert></div>
         else
-        patientAlreadyBookedAlert = null
+            patientAlreadyBookedAlert = null
+        
+        if (this.state.cantBookAnnual)
+            annualAlert = <div className="flash animated" id="welcome"><ReactAlert bsStyle="warning">Hasn't been a year since patient's last annual or 
+            patient already has an upcoming annual.</ReactAlert></div>
+        else
+            annualAlert = null
 
         return (
             <div>
                 <Modal show={this.state.modal}>
                         <Modal.Header>
                             <Modal.Title>Book {this.state.appointment[0]} appointment at {this.state.appointment[2]} on
-                                &nbsp;{this.state.appointment[1]} at {this.state.clinic.split(';')[1]}.
+                                &nbsp;{this.state.appointment[1]} at {this.state.clinic.split(';')[1]}
+                                &nbsp; (clinic id: {this.state.clinic.split(';')[0]}).
                             </Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
@@ -215,6 +226,7 @@ class CalendarDoctor extends Component {
                             {roomAlert}
                             {alert}
                             {patientAlreadyBookedAlert}
+                            {annualAlert}
                         </Modal.Body>
                         <Modal.Footer>
                             <Button variant="secondary" onClick={this.handleCloseModal}>Cancel</Button>
@@ -264,7 +276,8 @@ function AppointmentTable(props) {
     else if (props.size == 'checkin') {
         return (
             <div>
-                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}, at {props.clinic.split(';')[1]}</h2>
+                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}, at {props.clinic.split(';')[1]}
+                &nbsp; (clinic id: {props.clinic.split(';')[0]})</h2>
                 <Table columns={columns} dataSource={props.display1} pagination={false}/>
             </div>
         );
@@ -272,7 +285,8 @@ function AppointmentTable(props) {
     else if (props.size == 'annual') {
         return (
             <div>
-                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}, at {props.clinic.split(';')[1]}</h2>
+                <h2>Available Appointments for {props.value.format('YYYY-MM-DD')}, at {props.clinic.split(';')[1]}
+                &nbsp; (clinic id: {props.clinic.split(';')[0]})</h2>
                 <Table columns={columns} dataSource={props.display2} pagination={false}/>
             </div>
         );
