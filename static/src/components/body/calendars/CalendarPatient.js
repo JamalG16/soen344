@@ -59,8 +59,9 @@ class CalendarPatient extends Component {
             },
             () => {
             console.log("The selected clinic is: " + this.state.selectedClinic);
+            this.getTimeSlots(this.state.selectedValue, this.state.selectedClinic);
         });
-        this.getTimeSlots(this.state.selectedValue, this.state.selectedClinic);
+
 
     };
 
