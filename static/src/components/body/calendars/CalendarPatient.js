@@ -34,31 +34,35 @@ class CalendarPatient extends Component {
         };
         this.getClinics();
     }
-    
-    componentDidMount(){
-        this.getTimeSlots(moment())
-    }
+
 
     onSelect = (value) => {
         this.setState({
         value,
         selectedValue: value,
         });
-        this.getTimeSlots(value)
-    }
+        this.getTimeSlots(value, this.state.selectedClinic)
+    };
 
     onChange = (e) => {
+        console.log("on change!!");
     this.setState({ size: e.target.value });
-    }
+    };
 
     onPanelChange = (value) => {
         this.setState({ value });
     };
 
-    onDropdownChange = (event) => {
-        this.setState({selectedClinic: event.target.value});
-        console.log("The selected clinic is: " + this.state.selectedClinic);
-    }
+    onDropdownChange = (value) => {
+        this.setState({
+            selectedClinic: value.target.value
+            },
+            () => {
+            console.log("The selected clinic is: " + this.state.selectedClinic);
+        });
+        this.getTimeSlots(this.state.selectedValue, this.state.selectedClinic);
+
+    };
 
     cartClick(appointment) {
         if (appointment[0] == 'Checkup')
@@ -74,7 +78,6 @@ class CalendarPatient extends Component {
                 try{
                     if(response.success){
                         this.setState({clinics: response.clinics});
-                        console.log("Clinc: " + this.state.clinics[1].name)
                     }
                     else {
                   console.log('Response received, but not successful: ' + response.message);
@@ -84,16 +87,16 @@ class CalendarPatient extends Component {
         ).catch((e)=>console.error("Error:", e))
     }
 
-    async getTimeSlots(date){
-        let data = {date: date.format('YYYY-MM-DD') }
+    async getTimeSlots(date, clinic_id){
+        let data = {date: date.format('YYYY-MM-DD'), clinic_id: clinic_id };
         fetchAPI("POST", "/api/appointment/find", data).then(
             response => {
               try{
                 if (response.success){
-                    console.log('it is a success mate')
+                    console.log('it is a success mate');
                     this.setState({availableTimeSlots: response.listOfAvailableAppointments})
-                    let data1 = [] //for checkups
-                    let data2 = [] //for annuals
+                    let data1 = []; //for checkups
+                    let data2 = []; //for annuals
                     for (let i = 0; i<35; i++){
                         if (this.state.availableTimeSlots[i])
                             data1.push({
@@ -142,7 +145,10 @@ class CalendarPatient extends Component {
                 <tr>
                     <td>
                         <div>
-                            <select >
+                            <select onChange={this.onDropdownChange}>
+                                <option value="" selected disabled hidden>
+                                    Select an option
+                                </option>
                                 {this.state.clinics.map((clinic) =>
                                 <option key={clinic.id} value={clinic.id}>
                                     {clinic.name}
