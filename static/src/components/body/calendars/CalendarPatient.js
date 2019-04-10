@@ -1,6 +1,6 @@
 import {Component} from "react";
 import React from "react";
-import { Calendar, Alert , Table, Button, Radio, message} from 'antd';
+import {Calendar, Alert, Table, Button, Radio, message, Menu, Dropdown, Card} from 'antd';
 import * as moment from 'moment';
 import { fetchAPI } from '../../utility'
 import 'antd/es/calendar/style/index.css';
@@ -15,6 +15,7 @@ import 'antd/es/tabs/style/index.css';
 import 'antd/es/radio/style/index.css';
 import 'antd/es/typography/style/index.css';
 import 'antd/es/message/style/index.css';
+import 'antd/es/dropdown/style/index.css'
 
 class CalendarPatient extends Component {
     constructor() {
@@ -28,8 +29,10 @@ class CalendarPatient extends Component {
             availableTimeSlots: [],
             display1: [], //for checkups
             display2: [], //for annuals
-            clinic: []
-        }
+            clinics: [],
+            selectedClinic: ''
+        };
+        this.getClinics();
     }
     
     componentDidMount(){
@@ -50,6 +53,11 @@ class CalendarPatient extends Component {
 
     onPanelChange = (value) => {
         this.setState({ value });
+    };
+
+    onDropdownChange = (event) => {
+        this.setState({selectedClinic: event.target.value});
+        console.log("The selected clinic is: " + this.state.selectedClinic);
     }
 
     cartClick(appointment) {
@@ -59,7 +67,23 @@ class CalendarPatient extends Component {
             message.info('Added an ' + appointment[0] + ' appointment on ' + appointment[1] + ' at ' + appointment[2] + ' to cart.')
         this.props.addToCart(appointment)
     }
-    
+
+    async getClinics(){
+        fetchAPI("GET","/api/clinic/findAll").then(
+            response => {
+                try{
+                    if(response.success){
+                        this.setState({clinics: response.clinics});
+                        console.log("Clinc: " + this.state.clinics[1].name)
+                    }
+                    else {
+                  console.log('Response received, but not successful: ' + response.message);
+                }
+                } catch(e){console.error("Error receiving response when accessing clinics", e)}
+            }
+        ).catch((e)=>console.error("Error:", e))
+    }
+
     async getTimeSlots(date){
         let data = {date: date.format('YYYY-MM-DD') }
         fetchAPI("POST", "/api/appointment/find", data).then(
@@ -117,10 +141,15 @@ class CalendarPatient extends Component {
                 </tr>
                 <tr>
                     <td>
-                        <Radio.Group value={size} onChange={this.onChange} style={{ marginBottom: 16 }}>
-                            <Radio.Button value="Clinic_1">Clinic 1</Radio.Button>
-                            <Radio.Button value="Clinic_2">Clinic 2</Radio.Button>
-                        </Radio.Group>
+                        <div>
+                            <select >
+                                {this.state.clinics.map((clinic) =>
+                                <option key={clinic.id} value={clinic.id}>
+                                    {clinic.name}
+                                </option>
+                                )}
+                            </select>
+                        </div>
                     </td>
                 </tr>
                 <tr>

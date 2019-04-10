@@ -88,6 +88,7 @@ def updateClinic():
         {"success": success, "message": message, "clinic": clinic})
     return response
 
+# Returns all clinics
 @clinic.route('/api/clinic/findAll', methods=['GET'])
 def findAll():
     success = False
