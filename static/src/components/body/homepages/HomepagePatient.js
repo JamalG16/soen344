@@ -76,10 +76,9 @@ class HomepagePatient extends Component {
             response => {
                 try{
                     if(response.success){
-                        this.setState({
-                            appointments: response.appointments
-                        });
+                        this.setState({appointments: response.appointments});
                         console.log("Patient " + this.props.user.hcnumber + " successfully retrieved appointments")
+
                     }
                     else {
                         console.log("Patient " + this.props.user.hcnumber + " failed to retrieve appointments")
@@ -124,6 +123,7 @@ class HomepagePatient extends Component {
                                  <a onClick={() => this.cancel(appointment.id)}>Cancel Appointment</a>
                              </div>}
                              style={{width: 800}}>
+                             <p> Clinic id: {appointment.clinic_id} </p>
                              <p>{appointment.length} minute appointment with doctor
                                  id: {appointment.doctor_permit_number}</p>
                              <p>Room: {appointment.room}</p>
