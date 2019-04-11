@@ -19,8 +19,10 @@ class HomepagePatient extends Component {
             appointment: {},
             newAppointment: [],
             annualAlert: false,
-            alert: false
+            alert: false,
+            clinics: []
         };
+        this.getClinics()
         this.handleAppointmentsPatient();
         this.cancel = this.cancel.bind(this)
     }
@@ -111,29 +113,37 @@ class HomepagePatient extends Component {
     }
 
     async generateCardList() {
-     let appointmentsAsCards = null;
+     let appointmentsAsCards ;
      if(this.state.appointments.length !== 0){
-         appointmentsAsCards = this.state.appointments.map((appointment) => {
-                     return (
-                     <div>
-                         <Card
-                             title={appointment.date}
-                             extra={<div>
-                                 <a onClick={() => this.handleOpenModal(appointment)}>Update Appointment</a>
-                                 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-                                 <a onClick={() => this.cancel(appointment.id)}>Cancel Appointment</a>
-                             </div>}
-                             style={{width: 800}}>
-                             <p> Clinic id: {appointment.clinic_id} </p>
-                             <p>{appointment.length} minute appointment with doctor
-                                 id: {appointment.doctor_permit_number}</p>
-                             <p>Room: {appointment.room}</p>
-                             <p>Time: {appointment.time}</p>
-                         </Card>
-                         <br/>
-                     </div>
-                     )
-         });
+        appointmentsAsCards = this.state.clinics.map((clinic) => {
+            return (
+                appointmentsAsCards = this.state.appointments.map((appointment) => {
+                    if (appointment.clinic_id == clinic.id){
+                        return (
+                            <div>
+                                <Card
+                                    title={appointment.date}
+                                    extra={<div>
+                                            <a onClick={() => this.handleOpenModal(appointment)}>Update Appointment</a>
+                                            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                                            <a onClick={() => this.cancel(appointment.id)}>Cancel Appointment</a>
+                                        </div>}
+                                    style={{ width: 800 }}>
+                                    <p>{appointment.length} minute appointment with doctor id: {appointment.doctor_permit_number}</p>
+                                    <p>Clinic: {clinic.name}</p> 
+                                    <p>Address: {clinic.address}</p>
+                                    <p>Room: {appointment.room}</p>
+                                    <p>Time: {appointment.time}</p>
+                                </Card>
+                                <br/>
+                            </div>
+                        )
+                    }
+                    else
+                        return
+                    })
+                )
+            });
      }
      else{
          appointmentsAsCards = <div>No appointments scheduled. </div>
@@ -141,23 +151,22 @@ class HomepagePatient extends Component {
      this.setState({cardList: appointmentsAsCards, isLoading: false})
     }
 
-     async getClinic(clinic_id, callback){
-         let data = ({clinic_id: clinic_id});
-         fetchAPI("POST", '/api/clinic/find', data).then(
-                response => {
-                    try{
-                        if(response.success){
-                            console.log("Clinic "+ response.clinic.name + " retrieved by id");
-                            this.setState({clinic:response.clinic}, callback());
-                        }
-                        else {
-                            console.log("Could not retrieve Clinic by id")
-                            return callback()
-                        }
-                        this.handleAppointmentsPatient();
-                    } catch(e) {console.error("Error:", e)}
-                }
-            ).catch((e)=>console.error("Error:", e))
+    async getClinics(){
+        fetchAPI("GET", '/api/clinic/findAll').then(
+            response => {
+                try{
+                    if(response.success){
+                        this.setState({
+                            clinics: response.clinics
+                        });
+                        console.log('retrieved clinics')
+                    }
+                    else {
+                        console.log('failed to retrieve clinics')
+                    }
+                } catch(e) {console.error("Error getting appointments for patient:", e)}
+            }
+        ).catch((e)=>console.error("Error getting appointments for patient:", e))
     }
 
     render(){

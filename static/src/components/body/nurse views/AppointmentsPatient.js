@@ -19,8 +19,10 @@ class AppointmentsPatient extends Component {
             appointment: {},
             newAppointment: [],
             annualAlert: false,
-            alert: false
+            alert: false,
+            clinics: []
         };
+        this.getClinics();
         this.handleAppointmentsPatient();
         this.cancel = this.cancel.bind(this)
     }
@@ -50,9 +52,11 @@ class AppointmentsPatient extends Component {
     async updateAppointment(){
         let data;
         if (this.state.newAppointment[0] == 'Checkup')
-            data = {id: this.state.appointment.id, hcnumber: this.props.user.hcnumber, length:'20', time: this.state.newAppointment[2], date: this.state.newAppointment[1]}
+            data = {id: this.state.appointment.id, hcnumber: this.props.user.hcnumber, length:'20', 
+            time: this.state.newAppointment[2], date: this.state.newAppointment[1], clinic_id: this.state.newAppointment[3]}
         else
-            data = {id: this.state.appointment.id, hcnumber: this.props.user.hcnumber, length:'60', time: this.state.newAppointment[2], date: this.state.newAppointment[1]}
+            data = {id: this.state.appointment.id, hcnumber: this.props.user.hcnumber, length:'60', 
+            time: this.state.newAppointment[2], date: this.state.newAppointment[1], clinic_id: this.state.newAppointment[3]}
         fetchAPI("PUT", '/api/appointment/update', data).then(
             response => {
                 try{
@@ -118,26 +122,54 @@ class AppointmentsPatient extends Component {
         ).catch((e)=>console.error("Error getting appointments for patient:", e))
     }
 
+    async getClinics(){
+        fetchAPI("GET", '/api/clinic/findAll').then(
+            response => {
+                try{
+                    if(response.success){
+                        this.setState({
+                            clinics: response.clinics
+                        });
+                        console.log('retrieved clinics')
+                    }
+                    else {
+                        console.log('failed to retrieve clinics')
+                    }
+                } catch(e) {console.error("Error getting appointments for patient:", e)}
+            }
+        ).catch((e)=>console.error("Error getting appointments for patient:", e))
+    }
+
     async generateCardList() {
-     let appointmentsAsCards = this.state.appointments.map((appointment) => {
-         return (
-             <div>
-                 <Card
-                    title={appointment.date}
-                    extra={<div>
-                            <a onClick={() => this.handleOpenModal(appointment)}>Update Appointment</a>
-                            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-                            <a onClick={() => this.cancel(appointment.id)}>Cancel Appointment</a>
-                        </div>}
-                    style={{ width: 800 }}>
-                     <p>{appointment.length} minute appointment with doctor id: {appointment.doctor_permit_number}</p>
-                     <p>Room: {appointment.room}</p>
-                     <p>Time: {appointment.time}</p>
-                </Card>
-                <br/>
-            </div>
-         )
-     });
+     let appointmentsAsCards = this.state.clinics.map((clinic) => {
+        return (
+            appointmentsAsCards = this.state.appointments.map((appointment) => {
+                if (appointment.clinic_id == clinic.id){
+                    return (
+                        <div>
+                            <Card
+                                title={appointment.date}
+                                extra={<div>
+                                        <a onClick={() => this.handleOpenModal(appointment)}>Update Appointment</a>
+                                        &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                                        <a onClick={() => this.cancel(appointment.id)}>Cancel Appointment</a>
+                                    </div>}
+                                style={{ width: 800 }}>
+                                <p>{appointment.length} minute appointment with doctor id: {appointment.doctor_permit_number}</p>
+                                <p>Clinic: {clinic.name}</p> 
+                                <p>Address: {clinic.address}</p>
+                                <p>Room: {appointment.room}</p>
+                                <p>Time: {appointment.time}</p>
+                            </Card>
+                            <br/>
+                        </div>
+                    )
+                }
+                else
+                    return
+                })
+            )
+        });
      this.setState({cardList: appointmentsAsCards, isLoading: false})
     }
 
