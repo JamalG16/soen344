@@ -224,7 +224,8 @@ def updateAppointmentForDoctor():
     message = ""
 
     if AppointmentService.getAppointment(data['id']) is not None:
-        message, success = AppointmentService.updateAppointment(appointment_id=data['id'],
+        message, success = AppointmentService.updateAppointment(clinic_id=data['clinic_id'],
+                                                                appointment_id=data['id'],
                                                                 doctor_permit_number=data['permit_number'],
                                                                 length=data['length'], new_time=data['time'],
                                                                 new_date=data['date'])
@@ -250,8 +251,9 @@ def updateAppointment():
         bookableAnnual = PatientService.canBookAnnual(data['hcnumber'])
 
     if AppointmentService.getAppointment(data['id']) is not None:
-        success = AppointmentService.updateAppointment(appointment_id=data['id'], length=data['length'],
-                                                        new_time=data['time'], new_date=data['date'])
+        success = AppointmentService.updateAppointment(clinic_id=data['clinic_id'],
+                                                       appointment_id=data['id'], length=data['length'],
+                                                       new_time=data['time'], new_date=data['date'])
     if success:
         message = 'Appointment has been updated.'
         appointment = AppointmentService.getAppointment(data['id'])

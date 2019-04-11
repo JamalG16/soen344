@@ -152,7 +152,7 @@ def updateDB(id, clinic_id, room, doctor_permit_number, length, time, date):
 
 # gets the currently made appointment and tries to change it to the new appointment parameters.
 # 4 cases: 20mins --> 20mins, 20mins-->60mins, 60mins-->20mins, 60mins-->60mins
-def updateAppointment(appointment_id, length, new_time, new_date, doctor_permit_number=None):
+def updateAppointment(clinic_id, appointment_id, length, new_time, new_date, doctor_permit_number=None):
     old_appointment = getAppointment(appointment_id)
     old_appointment_is_annual = int(old_appointment['length']) == ANNUAL_LENGTH
     new_appointment_is_annual = int(length) == ANNUAL_LENGTH
@@ -164,12 +164,12 @@ def updateAppointment(appointment_id, length, new_time, new_date, doctor_permit_
     if doctor_permit_number is None:
         appointment_updated = bookAppointment(patient_hcnumber=old_appointment['patient_hcnumber'],
                                               length=length, time=new_time, date=new_date,
-                                              clinic_id=old_appointment['clinic_id'])
+                                              clinic_id=clinic_id)
     else:
         appointment_updated = bookAppointmentWithASpecificDoctor(patient_hcnumber=old_appointment['patient_hcnumber'],
                                                                  doctor_permit_number=doctor_permit_number,
                                                                  length=length, time=new_time, date=new_date,
-                                                                 clinic_id=old_appointment['clinic_id'])
+                                                                 clinic_id=clinic_id)
     if appointment_updated:
         cancelAppointment(appointment_id)
 

@@ -44,9 +44,10 @@ class HomepagePatient extends Component {
     async updateAppointment(){
         let data;
         if (this.state.newAppointment[0] == 'Checkup')
-            data = {id: this.state.appointment.id, hcnumber: this.props.user.hcnumber, length:'20', time: this.state.newAppointment[2], date: this.state.newAppointment[1]}
+            data = {id: this.state.appointment.id, hcnumber: this.props.user.hcnumber, length:'20', time: this.state.newAppointment[2], date: this.state.newAppointment[1], clinic_id: this.state.newAppointment[3]}
         else
-            data = {id: this.state.appointment.id, hcnumber: this.props.user.hcnumber, length:'60', time: this.state.newAppointment[2], date: this.state.newAppointment[1]}
+            data = {id: this.state.appointment.id, hcnumber: this.props.user.hcnumber, length:'60', time: this.state.newAppointment[2], date: this.state.newAppointment[1], clinic_id: this.state.newAppointment[3]}
+        console.log("newAppointment Data: " + JSON.stringify(this.state.newAppointment));
         fetchAPI("PUT", '/api/appointment/update', data).then(
             response => {
                 try{
