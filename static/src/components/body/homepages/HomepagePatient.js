@@ -141,6 +141,25 @@ class HomepagePatient extends Component {
      this.setState({cardList: appointmentsAsCards, isLoading: false})
     }
 
+     async getClinic(clinic_id, callback){
+         let data = ({clinic_id: clinic_id});
+         fetchAPI("POST", '/api/clinic/find', data).then(
+                response => {
+                    try{
+                        if(response.success){
+                            console.log("Clinic "+ response.clinic.name + " retrieved by id");
+                            this.setState({clinic:response.clinic}, callback());
+                        }
+                        else {
+                            console.log("Could not retrieve Clinic by id")
+                            return callback()
+                        }
+                        this.handleAppointmentsPatient();
+                    } catch(e) {console.error("Error:", e)}
+                }
+            ).catch((e)=>console.error("Error:", e))
+    }
+
     render(){
         let alert, annualAlert;
 
