@@ -16,6 +16,7 @@ class AppointmentCart extends Component {
             length: '', 
             date:'', 
             time:'',
+            clinic_id:'',
             //alert notifies if appointment already exists
             alert: false,
             success: false,
@@ -48,14 +49,18 @@ class AppointmentCart extends Component {
     }
 
     onCheckout(appointment){
-        if (appointment[0] == 'Checkup'){
-            this.setState({length:'20', date: appointment[1], time: appointment[2]})
-            this.showModal()
+        console.log("onCheckout appointment:" + JSON.stringify(appointment));
+        if (appointment[0] === 'Checkup'){
+            this.setState({length:'20'});
         }
-        if (appointment[0] == 'Annual'){
-            this.setState({length:'60', date: appointment[1], time: appointment[2]})
-            this.showModal()
+        if (appointment[0] === 'Annual'){
+            this.setState({length:'60'});
         }
+        this.setState({date: appointment[1], time: appointment[2], clinic_id: appointment[3]}, () => {
+            console.log("onCheckout Clinic id is: " + this.state.clinic_id);
+        });
+
+        this.showModal()
     }
     
     onRemove(appointment){
@@ -102,7 +107,7 @@ class AppointmentCart extends Component {
                     this.onCheckout(appointment)}>Checkout</Button>
                     </div>
             })
-        })
+        });
 
         return (
             <div>
@@ -112,7 +117,9 @@ class AppointmentCart extends Component {
     }
 
     async checkout(){
-        let appointment = {hcnumber: this.props.user.hcnumber, length: this.state.length, time:this.state.time , date:this.state.date }
+        let appointment = {hcnumber: this.props.user.hcnumber, length: this.state.length, time:this.state.time , date:this.state.date, clinic_id: this.state.clinic_id }
+        console.log("clinic id: " + this.state.clinic_id);
+        console.log("appointment object: " + JSON.stringify(appointment));
         fetchAPI("PUT", "/api/appointment/book", appointment).then(
             response => {
               try{

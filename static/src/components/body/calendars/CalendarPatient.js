@@ -30,7 +30,7 @@ class CalendarPatient extends Component {
             display1: [], //for checkups
             display2: [], //for annuals
             clinics: [],
-            selectedClinic: ''
+            selectedClinicId: ''
         };
         this.getClinics();
     }
@@ -41,7 +41,7 @@ class CalendarPatient extends Component {
         value,
         selectedValue: value,
         });
-        this.getTimeSlots(value, this.state.selectedClinic)
+        this.getTimeSlots(value, this.state.selectedClinicId)
     };
 
     onChange = (e) => {
@@ -55,21 +55,25 @@ class CalendarPatient extends Component {
 
     onDropdownChange = (value) => {
         this.setState({
-            selectedClinic: value.target.value
+            selectedClinicId: value.target.value
             },
             () => {
-            console.log("The selected clinic is: " + this.state.selectedClinic);
-            this.getTimeSlots(this.state.selectedValue, this.state.selectedClinic);
+            console.log("The selected clinic is: " + this.state.selectedClinicId);
+            this.getTimeSlots(this.state.selectedValue, this.state.selectedClinicId);
         });
 
 
     };
 
     cartClick(appointment) {
+        var infomessage = 'Added ';
         if (appointment[0] == 'Checkup')
-            message.info('Added a ' + appointment[0] + ' appointment on ' + appointment[1] + ' at ' + appointment[2] + ' to cart.')
+            infomessage += 'a ';
         if (appointment[0] == 'Annual')
-            message.info('Added an ' + appointment[0] + ' appointment on ' + appointment[1] + ' at ' + appointment[2] + ' to cart.')
+            infomessage += 'an ';
+        infomessage += appointment[0] + ' appointment on ' + appointment[1] + ' at ' + appointment[2] + ' to cart. (clinic id: ' + appointment[3] + '.)';
+
+        message.info(infomessage);
         this.props.addToCart(appointment)
     }
 
@@ -103,13 +107,15 @@ class CalendarPatient extends Component {
                             data1.push({
                                 time: this.state.timeSlots[i] + " - " + this.state.timeSlots[i+1],
                                 button: <Button type="primary" icon="plus" size="large" onClick={() => 
-                                    this.cartClick(['Checkup', data.date, this.state.timeSlots[i]])}>ADD TO CART</Button>
+                                    this.cartClick(['Checkup', data.date, this.state.timeSlots[i], this.state.selectedClinicId])}>
+                                    ADD TO CART</Button>
                             })
                         if (this.state.availableTimeSlots[i] && this.state.availableTimeSlots[i+1] && this.state.availableTimeSlots[i+2] && i<=33)
                             data2.push({
                                 time: this.state.timeSlots[i] + " - " + this.state.timeSlots[i+3],
                                 button: <Button type="primary" icon="plus" size="large" onClick={() => 
-                                    this.cartClick(['Annual', data.date, this.state.timeSlots[i]])}>ADD TO CART</Button>
+                                    this.cartClick(['Annual', data.date, this.state.timeSlots[i], this.state.selectedClinicId])}>
+                                    ADD TO CART</Button>
                             })
                     }
                     this.setState({display1: data1, display2:data2})
