@@ -48,11 +48,6 @@ class HomepageDoctor extends Component {
                            <div>
                                <Card
                                    title={appointment.date}
-                                   extra={<div>
-                                           <a onClick={() => this.handleOpenModal(appointment)}>Update Appointment</a>
-                                           &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-                                           <a onClick={() => this.cancel(appointment.id)}>Cancel Appointment</a>
-                                       </div>}
                                    style={{ width: 800 }}>
                                    <p>{appointment.length} minute appointment with patient: {appointment.patient_hcnumber}</p>
                                    <p>Clinic: {clinic.name}</p> 
