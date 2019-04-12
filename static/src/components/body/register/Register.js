@@ -6,6 +6,7 @@ import RegisterPatient from './RegisterPatient'
 import RegisterDoctor from './RegisterDoctor'
 import RegisterNurse from './RegisterNurse'
 import RegisterAdmin from "./RegisterAdmin";
+import RegisterClinic from "./RegisterClinic";
 
 class Register extends Component {
     render() {
@@ -26,6 +27,9 @@ class Register extends Component {
                     </Tab>
                     <Tab eventKey="admin" title="Admin Registration">
                         <RegisterAdmin></RegisterAdmin>
+                    </Tab>
+                    <Tab eventKey="clinic" title="Clinic Registration">
+                        <RegisterClinic></RegisterClinic>
                     </Tab>
                 </Tabs>
             </div>
