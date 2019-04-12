@@ -1,6 +1,6 @@
 import {Component} from "react";
 import React from "react";
-import { Calendar, Alert , Table, Button, Radio, message} from 'antd';
+import {Calendar, Alert, Table, Button, Radio, message, Menu, Dropdown, Card} from 'antd';
 import * as moment from 'moment';
 import { fetchAPI } from '../../utility'
 import 'antd/es/calendar/style/index.css';
@@ -15,6 +15,7 @@ import 'antd/es/tabs/style/index.css';
 import 'antd/es/radio/style/index.css';
 import 'antd/es/typography/style/index.css';
 import 'antd/es/message/style/index.css';
+import 'antd/es/dropdown/style/index.css'
 
 class CalendarPatient extends Component {
     constructor() {
@@ -28,59 +29,93 @@ class CalendarPatient extends Component {
             availableTimeSlots: [],
             display1: [], //for checkups
             display2: [], //for annuals
-        }
+            clinics: [],
+            selectedClinicId: ''
+        };
+        this.getClinics();
     }
-    
-    componentDidMount(){
-        this.getTimeSlots(moment())
-    }
+
 
     onSelect = (value) => {
         this.setState({
         value,
         selectedValue: value,
         });
-        this.getTimeSlots(value)
-    }
+        this.getTimeSlots(value, this.state.selectedClinicId)
+    };
 
     onChange = (e) => {
+        console.log("on change!!");
     this.setState({ size: e.target.value });
-    }
+    };
 
     onPanelChange = (value) => {
         this.setState({ value });
-    }
+    };
+
+    onDropdownChange = (value) => {
+        this.setState({
+            selectedClinicId: value.target.value
+            },
+            () => {
+            console.log("The selected clinic is: " + this.state.selectedClinicId);
+            this.getTimeSlots(this.state.selectedValue, this.state.selectedClinicId);
+        });
+
+
+    };
 
     cartClick(appointment) {
+        var infomessage = 'Added ';
         if (appointment[0] == 'Checkup')
-            message.info('Added a ' + appointment[0] + ' appointment on ' + appointment[1] + ' at ' + appointment[2] + ' to cart.')
+            infomessage += 'a ';
         if (appointment[0] == 'Annual')
-            message.info('Added an ' + appointment[0] + ' appointment on ' + appointment[1] + ' at ' + appointment[2] + ' to cart.')
+            infomessage += 'an ';
+        infomessage += appointment[0] + ' appointment on ' + appointment[1] + ' at ' + appointment[2] + ' to cart. (clinic id: ' + appointment[3] + '.)';
+
+        message.info(infomessage);
         this.props.addToCart(appointment)
     }
-    
-    async getTimeSlots(date){
-        let data = {date: date.format('YYYY-MM-DD') }
+
+    async getClinics(){
+        fetchAPI("GET","/api/clinic/findAll").then(
+            response => {
+                try{
+                    if(response.success){
+                        this.setState({clinics: response.clinics});
+                    }
+                    else {
+                  console.log('Response received, but not successful: ' + response.message);
+                }
+                } catch(e){console.error("Error receiving response when accessing clinics", e)}
+            }
+        ).catch((e)=>console.error("Error:", e))
+    }
+
+    async getTimeSlots(date, clinic_id){
+        let data = {date: date.format('YYYY-MM-DD'), clinic_id: clinic_id };
         fetchAPI("POST", "/api/appointment/find", data).then(
             response => {
               try{
                 if (response.success){
-                    console.log('it is a success mate')
+                    console.log('it is a success mate');
                     this.setState({availableTimeSlots: response.listOfAvailableAppointments})
-                    let data1 = [] //for checkups
-                    let data2 = [] //for annuals
+                    let data1 = []; //for checkups
+                    let data2 = []; //for annuals
                     for (let i = 0; i<35; i++){
                         if (this.state.availableTimeSlots[i])
                             data1.push({
                                 time: this.state.timeSlots[i] + " - " + this.state.timeSlots[i+1],
                                 button: <Button type="primary" icon="plus" size="large" onClick={() => 
-                                    this.cartClick(['Checkup', data.date, this.state.timeSlots[i]])}>ADD TO CART</Button>
+                                    this.cartClick(['Checkup', data.date, this.state.timeSlots[i], this.state.selectedClinicId])}>
+                                    ADD TO CART</Button>
                             })
                         if (this.state.availableTimeSlots[i] && this.state.availableTimeSlots[i+1] && this.state.availableTimeSlots[i+2] && i<=33)
                             data2.push({
                                 time: this.state.timeSlots[i] + " - " + this.state.timeSlots[i+3],
                                 button: <Button type="primary" icon="plus" size="large" onClick={() => 
-                                    this.cartClick(['Annual', data.date, this.state.timeSlots[i]])}>ADD TO CART</Button>
+                                    this.cartClick(['Annual', data.date, this.state.timeSlots[i], this.state.selectedClinicId])}>
+                                    ADD TO CART</Button>
                             })
                     }
                     this.setState({display1: data1, display2:data2})
@@ -109,6 +144,27 @@ class CalendarPatient extends Component {
 
         return (
             <table>
+                <tr>
+                    <td colSpan={2}>
+                        Select the clinic you want to visit.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div>
+                            <select onChange={this.onDropdownChange}>
+                                <option value="" selected disabled hidden>
+                                    Select an option
+                                </option>
+                                {this.state.clinics.map((clinic) =>
+                                <option key={clinic.id} value={clinic.id}>
+                                    {clinic.name} - id: {clinic.id}
+                                </option>
+                                )}
+                            </select>
+                        </div>
+                    </td>
+                </tr>
                 <tr>
                     <td colSpan={2}>
                         Select the type of appointment you want to book.

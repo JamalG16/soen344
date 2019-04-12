@@ -8,6 +8,7 @@ import { Route, Redirect } from 'react-router-dom'
 import CalendarDoctor from "./calendars/CalendarDoctor";
 import CalendarNurse from "./calendars/CalendarNurse";
 import AppointmentCart from "./AppointmentCart";
+import Clinics from "./Clinics";
 import Homepage from "./homepages/Homepage";
 import UpdateAvailability from "./doctor avail/UpdateAvailability"
 
@@ -25,7 +26,8 @@ class Body extends Component {
   addToCart(appointment){
     var exists = false
     this.state.cart.map(function(cartObject){
-      if(appointment[0] == cartObject[0] && appointment[1] == cartObject[1] && appointment[2] == cartObject[2])
+      if(appointment[0] == cartObject[0] && appointment[1] == cartObject[1] && appointment[2] == cartObject[2] &&
+        appointment[3] == cartObject[3])
         exists = true
     })
     if (!exists)
@@ -34,7 +36,15 @@ class Body extends Component {
 
   removeFromCart(appointment){
     var cartCopy = [...this.state.cart];
-    var index = cartCopy.indexOf(appointment)
+    var index = -1;
+    this.state.cart.map((cartObject) => {
+      for (let i=0; i<cartObject.length; i++){
+        if (cartObject[i] != appointment[i])
+          break;
+        if (i==cartObject.length-1)
+          index = cartCopy.indexOf(cartObject)
+      }
+    });
     if (index !== -1){
       cartCopy.splice(index,1);
       this.setState({cart: cartCopy})
@@ -69,6 +79,7 @@ class Body extends Component {
                 <Route path='/CalendarNurse' component={CalendarNurse} />
                 <Route path='/AppointmentCart' render={(props) => <AppointmentCart {...props} removeFromCart={this.removeFromCart} cart={this.state.cart} user={this.props.user}/>}/>
                 <Route path='/Homepage' component={Homepage} />
+                <Route path='/Clinics' component={Clinics} />
                 <Redirect from='/' to='/Homepage'></Redirect>
           </Row>
         </Grid>

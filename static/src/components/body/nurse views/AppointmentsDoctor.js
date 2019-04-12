@@ -20,8 +20,9 @@ class AppointmentsDoctor extends Component {
             newAppointment: [],
             annualAlert: false,
             alert: false,
+            clinics: []
         };
-        this.handleAppointmentsDoctor();
+        this.getClinics();
         this.cancel = this.cancel.bind(this)
     }
 
@@ -123,28 +124,56 @@ class AppointmentsDoctor extends Component {
         ).catch((e)=>console.error("Error getting appointments for doctor:", e))
     }
 
+    async getClinics(){
+        fetchAPI("GET", '/api/clinic/findAll').then(
+            response => {
+                try{
+                    if(response.success){
+                        this.setState({
+                            clinics: response.clinics
+                        });
+                        console.log('retrieved clinics')
+                    }
+                    else {
+                        console.log('failed to retrieve clinics')
+                    }
+                    this.handleAppointmentsDoctor();
+                } catch(e) {console.error("Error getting appointments for patient:", e)}
+            }
+        ).catch((e)=>console.error("Error getting appointments for patient:", e))
+    }
+
     async generateCardList() {
-     let appointmentsAsCards = this.state.appointments.map((appointment) => {
-         return (
-             <div>
-                 <Card
-                    title={appointment.date}
-                    extra={<div>
-                            <a onClick={() => this.handleOpenModal(appointment)}>Update Appointment</a>
-                            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-                            <a onClick={() => this.cancel(appointment.id)}>Cancel Appointment</a>
-                        </div>}
-                    style={{ width: 800 }}>
-                     <p>{appointment.length} minute appointment with patient: {appointment.patient_hcnumber}</p>
-                     <p>Clinic id: {appointment.clinic_id}</p>
-                     <p>Room: {appointment.room}</p>
-                     <p>Time: {appointment.time}</p>
-                </Card>
-                <br/>
-            </div>
-         )
-     });
-     this.setState({cardList: appointmentsAsCards, isLoading: false})
+        let appointmentsAsCards = this.state.clinics.map((clinic) => {
+           return (
+               appointmentsAsCards = this.state.appointments.map((appointment) => {
+                   if (appointment.clinic_id == clinic.id){
+                       return (
+                           <div>
+                               <Card
+                                   title={appointment.date}
+                                   extra={<div>
+                                           <a onClick={() => this.handleOpenModal(appointment)}>Update Appointment</a>
+                                           &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                                           <a onClick={() => this.cancel(appointment.id)}>Cancel Appointment</a>
+                                       </div>}
+                                   style={{ width: 800 }}>
+                                   <p>{appointment.length} minute appointment with patient: {appointment.patient_hcnumber}</p>
+                                   <p>Clinic: {clinic.name}</p> 
+                                   <p>Address: {clinic.address}</p>
+                                   <p>Room: {appointment.room}</p>
+                                   <p>Time: {appointment.time}</p>
+                               </Card>
+                               <br/>
+                           </div>
+                       )
+                   }
+                   else
+                       return
+                   })
+               )
+           });
+        this.setState({cardList: appointmentsAsCards, isLoading: false})
     }
 
     render(){

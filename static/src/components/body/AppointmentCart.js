@@ -16,10 +16,14 @@ class AppointmentCart extends Component {
             length: '', 
             date:'', 
             time:'',
+            clinic_id:'',
             //alert notifies if appointment already exists
             alert: false,
             success: false,
-            annualAlert: false }
+            annualAlert: false,
+            clinics: [], 
+         }
+        this.getClinics();
         this.onCheckout = this.onCheckout.bind(this)
         this.TableGenerator = this.TableGenerator.bind(this)
         
@@ -48,14 +52,18 @@ class AppointmentCart extends Component {
     }
 
     onCheckout(appointment){
-        if (appointment[0] == 'Checkup'){
-            this.setState({length:'20', date: appointment[1], time: appointment[2]})
-            this.showModal()
+        console.log("onCheckout appointment:" + JSON.stringify(appointment));
+        if (appointment[0] === 'Checkup'){
+            this.setState({length:'20'});
         }
-        if (appointment[0] == 'Annual'){
-            this.setState({length:'60', date: appointment[1], time: appointment[2]})
-            this.showModal()
+        if (appointment[0] === 'Annual'){
+            this.setState({length:'60'});
         }
+        this.setState({date: appointment[1], time: appointment[2], clinic_id: appointment[3]}, () => {
+            console.log("onCheckout Clinic id is: " + this.state.clinic_id);
+        });
+
+        this.showModal()
     }
     
     onRemove(appointment){
@@ -65,6 +73,24 @@ class AppointmentCart extends Component {
             time: '',
         });
         this.props.removeFromCart(appointment)
+    }
+
+    async getClinics(){
+        fetchAPI("GET", '/api/clinic/findAll').then(
+            response => {
+                try{
+                    if(response.success){
+                        this.setState({
+                            clinics: response.clinics
+                        });
+                        console.log('retrieved clinics')
+                    }
+                    else {
+                        console.log('failed to retrieve clinics')
+                    }
+                } catch(e) {console.error("Error getting appointments for patient:", e)}
+            }
+        ).catch((e)=>console.error("Error getting appointments for patient:", e))
     }
 
     TableGenerator() {
@@ -83,25 +109,37 @@ class AppointmentCart extends Component {
                 title: 'Price',
                 dataIndex: 'price',
             }, {
+                title: 'Clinic',
+                dataIndex: 'clinic_name',
+            }, {
+                title: 'Address',
+                dataIndex: 'clinic_address',
+            }, {
                 title: <div style={{float: 'left'}}>Action</div>,
                 dataIndex: 'button'
             }
         ];
 
         const data = []
-        this.props.cart.map((appointment) => {
-            data.push({
-                type: appointment[0],
-                time: appointment[2],
-                date: appointment[1],
-                price: '50$',
-                button: <div>
-                    <Button type="primary" icon="minus" style={{float: 'left'}} size="large" onClick={() => 
-                    this.onRemove(appointment)}>Remove</Button>
-                    <Button type="primary" icon="plus" style={{float: 'right'}} size="large" onClick={() => 
-                    this.onCheckout(appointment)}>Checkout</Button>
-                    </div>
-            })
+        this.state.clinics.map((clinic)=> {
+            this.props.cart.map((appointment) => {
+                if (clinic.id == appointment[3]){
+                    data.push({
+                    type: appointment[0],
+                    time: appointment[2],
+                    date: appointment[1],
+                    clinic_name: clinic.name,
+                    clinic_address: clinic.address,
+                    price: '50$',
+                    button: <div>
+                        <Button type="primary" icon="minus" style={{float: 'left'}} size="large" onClick={() => 
+                        this.onRemove(appointment)}>Remove</Button>
+                        <Button type="primary" icon="plus" style={{float: 'right'}} size="large" onClick={() => 
+                        this.onCheckout(appointment)}>Checkout</Button>
+                        </div>
+                    })
+                }
+            });
         })
 
         return (
@@ -112,16 +150,18 @@ class AppointmentCart extends Component {
     }
 
     async checkout(){
-        let appointment = {hcnumber: this.props.user.hcnumber, length: this.state.length, time:this.state.time , date:this.state.date }
+        let appointment = {hcnumber: this.props.user.hcnumber, length: this.state.length, time:this.state.time , date:this.state.date, clinic_id: this.state.clinic_id }
+        console.log("clinic id: " + this.state.clinic_id);
+        console.log("appointment object: " + JSON.stringify(appointment));
         fetchAPI("PUT", "/api/appointment/book", appointment).then(
             response => {
               try{
                 if (response.success){
                     console.log('it is a success mate')
                     if (this.state.length=='20')
-                        this.onRemove(['Checkup', this.state.date, this.state.time])
+                        this.onRemove(['Checkup', this.state.date, this.state.time, this.state.clinic_id])
                     else
-                        this.onRemove(['Annual', this.state.date, this.state.time])
+                        this.onRemove(['Annual', this.state.date, this.state.time, this.state.clinic_id])
                     this.setState({alert: false, success: true, annualAlert: false})
                 }
                 else {
