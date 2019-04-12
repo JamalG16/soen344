@@ -36,7 +36,15 @@ class Body extends Component {
 
   removeFromCart(appointment){
     var cartCopy = [...this.state.cart];
-    var index = cartCopy.indexOf(appointment)
+    var index = -1;
+    this.state.cart.map((cartObject) => {
+      for (let i=0; i<cartObject.length; i++){
+        if (cartObject[i] != appointment[i])
+          break;
+        if (i==cartObject.length-1)
+          index = cartCopy.indexOf(cartObject)
+      }
+    });
     if (index !== -1){
       cartCopy.splice(index,1);
       this.setState({cart: cartCopy})
