@@ -61,23 +61,30 @@ class HomepageDoctor extends Component {
     }
 
     async generateCardList() {
-        let appointmentsAsCards = this.state.appointments.map(function (appointment) {
-            console.log(appointment)
-            console.log(Object.keys(appointment))
-            return (
-                <div>
-                    <Card
-                    title={appointment.date}
-                    style={{ width: 800 }}>
-                        <p>{appointment.length} minute appointment with patient: {appointment.patient_hcnumber}</p>
-                        <p>Clinic id: {appointment.clinic_id}</p>
-                        <p>Room: {appointment.room}</p>
-                        <p>Time: {appointment.time}</p>
-                </Card>
-                <br/>
-            </div>
-            )
-        });
+        let appointmentsAsCards = this.state.clinics.map((clinic) => {
+           return (
+               appointmentsAsCards = this.state.appointments.map((appointment) => {
+                   if (appointment.clinic_id == clinic.id){
+                       return (
+                           <div>
+                               <Card
+                                   title={appointment.date}
+                                   style={{ width: 800 }}>
+                                   <p>{appointment.length} minute appointment with patient: {appointment.patient_hcnumber}</p>
+                                   <p>Clinic: {clinic.name}</p> 
+                                   <p>Address: {clinic.address}</p>
+                                   <p>Room: {appointment.room}</p>
+                                   <p>Time: {appointment.time}</p>
+                               </Card>
+                               <br/>
+                           </div>
+                       )
+                   }
+                   else
+                       return
+                   })
+               )
+           });
         this.setState({cardList: appointmentsAsCards, isLoading: false})
     }
 

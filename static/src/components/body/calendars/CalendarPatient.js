@@ -111,6 +111,27 @@ class CalendarPatient extends Component {
             <table>
                 <tr>
                     <td colSpan={2}>
+                        Select the clinic you want to visit.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div>
+                            <select onChange={this.onDropdownChange}>
+                                <option value="" selected disabled hidden>
+                                    Select an option
+                                </option>
+                                {this.state.clinics.map((clinic) =>
+                                <option key={clinic.id} value={clinic.id}>
+                                    {clinic.name}
+                                </option>
+                              )}
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colSpan={2}>
                         Select the type of appointment you want to book.
                     </td>
                 </tr>
