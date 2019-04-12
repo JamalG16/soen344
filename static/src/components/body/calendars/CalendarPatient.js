@@ -158,7 +158,7 @@ class CalendarPatient extends Component {
                                 </option>
                                 {this.state.clinics.map((clinic) =>
                                 <option key={clinic.id} value={clinic.id}>
-                                    {clinic.name}
+                                    {clinic.name} - id: {clinic.id}
                                 </option>
                                 )}
                             </select>
