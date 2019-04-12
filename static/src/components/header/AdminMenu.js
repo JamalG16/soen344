@@ -13,7 +13,11 @@ class AdminMenu extends Component {
                         Register an Account
                     </Link>
                     &nbsp;&nbsp;&nbsp;
-                    <Link to="/" onClick={logOut}>
+                    <Link to="/Clinics">
+                    Clinics
+                    </Link>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <Link to="/Homepage" onClick={logOut}>
                         Logout
                     </Link>
             </div> 

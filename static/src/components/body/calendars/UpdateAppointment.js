@@ -68,30 +68,31 @@ class UpdateAppointment extends Component {
     }
     
     async getTimeSlots(date, clinic_id){
-        let data = {date: date.format('YYYY-MM-DD'), clinic_id: clinic_id }
+        let data = {date: date.format('YYYY-MM-DD'), clinic_id: clinic_id };
         fetchAPI("POST", "/api/appointment/find", data).then(
             response => {
               try{
                 if (response.success){
-                    console.log('it is a success mate')
+                    console.log('it is a success mate');
                     this.setState({availableTimeSlots: response.listOfAvailableAppointments})
-                    let data1 = [] //for checkups
-                    let data2 = [] //for annuals
+                    let data1 = []; //for checkups
+                    let data2 = []; //for annuals
+                    console.log("clinic id:" + clinic_id);
                     for (let i = 0; i<35; i++){
                         if (this.state.availableTimeSlots[i])
                             data1.push({
                                 time: this.state.timeSlots[i] + " - " + this.state.timeSlots[i+1],
                                 button: <Button type="primary" icon="plus" size="large" onClick={() => 
-                                    this.onSelectNew(['Checkup', data.date, this.state.timeSlots[i]])}>Select</Button>
+                                    this.onSelectNew(['Checkup', data.date, this.state.timeSlots[i], clinic_id])}>Select</Button>
                             })
                         if (this.state.availableTimeSlots[i] && this.state.availableTimeSlots[i+1] && this.state.availableTimeSlots[i+2] && i<=33)
                             data2.push({
                                 time: this.state.timeSlots[i] + " - " + this.state.timeSlots[i+3],
                                 button: <Button type="primary" icon="plus" size="large" onClick={() => 
-                                    this.onSelectNew(['Annual', data.date, this.state.timeSlots[i]])}>Select</Button>
+                                    this.onSelectNew(['Annual', data.date, this.state.timeSlots[i], clinic_id])}>Select</Button>
                             })
                     }
-                    this.setState({display1: data1, display2:data2})
+                    this.setState({display1: data1, display2:data2});
                     this.setState({availableTimeSlots: []})
                 }
                 else {

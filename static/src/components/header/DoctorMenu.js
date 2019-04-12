@@ -18,7 +18,11 @@ class PatientMenu extends Component {
               Book Appointment
             </Link>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <Link to="/" onClick={logOut}>
+            <Link to="/Clinics">
+                    Clinics
+            </Link>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <Link to="/Homepage" onClick={logOut}>
                 Logout
             </Link>
         </div>

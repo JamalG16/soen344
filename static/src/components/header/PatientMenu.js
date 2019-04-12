@@ -19,7 +19,11 @@ class PatientMenu extends Component {
                 <Icon type="shopping-cart" /> Cart
             </Link>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <Link to="/" onClick={logOut}>
+            <Link to="/Clinics">
+                Clinics
+            </Link>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <Link to="/Homepage" onClick={logOut}>
                 Logout
             </Link>
         </div>
