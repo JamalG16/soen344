@@ -20,7 +20,10 @@ class AppointmentCart extends Component {
             //alert notifies if appointment already exists
             alert: false,
             success: false,
-            annualAlert: false }
+            annualAlert: false,
+            clinics: [], 
+         }
+        this.getClinics();
         this.onCheckout = this.onCheckout.bind(this)
         this.TableGenerator = this.TableGenerator.bind(this)
         
@@ -72,6 +75,24 @@ class AppointmentCart extends Component {
         this.props.removeFromCart(appointment)
     }
 
+    async getClinics(){
+        fetchAPI("GET", '/api/clinic/findAll').then(
+            response => {
+                try{
+                    if(response.success){
+                        this.setState({
+                            clinics: response.clinics
+                        });
+                        console.log('retrieved clinics')
+                    }
+                    else {
+                        console.log('failed to retrieve clinics')
+                    }
+                } catch(e) {console.error("Error getting appointments for patient:", e)}
+            }
+        ).catch((e)=>console.error("Error getting appointments for patient:", e))
+    }
+
     TableGenerator() {
 
         const columns = [
@@ -88,26 +109,38 @@ class AppointmentCart extends Component {
                 title: 'Price',
                 dataIndex: 'price',
             }, {
+                title: 'Clinic',
+                dataIndex: 'clinic_name',
+            }, {
+                title: 'Address',
+                dataIndex: 'clinic_address',
+            }, {
                 title: <div style={{float: 'left'}}>Action</div>,
                 dataIndex: 'button'
             }
         ];
 
         const data = []
-        this.props.cart.map((appointment) => {
-            data.push({
-                type: appointment[0],
-                time: appointment[2],
-                date: appointment[1],
-                price: '50$',
-                button: <div>
-                    <Button type="primary" icon="minus" style={{float: 'left'}} size="large" onClick={() => 
-                    this.onRemove(appointment)}>Remove</Button>
-                    <Button type="primary" icon="plus" style={{float: 'right'}} size="large" onClick={() => 
-                    this.onCheckout(appointment)}>Checkout</Button>
-                    </div>
-            })
-        });
+        this.state.clinics.map((clinic)=> {
+            this.props.cart.map((appointment) => {
+                if (clinic.id == appointment[3]){
+                    data.push({
+                    type: appointment[0],
+                    time: appointment[2],
+                    date: appointment[1],
+                    clinic_name: clinic.name,
+                    clinic_address: clinic.address,
+                    price: '50$',
+                    button: <div>
+                        <Button type="primary" icon="minus" style={{float: 'left'}} size="large" onClick={() => 
+                        this.onRemove(appointment)}>Remove</Button>
+                        <Button type="primary" icon="plus" style={{float: 'right'}} size="large" onClick={() => 
+                        this.onCheckout(appointment)}>Checkout</Button>
+                        </div>
+                    })
+                }
+            });
+        })
 
         return (
             <div>
@@ -126,9 +159,9 @@ class AppointmentCart extends Component {
                 if (response.success){
                     console.log('it is a success mate')
                     if (this.state.length=='20')
-                        this.onRemove(['Checkup', this.state.date, this.state.time])
+                        this.onRemove(['Checkup', this.state.date, this.state.time, this.state.clinic_id])
                     else
-                        this.onRemove(['Annual', this.state.date, this.state.time])
+                        this.onRemove(['Annual', this.state.date, this.state.time, this.state.clinic_id])
                     this.setState({alert: false, success: true, annualAlert: false})
                 }
                 else {

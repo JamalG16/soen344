@@ -35,6 +35,10 @@ class Menu extends Component {
                     Register
                 </Link>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <Link to="/Clinics">
+                    Clinics
+                </Link>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <Link to="/login">
                     Login
                 </Link>

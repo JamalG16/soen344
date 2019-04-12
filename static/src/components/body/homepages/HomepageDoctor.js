@@ -15,7 +15,6 @@ class HomepageDoctor extends Component {
             clinics: []
         };
         this.getClinics()
-        this.handleAppointmentsDoctor();
         this.generateCardList = this.generateCardList.bind(this)
     }
 
@@ -86,6 +85,7 @@ class HomepageDoctor extends Component {
                     else {
                         console.log('failed to retrieve clinics')
                     }
+                    this.handleAppointmentsDoctor();
                 } catch(e) {console.error("Error getting appointments for patient:", e)}
             }
         ).catch((e)=>console.error("Error getting appointments for patient:", e))

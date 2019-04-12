@@ -23,7 +23,6 @@ class AppointmentsPatient extends Component {
             clinics: []
         };
         this.getClinics();
-        this.handleAppointmentsPatient();
         this.cancel = this.cancel.bind(this)
     }
 
@@ -135,6 +134,7 @@ class AppointmentsPatient extends Component {
                     else {
                         console.log('failed to retrieve clinics')
                     }
+                    this.handleAppointmentsPatient();
                 } catch(e) {console.error("Error getting appointments for patient:", e)}
             }
         ).catch((e)=>console.error("Error getting appointments for patient:", e))

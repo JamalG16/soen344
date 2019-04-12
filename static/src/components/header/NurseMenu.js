@@ -9,8 +9,11 @@ class PatientMenu extends Component {
         <div>
             Welcome {this.props.user.fname}!
             &nbsp;&nbsp;&nbsp;&nbsp;
+            <Link to="/Clinics">
+              Clinics
+            </Link>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <Link to="/" onClick={logOut}>
+            <Link to="/Homepage" onClick={logOut}>
                 Logout
             </Link>
         </div>
